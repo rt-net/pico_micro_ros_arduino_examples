@@ -9,7 +9,7 @@ on:
     - '**.md'
   workflow_dispatch:
 
-jobos:
+jobs:
   compile-sketches:
   runs-on: ubuntu-latest
   steps:
