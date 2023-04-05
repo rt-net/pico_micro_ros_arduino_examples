@@ -1,0 +1,37 @@
+typedef struct
+{
+  short value;
+  short p_value;
+  short p2_value;
+  short error;
+  short ref;
+  short th_wall;
+  short th_control;
+  bool is_wall;
+  bool is_control;
+} t_sensor;
+
+typedef struct
+{
+  double control;
+  double error;
+  double p_error;
+  double diff;
+  double sum;
+  double sum_max;
+  double kp;
+  double kd;
+  double ki;
+  bool enable;
+} t_control;
+
+typedef enum
+{
+  MOT_FORWARD,
+  MOT_BACK
+}t_CW_CCW;
+
+ typedef enum{
+  R90,
+  L90
+}t_sura_mode;
