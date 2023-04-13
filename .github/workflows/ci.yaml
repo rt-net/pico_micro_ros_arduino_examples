@@ -22,7 +22,7 @@ jobs:
               source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
           cli-compile-flags: |
             - --build-property
-            - compiler.cpp.extra_flags=-Wno-error
+            - compiler.cpp.extra_flags=-Wno-error=unused-but-set-parameter -Wno-error=unused-but-set-variable -Wno-error=unused-variable  -Wno-error=switch -Wno-error=char-subscripts -Wno-error=return-type
           sketch-paths: |
             - uROS_STEP1_LED
             - uROS_STEP2_SWITCH
