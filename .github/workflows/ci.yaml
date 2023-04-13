@@ -22,3 +22,12 @@ jobs:
               source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
           sketch-paths: |
             - uROS_STEP1_LED
+            - uROS_STEP2_SWITCH
+            - uROS_STEP3_Buzzer
+            - uROS_STEP4_Sensor
+            - uROS_STEP5_Straight
+            - uROS_STEP6_rotate
+            - uROS_STEP7_P_control
+            - uROS_STEP8_micromouse
+            - uROS_STEP10_twistMsg
+
