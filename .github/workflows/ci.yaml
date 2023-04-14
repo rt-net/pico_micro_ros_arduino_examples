@@ -21,7 +21,7 @@ jobs:
             - name: esp32:esp32
               source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
           libraries: |
-            - source-url: https://github.com/ShotaAk/micro_ros_arduino/archive/refs/tags/v2.0.5-humble-esp32s3.zip
+            - source-url: https://github.com/ShotaAk/micro_ros_arduino/archive/refs/tags/humble-add-custom-msg-esp32s3.zip
           cli-compile-flags: |
             - --build-property
             - compiler.cpp.extra_flags=-Wno-error=unused-but-set-parameter -Wno-error=unused-but-set-variable -Wno-error=unused-variable  -Wno-error=switch -Wno-error=char-subscripts -Wno-error=return-type
@@ -35,4 +35,7 @@ jobs:
             - uROS_STEP7_P_control
             - uROS_STEP8_micromouse
             - uROS_STEP10_twistMsg
+            - uROS_STEP11_tfMsg
+            - uROS_STEP12_SensorMsg
+            - uROS_STEP13_micromouse
 
