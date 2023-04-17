@@ -20,7 +20,7 @@
 #include <rclc/rclc.h>
 
 #include <pico_msgs/msg/light_sensor.h>
-pico_msgs__msg__LightSensor sensor_msg;
+pico_msg__msg__LightSensor sensor_msg;
 
 #include <std_msgs/msg/int16.h>
 std_msgs__msg__Int16 bat_msg;
