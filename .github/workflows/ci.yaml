@@ -36,6 +36,6 @@ jobs:
             - uROS_STEP8_micromouse
             - uROS_STEP10_twistMsg
             - uROS_STEP11_tfMsg
-            # - uROS_STEP12_SensorMsg
+            - uROS_STEP12_SensorMsg
             # - uROS_STEP13_micromouse
 
