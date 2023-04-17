@@ -56,7 +56,7 @@ jobs:
             - uROS_STEP12_SensorMsg
             - uROS_STEP13_micromouse
 
-      This step is needed to pass the size data to the report job 
+      # This step is needed to pass the size data to the report job 
       - name: Upload sketches report to workflow artifact
         uses: actions/upload-artifact@v3
         with:
