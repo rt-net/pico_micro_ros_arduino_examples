@@ -9,14 +9,73 @@ on:
     - '**.md'
   workflow_dispatch:
 
-jobos:
+env:
+  # It's convenient to set variables for values used multiple times in the workflow
+  SKETCHES_REPORTS_PATH: sketches-reports
+  SKETCHES_REPORTS_ARTIFACT_NAME: sketches-reports
+
+jobs:
   compile-sketches:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
-    - uses: arduino/compile-sketches@v1
-      with:
-        # 要修正
-        fqbn: arduino:avr:uno
-        sketch-paths: |
-          - uROS_STEP1_LED
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: arduino/compile-sketches@v1
+        with:
+          enable-deltas-report: true
+          sketches-report-path: ${{ env.SKETCHES_REPORTS_PATH }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fqbn: esp32:esp32:esp32s3
+          platforms: |  # ESP32公式のpackage indexを使用する
+            - name: esp32:esp32
+              source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          libraries: |  # RTがカスタマイズしたmicro_ros_arduinoライブラリを使用する
+            - source-url: https://github.com/ShotaAk/micro_ros_arduino/archive/refs/tags/humble-add-custom-msg-esp32s3.zip
+          cli-compile-flags: |  # 警告がエラーとして扱われるので、対処しない警告はエラーから除外する
+            - --build-property
+            - "compiler.cpp.extra_flags= \
+              -Wno-error=unused-but-set-parameter \
+              -Wno-error=unused-but-set-variable \
+              -Wno-error=unused-variable \
+              -Wno-error=switch \
+              -Wno-error=char-subscripts \
+              -Wno-error=return-type \
+              -Wno-error=type-limits \
+              -Wno-error=ignored-qualifiers \
+              -Wno-error=implicit-function-declaration"
+          sketch-paths: |
+            - uROS_STEP1_LED
+            - uROS_STEP2_SWITCH
+            - uROS_STEP3_Buzzer
+            - uROS_STEP4_Sensor
+            - uROS_STEP5_Straight
+            - uROS_STEP6_rotate
+            - uROS_STEP7_P_control
+            - uROS_STEP8_micromouse
+            - uROS_STEP10_twistMsg
+            - uROS_STEP11_tfMsg
+            - uROS_STEP12_SensorMsg
+            - uROS_STEP13_micromouse
+
+      # This step is needed to pass the size data to the report job 
+      - name: Upload sketches report to workflow artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.SKETCHES_REPORTS_ARTIFACT_NAME }}
+          path: ${{ env.SKETCHES_REPORTS_PATH }}
+
+  report:
+    needs: compile-sketches  # Wait for the compile job to finish to get the data for the report
+    if: github.event_name == 'pull_request' # Only run the job when the workflow is triggered by a pull request
+    runs-on: ubuntu-latest
+    steps:
+      # This step is needed to get the size data produced by the compile jobs
+      - name: Download sketches reports artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.SKETCHES_REPORTS_ARTIFACT_NAME }}
+          path: ${{ env.SKETCHES_REPORTS_PATH }}
+
+      - uses: arduino/report-size-deltas@v1
+        with:
+          sketches-reports-source: ${{ env.SKETCHES_REPORTS_PATH }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
