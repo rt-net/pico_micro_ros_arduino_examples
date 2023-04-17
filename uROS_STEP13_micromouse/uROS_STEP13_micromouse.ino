@@ -32,7 +32,7 @@
 #include <geometry_msgs/msg/transform_stamped.h>
 #include <tf2_msgs/msg/tf_message.h>
 #include <sensor_msgs/msg/joint_state.h>
-#include <picosensor/msg/light_sensor.h>
+#include <pico_msgs/msg/light_sensor.h>
 #include <std_msgs/msg/int16.h>
 #include <visualization_msgs/msg/marker.h>
 

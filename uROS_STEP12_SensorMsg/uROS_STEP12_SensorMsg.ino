@@ -19,8 +19,8 @@
 #include <rcl/error_handling.h>
 #include <rclc/rclc.h>
 
-#include <picosensor/msg/light_sensor.h>
-picosensor__msg__LightSensor sensor_msg;
+#include <pico_msgs/msg/light_sensor.h>
+pico_msgs__msg__LightSensor sensor_msg;
 
 #include <std_msgs/msg/int16.h>
 std_msgs__msg__Int16 bat_msg;
@@ -161,7 +161,7 @@ void setup() {
   RCCHECK(rclc_publisher_init_default(
     &publisher_sensor,
     &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(picosensor, msg, LightSensor),
+    ROSIDL_GET_MSG_TYPE_SUPPORT(pico_msgs, msg, LightSensor),
     "pico_sensor"));
 
   RCCHECK(rclc_publisher_init_default(
