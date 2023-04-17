@@ -17,12 +17,12 @@ jobs:
       - uses: arduino/compile-sketches@v1
         with:
           fqbn: esp32:esp32:esp32s3
-          platforms: |
+          platforms: |  # ESP32公式のpackage indexを使用する
             - name: esp32:esp32
               source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-          libraries: |
+          libraries: |  # RTがカスタマイズしたmicro_ros_arduinoライブラリを使用する
             - source-url: https://github.com/ShotaAk/micro_ros_arduino/archive/refs/tags/humble-add-custom-msg-esp32s3.zip
-          cli-compile-flags: |
+          cli-compile-flags: |  # 警告がエラーとして扱われるので、対処しない警告はエラーから除外する
             - --build-property
             - compiler.cpp.extra_flags=-Wno-error=unused-but-set-parameter -Wno-error=unused-but-set-variable -Wno-error=unused-variable  -Wno-error=switch -Wno-error=char-subscripts -Wno-error=return-type -Wno-error=type-limits -Wno-error=ignored-qualifiers -Wno-error=implicit-function-declaration 
           sketch-paths: |
@@ -37,5 +37,5 @@ jobs:
             - uROS_STEP10_twistMsg
             - uROS_STEP11_tfMsg
             - uROS_STEP12_SensorMsg
-            # - uROS_STEP13_micromouse
+            - uROS_STEP13_micromouse
 
