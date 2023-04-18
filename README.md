@@ -1,7 +1,7 @@
 # micro-ROS Arduino examples for Pi:Co Classic 3
 
-[![CI](https://github.com/rt-net/pico_micro_ros_examples/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/rt-net/pico_micro_ros_examples/actions/workflows/ci.yaml)
-
+[![Compile Sketches](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/compile-sketches.yaml/badge.svg)](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/compile-sketches.yaml)
+[![Lint](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/lint.yaml/badge.svg)](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/lint.yaml)
 
 ## スケッチファイルの自動整形について
 
