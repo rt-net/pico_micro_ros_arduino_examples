@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-tf2_msgs__msg__TFMessage* tf_message;
+tf2_msgs__msg__TFMessage * tf_message;
 sensor_msgs__msg__JointState jstate;
 std_msgs__msg__Int16 bat_msg;
 rosidl_runtime_c__String joint_name[2];
@@ -20,24 +20,35 @@ double positions[2];
 pico_msgs__msg__LightSensor sensor_msg;
 visualization_msgs__msg__Marker marker_msg;
 
-rcl_publisher_t publisher_tf, publisher_joint, publisher_sensor, publisher_battery, publisher_marker;
+rcl_publisher_t publisher_tf, publisher_joint, publisher_sensor, publisher_battery,
+  publisher_marker;
 rclc_support_t support;
 rcl_allocator_t allocator;
 rcl_node_t node;
 
-#define RCCHECK(fn)     { rcl_ret_t temp_rc = fn; if ((temp_rc != RCL_RET_OK)) { error_loop(); } }
-#define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if ((temp_rc != RCL_RET_OK)) {} }
-
+#define RCCHECK(fn)                \
+  {                                \
+    rcl_ret_t temp_rc = fn;        \
+    if ((temp_rc != RCL_RET_OK)) { \
+      error_loop();                \
+    }                              \
+  }
+#define RCSOFTCHECK(fn)            \
+  {                                \
+    rcl_ret_t temp_rc = fn;        \
+    if ((temp_rc != RCL_RET_OK)) { \
+    }                              \
+  }
 
 extern unsigned char second_run[256];
 
-void marker_set(int start2_x, int start2_y, t_direction_glob dir) {
+void marker_set(int start2_x, int start2_y, t_direction_glob dir)
+{
   int i = 0;
   t_direction_glob temp_dir = dir;
   int x, y;
 
-  x = start2_x,
-  y = start2_y;
+  x = start2_x, y = start2_y;
 
   switch (temp_dir) {
     case north:
@@ -87,36 +98,43 @@ void marker_set(int start2_x, int start2_y, t_direction_glob dir) {
     if (second_run[i] == 127) break;
     switch (second_run[i]) {
       case R90:
-        if (temp_dir == north) temp_dir = east;
-        else if (temp_dir == east) temp_dir = south;
-        else if (temp_dir == south) temp_dir = west;
-        else temp_dir = north;
+        if (temp_dir == north)
+          temp_dir = east;
+        else if (temp_dir == east)
+          temp_dir = south;
+        else if (temp_dir == south)
+          temp_dir = west;
+        else
+          temp_dir = north;
         break;
       case L90:
-        if(temp_dir==north)temp_dir=west;
-        else if(temp_dir==east)temp_dir=north;
-        else if(temp_dir==south)temp_dir=east;
-        else temp_dir=south;
-       break; 
-
+        if (temp_dir == north)
+          temp_dir = west;
+        else if (temp_dir == east)
+          temp_dir = north;
+        else if (temp_dir == south)
+          temp_dir = east;
+        else
+          temp_dir = south;
+        break;
     }
-    switch (temp_dir){
-      case north :
-       fast_path_add_publish(y, x, north);
-       y++;
-       break;
-     case east:
-       fast_path_add_publish(y, x, east);
-       x++;
-       break;
-     case south:
-       fast_path_add_publish(y, x, south);
-       y--;
-       break;
-     case west:
-       fast_path_add_publish(y, x, west);
-       x--;
-       break;
+    switch (temp_dir) {
+      case north:
+        fast_path_add_publish(y, x, north);
+        y++;
+        break;
+      case east:
+        fast_path_add_publish(y, x, east);
+        x++;
+        break;
+      case south:
+        fast_path_add_publish(y, x, south);
+        y--;
+        break;
+      case west:
+        fast_path_add_publish(y, x, west);
+        x--;
+        break;
     }
     i++;
     delay(30);
@@ -126,14 +144,16 @@ void marker_set(int start2_x, int start2_y, t_direction_glob dir) {
 }
 
 //micro-ROS function
-void error_loop() {
+void error_loop()
+{
   while (1) {
     digitalWrite(LED0, !digitalRead(LED0));
     delay(100);
   }
 }
 
-const void euler_to_quat(float x, float y, float z, double* q) {
+const void euler_to_quat(float x, float y, float z, double * q)
+{
   float c1 = cos(y / 2);
   float c2 = cos(z / 2);
   float c3 = cos(x / 2);
@@ -148,8 +168,8 @@ const void euler_to_quat(float x, float y, float z, double* q) {
   q[3] = c1 * s2 * c3 - s1 * c2 * s3;
 }
 
-
-void pole_publish(int x, int y) {  //x,yの方向はrvizの座標
+void pole_publish(int x, int y)
+{  //x,yの方向はrvizの座標
   uint32_t current = micros();
   marker_msg.header.stamp.sec = current / 1000000;
   marker_msg.header.stamp.nanosec = current - jstate.header.stamp.sec * 1000000;
@@ -188,7 +208,8 @@ void pole_publish(int x, int y) {  //x,yの方向はrvizの座標
   RCSOFTCHECK(rcl_publish(&publisher_marker, &marker_msg, NULL));
 }
 
-void wall_publish(int x, int y, t_direction_glob dir) {  //x,yの方向はrvizの座標、t_direction_globはマイクマウスのマップの方角
+void wall_publish(int x, int y, t_direction_glob dir)
+{  //x,yの方向はrvizの座標、t_direction_globはマイクマウスのマップの方角
   uint32_t current = micros();
   marker_msg.header.stamp.sec = current / 1000000;
   marker_msg.header.stamp.nanosec = current - jstate.header.stamp.sec * 1000000;
@@ -242,7 +263,8 @@ void wall_publish(int x, int y, t_direction_glob dir) {  //x,yの方向はrviz�
   RCSOFTCHECK(rcl_publish(&publisher_marker, &marker_msg, NULL));
 }
 
-void vwall_publish(int x, int y, t_direction_glob dir) {  //x,yの方向はrvizの座標、t_direction_globはマイクマウスのマップの方角
+void vwall_publish(int x, int y, t_direction_glob dir)
+{  //x,yの方向はrvizの座標、t_direction_globはマイクマウスのマップの方角
   uint32_t current = micros();
   marker_msg.header.stamp.sec = current / 1000000;
   marker_msg.header.stamp.nanosec = current - jstate.header.stamp.sec * 1000000;
@@ -296,8 +318,8 @@ void vwall_publish(int x, int y, t_direction_glob dir) {  //x,yの方向はrviz�
   RCSOFTCHECK(rcl_publish(&publisher_marker, &marker_msg, NULL));
 }
 
-
-void wall_del_publish(int x, int y, t_direction_glob dir) {
+void wall_del_publish(int x, int y, t_direction_glob dir)
+{
   uint32_t current = micros();
   marker_msg.header.stamp.sec = current / 1000000;
   marker_msg.header.stamp.nanosec = current - jstate.header.stamp.sec * 1000000;
@@ -323,7 +345,8 @@ void wall_del_publish(int x, int y, t_direction_glob dir) {
   RCSOFTCHECK(rcl_publish(&publisher_marker, &marker_msg, NULL));
 }
 
-void fast_path_del_publish(void) {
+void fast_path_del_publish(void)
+{
   uint32_t current = micros();
   marker_msg.header.stamp.sec = current / 1000000;
   marker_msg.header.stamp.nanosec = current - jstate.header.stamp.sec * 1000000;
@@ -335,8 +358,8 @@ void fast_path_del_publish(void) {
   RCSOFTCHECK(rcl_publish(&publisher_marker, &marker_msg, NULL));
 }
 
-
-void fast_path_add_publish(int x, int y, t_direction_glob dir) {
+void fast_path_add_publish(int x, int y, t_direction_glob dir)
+{
   uint32_t current = micros();
   marker_msg.header.stamp.sec = current / 1000000;
   marker_msg.header.stamp.nanosec = current - jstate.header.stamp.sec * 1000000;
@@ -382,9 +405,9 @@ void fast_path_add_publish(int x, int y, t_direction_glob dir) {
   marker_msg.pose.orientation.w = 1.0;  //矢印を下にするためz軸を回転
 }
 
-
 //mico-ROSのタスク
-void publisher_task(void* pvParameters) {
+void publisher_task(void * pvParameters)
+{
   double q[4];
   uint32_t current;
 
@@ -455,7 +478,7 @@ void publisher_task(void* pvParameters) {
         wall_del_publish(publish_y, publish_x, west);
         break;
     }
-    if (fast_task == true) {//最短走行時のマーカーを出力
+    if (fast_task == true) {  //最短走行時のマーカーを出力
       fast_path_del_publish();
       delay(10);
       marker_set(start_x, start_y, start_dir);
@@ -464,10 +487,8 @@ void publisher_task(void* pvParameters) {
   }
 }
 
-
-
-void init_microROS(void) {
-
+void init_microROS(void)
+{
   char a = 0;
 
   set_microros_wifi_transports("使用するWiFiのAP名", "Wi-Fiのパスワード", "PCのIPアドレス", 8888);
@@ -488,44 +509,34 @@ void init_microROS(void) {
   RCCHECK(rclc_node_init_default(&node, "micro_ros_pico_node", "", &support));
   // create publisher
   RCCHECK(rclc_publisher_init_default(
-    &publisher_tf,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(tf2_msgs, msg, TFMessage),
-    "/tf"));
+    &publisher_tf, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(tf2_msgs, msg, TFMessage), "/tf"));
 
   RCCHECK(rclc_publisher_init_default(
-    &publisher_joint,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, JointState),
+    &publisher_joint, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, JointState),
     "/joint_states"));
 
   RCCHECK(rclc_publisher_init_default(
-    &publisher_sensor,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(pico_msgs, msg, LightSensor),
+    &publisher_sensor, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(pico_msgs, msg, LightSensor),
     "/pico_sensor"));
 
   RCCHECK(rclc_publisher_init_default(
-    &publisher_battery,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16),
-    "/pico_battery"));
+    &publisher_battery, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16), "/pico_battery"));
 
   RCCHECK(rclc_publisher_init_default(
-    &publisher_marker,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(visualization_msgs, msg, Marker),
+    &publisher_marker, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(visualization_msgs, msg, Marker),
     "/marker"));
 
   tf_message = tf2_msgs__msg__TFMessage__create();
   geometry_msgs__msg__TransformStamped__Sequence__init(&tf_message->transforms, 1);
 
   tf_message->transforms.data[0].header.frame_id.data = "/odom";
-  tf_message->transforms.data[0].header.frame_id.size = strlen(tf_message->transforms.data[0].header.frame_id.data);
+  tf_message->transforms.data[0].header.frame_id.size =
+    strlen(tf_message->transforms.data[0].header.frame_id.data);
   tf_message->transforms.data[0].header.frame_id.capacity = 100;
 
   tf_message->transforms.data[0].child_frame_id.data = "/base_footprint";
-  tf_message->transforms.data[0].child_frame_id.size = strlen(tf_message->transforms.data[0].child_frame_id.data);
+  tf_message->transforms.data[0].child_frame_id.size =
+    strlen(tf_message->transforms.data[0].child_frame_id.data);
   tf_message->transforms.data[0].child_frame_id.capacity = 100;
 
   joint_name[0].data = "left_wheel_joint";
@@ -588,7 +599,6 @@ void init_microROS(void) {
         delay(15);
       }
 
-
       if ((j == 0) && (i < 16)) {  //西
         wall_publish(i, j, west);
         delay(15);
@@ -613,31 +623,24 @@ void init_microROS(void) {
       }
     }
   }
-  for(int j= 0;j<15;j++){
-    vwall_publish(15,j,east);
+  for (int j = 0; j < 15; j++) {
+    vwall_publish(15, j, east);
     delay(15);
   }
 
-  
   wall_publish(0, 0, east);
   delay(20);
   wall_del_publish(0, 0, north);
   delay(20);
 
-
   fast_path_del_publish();
   delay(20);
 
-
   xTaskCreateUniversal(
     //  xTaskCreatePinnedToCore(
-    publisher_task,
-    "publisher_task",
-    4096,
-//    8192,  //4096,
-    NULL,
-    1,
-    NULL,
+    publisher_task, "publisher_task", 4096,
+    //    8192,  //4096,
+    NULL, 1, NULL,
     //    PRO_CPU_NUM
     //    APP_CPU_NUM
     CONFIG_ARDUINO_RUNNING_CORE);
