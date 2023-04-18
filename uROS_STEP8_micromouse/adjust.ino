@@ -129,30 +129,30 @@ void goAndTurnRight(void)
 
 void adjustMenu(void)
 {
-  unsigned char _mode = 1;
+  unsigned char mode = 1;
   char LED3_data;
   char sw;
 
   while (1) {
-    setLED(_mode);
+    setLED(mode);
     while (1) {
       sw = getSW();
       if (sw != 0) break;
       delay(33);
       LED3_data ^= 1;
-      setLED((_mode & 0x7) + ((LED3_data << 3) & 0x08));
+      setLED((mode & 0x7) + ((LED3_data << 3) & 0x08));
     }
     LED3_data = 0;
     switch (sw) {
       case SW_RM:
-        _mode = incButton(_mode, 7, 1);
+        mode = incButton(mode, 7, 1);
         break;
       case SW_LM:
-        _mode = decButton(_mode, 1, 7);
+        mode = decButton(mode, 1, 7);
         break;
       case SW_CM:
         okButton();
-        if (execByModeAdjust(_mode) == 1) {
+        if (execByModeAdjust(mode) == 1) {
           return;
         }
         break;
@@ -160,10 +160,10 @@ void adjustMenu(void)
   }
 }
 
-unsigned char execByModeAdjust(unsigned char _mode)
+unsigned char execByModeAdjust(unsigned char mode)
 {
   disableMotor();
-  switch (_mode) {
+  switch (mode) {
     case 1:
       viewAdc();
       break;
