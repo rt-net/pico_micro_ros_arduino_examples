@@ -28,71 +28,71 @@ volatile double r_accel;
 double max_speed, min_speed;
 volatile double speed;
 volatile bool motor_move;
-map_manager map_control;
+MapManager map_control;
 
 void setup()
 {
   // put your setup code here, to run once:
 
-  InitAll();
+  initAll();
 
-  DisableBuzzer();
+  disableBuzzer();
   __mode = 1;
 }
 
 void loop()
 {
   // put your main code here, to run repeatedly:
-  SetLED(__mode);
-  switch (GetSW()) {
+  setLED(__mode);
+  switch (getSW()) {
     case SW_LM:
-      __mode = dec_button(__mode, 1, 15);
+      __mode = decButton(__mode, 1, 15);
       break;
     case SW_RM:
-      __mode = inc_button(__mode, 15, 1);
+      __mode = incButton(__mode, 15, 1);
       break;
     case SW_CM:
-      ok_button();
-      exec_by_mode(__mode);
+      okButton();
+      execByMode(__mode);
       break;
   }
   delay(1);
 }
 
-void exec_by_mode(int _mode)
+void execByMode(int _mode)
 {
-  EnableMotor();
+  enableMotor();
   delay(1000);
 
   switch (_mode) {
     case 1:
-      search_lefthand();
+      searchLefthand();
       break;
     case 2:  //足立法
-      map_control.position_init();
-      search_adachi(map_control.get_goal_x(), map_control.get_goal_y());
+      map_control.positionInit();
+      searchAdachi(map_control.getGoalX(), map_control.getGoalY());
       rotate(right, 2);
-      map_control.next_dir(right);
-      map_control.next_dir(right);
-      goal_appeal();
-      search_adachi(0, 0);
+      map_control.nextDir(right);
+      map_control.nextDir(right);
+      goalAppeal();
+      searchAdachi(0, 0);
       rotate(right, 2);
-      map_control.next_dir(right);
-      map_control.next_dir(right);
-      map_write();
+      map_control.nextDir(right);
+      map_control.nextDir(right);
+      mapWrite();
       break;
     case 3:  //最短走行
-      copy_map();
-      map_control.position_init();
-      fast_run(map_control.get_goal_x(), map_control.get_goal_y());
+      copyMap();
+      map_control.positionInit();
+      fastRun(map_control.getGoalX(), map_control.getGoalY());
       rotate(right, 2);
-      map_control.next_dir(right);
-      map_control.next_dir(right);
-      goal_appeal();
-      fast_run(0, 0);
+      map_control.nextDir(right);
+      map_control.nextDir(right);
+      goalAppeal();
+      fastRun(0, 0);
       rotate(right, 2);
-      map_control.next_dir(right);
-      map_control.next_dir(right);
+      map_control.nextDir(right);
+      map_control.nextDir(right);
       break;
     case 4:
       break;
@@ -117,9 +117,9 @@ void exec_by_mode(int _mode)
     case 14:
       break;
     case 15:
-      DisableMotor();
-      adjust_menu();  //調整メニューに行く
+      disableMotor();
+      adjustMenu();  //調整メニューに行く
       break;
   }
-  DisableMotor();
+  disableMotor();
 }

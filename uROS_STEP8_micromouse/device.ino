@@ -17,74 +17,74 @@ hw_timer_t * timer1 = NULL;
 hw_timer_t * timer2 = NULL;
 hw_timer_t * timer3 = NULL;
 
-volatile unsigned short RStepHz, LStepHz;
-volatile unsigned int StepR, StepL;
+volatile unsigned short r_step_hz, l_step_hz;
+volatile unsigned int step_r, step_l;
 
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
-void SetRStepHz(short data) { RStepHz = data; }
+void setRStepHz(short data) { r_step_hz = data; }
 
-void SetLStepHz(short data) { LStepHz = data; }
+void setLStepHz(short data) { l_step_hz = data; }
 
-void ClearStepR(void) { StepR = 0; }
+void clearStepR(void) { step_r = 0; }
 
-void ClearStepL(void) { StepL = 0; }
+void clearStepL(void) { step_l = 0; }
 
-unsigned int GetStepR(void) { return StepR; }
+unsigned int getStepR(void) { return step_r; }
 
-unsigned int GetStepL(void) { return StepL; }
+unsigned int getStepL(void) { return step_l; }
 
-void IRAM_ATTR OnTimer0(void)
+void IRAM_ATTR onTimer0(void)
 {
-  portENTER_CRITICAL_ISR(&timerMux);
-  control_interrupt();
-  portEXIT_CRITICAL_ISR(&timerMux);
+  portENTER_CRITICAL_ISR(&timer_mux);
+  controlInterrupt();
+  portEXIT_CRITICAL_ISR(&timer_mux);
 }
 
-void IRAM_ATTR OnTimer1(void)
+void IRAM_ATTR onTimer1(void)
 {
-  portENTER_CRITICAL_ISR(&timerMux);
-  sensor_interrupt();
-  portEXIT_CRITICAL_ISR(&timerMux);
+  portENTER_CRITICAL_ISR(&timer_mux);
+  sensorInterrupt();
+  portEXIT_CRITICAL_ISR(&timer_mux);
 }
 
-void IRAM_ATTR IsrR(void)
+void IRAM_ATTR isrR(void)
 {
-  portENTER_CRITICAL_ISR(&timerMux);
+  portENTER_CRITICAL_ISR(&timer_mux);
   if (motor_move) {
-    if (RStepHz < 30) RStepHz = 30;
-    timerAlarmWrite(timer2, 2000000 / RStepHz, true);
+    if (r_step_hz < 30) r_step_hz = 30;
+    timerAlarmWrite(timer2, 2000000 / r_step_hz, true);
     digitalWrite(PWM_R, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     }
     digitalWrite(PWM_R, LOW);
-    StepR++;
+    step_r++;
   }
-  portEXIT_CRITICAL_ISR(&timerMux);
+  portEXIT_CRITICAL_ISR(&timer_mux);
 }
 
-void IRAM_ATTR IsrL(void)
+void IRAM_ATTR isrL(void)
 {
-  portENTER_CRITICAL_ISR(&timerMux);
+  portENTER_CRITICAL_ISR(&timer_mux);
   if (motor_move) {
-    if (LStepHz < 30) LStepHz = 30;
-    timerAlarmWrite(timer3, 2000000 / LStepHz, true);
+    if (l_step_hz < 30) l_step_hz = 30;
+    timerAlarmWrite(timer3, 2000000 / l_step_hz, true);
     digitalWrite(PWM_L, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     };
     digitalWrite(PWM_L, LOW);
-    StepL++;
+    step_l++;
   }
-  portEXIT_CRITICAL_ISR(&timerMux);
+  portEXIT_CRITICAL_ISR(&timer_mux);
 }
 
-void ControlInterruptStart(void) { timerAlarmEnable(timer0); }
-void ControlInterruptStop(void) { timerAlarmDisable(timer0); }
+void controlInterruptStart(void) { timerAlarmEnable(timer0); }
+void controlInterruptStop(void) { timerAlarmDisable(timer0); }
 
-void SensorInterruptStart(void) { timerAlarmEnable(timer1); }
-void SensorInterruptStop(void) { timerAlarmDisable(timer1); }
+void sensorInterruptStart(void) { timerAlarmEnable(timer1); }
+void sensorInterruptStop(void) { timerAlarmDisable(timer1); }
 
 void PWMInterruptStart(void)
 {
@@ -97,7 +97,7 @@ void PWMInterruptStop(void)
   timerAlarmDisable(timer3);
 }
 
-void InitAll(void)
+void initAll(void)
 {
   pinMode(LED0, OUTPUT);
   pinMode(LED1, OUTPUT);
@@ -143,22 +143,22 @@ void InitAll(void)
   }
 
   timer0 = timerBegin(0, 80, true);
-  timerAttachInterrupt(timer0, &OnTimer0, false);
+  timerAttachInterrupt(timer0, &onTimer0, false);
   timerAlarmWrite(timer0, 1000, true);
   timerAlarmEnable(timer0);
 
   timer1 = timerBegin(1, 80, true);
-  timerAttachInterrupt(timer1, &OnTimer1, false);
+  timerAttachInterrupt(timer1, &onTimer1, false);
   timerAlarmWrite(timer1, 250, true);
   timerAlarmEnable(timer1);
 
   timer2 = timerBegin(2, 40, true);
-  timerAttachInterrupt(timer2, &IsrR, false);
+  timerAttachInterrupt(timer2, &isrR, false);
   timerAlarmWrite(timer2, 13333, true);
   timerAlarmEnable(timer2);
 
   timer3 = timerBegin(3, 40, true);
-  timerAttachInterrupt(timer3, &IsrL, false);
+  timerAttachInterrupt(timer3, &isrL, false);
   timerAlarmWrite(timer3, 13333, true);
   timerAlarmEnable(timer3);
 
@@ -177,27 +177,27 @@ void InitAll(void)
 
   con_wall.kp = CON_WALL_KP;
 
-  map_control.set_goal_x(GOAL_X);
-  map_control.set_goal_y(GOAL_Y);
+  map_control.setGoalX(GOAL_X);
+  map_control.setGoalY(GOAL_Y);
 
   motor_move = false;
-  SetRStepHz(MIN_SPEED);
-  SetLStepHz(MIN_SPEED);
+  setRStepHz(MIN_SPEED);
+  setLStepHz(MIN_SPEED);
 
-  EnableBuzzer(INC_FREQ);
+  enableBuzzer(INC_FREQ);
   delay(80);
-  DisableBuzzer();
+  disableBuzzer();
 }
 
 //LED
-void SetLED(unsigned char _data)
+void setLED(unsigned char _data)
 {
   digitalWrite(LED0, _data & 0x01);
   digitalWrite(LED1, (_data >> 1) & 0x01);
   digitalWrite(LED2, (_data >> 2) & 0x01);
   digitalWrite(LED3, (_data >> 3) & 0x01);
 }
-void SetBLED(char _data)
+void setBLED(char _data)
 {
   if (_data & 0x01) {
     digitalWrite(BLED0, HIGH);
@@ -212,22 +212,22 @@ void SetBLED(char _data)
 }
 
 //Buzzer
-void EnableBuzzer(short f) { ledcWriteTone(BUZZER_CH, f); }
-void DisableBuzzer(void)
+void enableBuzzer(short f) { ledcWriteTone(BUZZER_CH, f); }
+void disableBuzzer(void)
 {
   ledcWrite(BUZZER_CH, 1024);  //duty 100% Buzzer OFF
 }
 
 //motor
-void EnableMotor(void)
+void enableMotor(void)
 {
   digitalWrite(MOTOR_EN, HIGH);  //Power ON
 }
-void DisableMotor(void)
+void disableMotor(void)
 {
   digitalWrite(MOTOR_EN, LOW);  //Power OFF
 }
-void MoveDir(t_CW_CCW left_CW, t_CW_CCW right_CW)
+void moveDir(t_CW_CCW left_CW, t_CW_CCW right_CW)
 {  //左右のモータの回転方向を指示する
   if (right_CW == MOT_FORWARD) {
     digitalWrite(CW_R, LOW);
@@ -243,7 +243,7 @@ void MoveDir(t_CW_CCW left_CW, t_CW_CCW right_CW)
 }
 
 //SWITCH
-unsigned char GetSW(void)
+unsigned char getSW(void)
 {
   int i;
   unsigned char ret = 0;
@@ -269,7 +269,7 @@ unsigned char GetSW(void)
 }
 
 //sensor
-unsigned short GetSensorR(void)
+unsigned short getSensorR(void)
 {
   digitalWrite(SLED_R, HIGH);
   for (int i = 0; i < WAITLOOP_SLED; i++) {
@@ -279,7 +279,7 @@ unsigned short GetSensorR(void)
   digitalWrite(SLED_R, LOW);
   return tmp;
 }
-unsigned short GetSensorL(void)
+unsigned short getSensorL(void)
 {
   digitalWrite(SLED_L, HIGH);
   for (int i = 0; i < WAITLOOP_SLED; i++) {
@@ -289,7 +289,7 @@ unsigned short GetSensorL(void)
   digitalWrite(SLED_L, LOW);
   return tmp;
 }
-unsigned short GetSensorFL(void)
+unsigned short getSensorFL(void)
 {
   digitalWrite(SLED_FL, HIGH);  //LED点灯
   for (int i = 0; i < WAITLOOP_SLED; i++) {
@@ -299,7 +299,7 @@ unsigned short GetSensorFL(void)
   digitalWrite(SLED_FL, LOW);  //LED消灯
   return tmp;
 }
-unsigned short GetSensorFR(void)
+unsigned short getSensorFR(void)
 {
   digitalWrite(SLED_FR, HIGH);
   for (int i = 0; i < WAITLOOP_SLED; i++) {
@@ -309,7 +309,7 @@ unsigned short GetSensorFR(void)
   digitalWrite(SLED_FR, LOW);
   return tmp;
 }
-short GetBatteryVolt(void)
+short getBatteryVolt(void)
 {
   short inputVoltage = (double)analogReadMilliVolts(AD0) / 10.0 * (10.0 + 51.0);
   return inputVoltage;
