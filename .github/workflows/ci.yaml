@@ -29,7 +29,7 @@ jobs:
             - name: esp32:esp32
               source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
           libraries: |  # RTがカスタマイズしたmicro_ros_arduinoライブラリを使用する
-            - source-url: https://github.com/ShotaAk/micro_ros_arduino/archive/refs/tags/humble-add-custom-msg-esp32s3.zip
+            - source-url: https://github.com/rt-net/micro_ros_arduino/archive/refs/tags/esp32s3-230417.zip
           cli-compile-flags: |  # 警告がエラーとして扱われるので、対処しない警告はエラーから除外する
             - --build-property
             - "compiler.cpp.extra_flags= \

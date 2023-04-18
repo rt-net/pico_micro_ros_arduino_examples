@@ -17,7 +17,7 @@ sensor_msgs__msg__JointState jstate;
 std_msgs__msg__Int16 bat_msg;
 rosidl_runtime_c__String joint_name[2];
 double positions[2];
-picosensor__msg__LightSensor sensor_msg;
+pico_msgs__msg__LightSensor sensor_msg;
 visualization_msgs__msg__Marker marker_msg;
 
 rcl_publisher_t publisher_tf, publisher_joint, publisher_sensor, publisher_battery, publisher_marker;
@@ -502,7 +502,7 @@ void init_microROS(void) {
   RCCHECK(rclc_publisher_init_default(
     &publisher_sensor,
     &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(picosensor, msg, LightSensor),
+    ROSIDL_GET_MSG_TYPE_SUPPORT(pico_msgs, msg, LightSensor),
     "/pico_sensor"));
 
   RCCHECK(rclc_publisher_init_default(
