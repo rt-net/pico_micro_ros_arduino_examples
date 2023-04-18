@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void control_interrupt(void) {
+void control_interrupt(void)
+{
   double spd_r, spd_l;
 
   speed += r_accel;
@@ -35,10 +36,10 @@ void control_interrupt(void) {
   spd_r = speed + con_wall.control;
   spd_l = speed - con_wall.control;
 
-  if(spd_r<min_speed){
+  if (spd_r < min_speed) {
     spd_r = min_speed;
   }
-  if(spd_l<min_speed){
+  if (spd_l < min_speed) {
     spd_l = min_speed;
   }
 
@@ -46,11 +47,10 @@ void control_interrupt(void) {
   LStepHz = (unsigned short)(spd_l / PULSE);
 }
 
-
-void sensor_interrupt(void) {
+void sensor_interrupt(void)
+{
   static char cnt = 0;
   static char bled_cnt = 0;
-
 
   switch (cnt) {
     case 0:

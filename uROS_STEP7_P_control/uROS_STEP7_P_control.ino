@@ -41,7 +41,7 @@
 #define MIN_HZ 80
 #define TIRE_DIAMETER (48.00)
 #define PULSE (TIRE_DIAMETER * PI / 400.0)
-#define MIN_SPEED (MIN_HZ*PULSE)
+#define MIN_SPEED (MIN_HZ * PULSE)
 
 //環境に合わせて変更する
 #define REF_SEN_R 352
@@ -84,10 +84,10 @@ typedef struct
   bool enable;
 } t_control;
 
-hw_timer_t* timer0 = NULL;
-hw_timer_t* timer1 = NULL;
-hw_timer_t* timer2 = NULL;
-hw_timer_t* timer3 = NULL;
+hw_timer_t * timer0 = NULL;
+hw_timer_t * timer1 = NULL;
+hw_timer_t * timer2 = NULL;
+hw_timer_t * timer3 = NULL;
 
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
@@ -108,21 +108,23 @@ volatile bool motor_move = 0;
 
 //割り込み
 //目標値の更新周期1kHz
-void IRAM_ATTR OnTimer0(void) {
+void IRAM_ATTR OnTimer0(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   control_interrupt();
   portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
 }
 
-void IRAM_ATTR OnTimer1(void) {
+void IRAM_ATTR OnTimer1(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   sensor_interrupt();
   portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
 }
 
-
 //Rモータの周期数割り込み
-void IRAM_ATTR IsrR(void) {
+void IRAM_ATTR IsrR(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   if (motor_move) {
     timerAlarmWrite(timer2, 2000000 / RStepHz, true);
@@ -137,7 +139,8 @@ void IRAM_ATTR IsrR(void) {
 }
 
 //Lモータの周期数割り込み
-void IRAM_ATTR IsrL(void) {
+void IRAM_ATTR IsrL(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   if (motor_move) {
     timerAlarmWrite(timer3, 2000000 / LStepHz, true);
@@ -151,8 +154,8 @@ void IRAM_ATTR IsrL(void) {
   portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
 }
 
-
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
   pinMode(LED0, OUTPUT);
   pinMode(LED1, OUTPUT);
@@ -222,7 +225,8 @@ void setup() {
   con_wall.kp = CON_WALL_KP;
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
   while (digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R))
     ;

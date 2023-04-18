@@ -1,5 +1,5 @@
-#define TIRE_DIAMETER (48.1)//47.55
-#define TREAD_WIDTH (66.0)//67.1
+#define TIRE_DIAMETER (48.1)  //47.55
+#define TREAD_WIDTH (66.0)    //67.1
 #define TREAD_CIRCUIT (TREAD_WIDTH * PI / 4.0)
 #define PULSE (TIRE_DIAMETER * PI / 400.0)
 #define MIN_HZ 80.0
@@ -11,7 +11,7 @@
 
 #define TH_SEN_R 150
 #define TH_SEN_L 350
-#define TH_SEN_FR 100//103
+#define TH_SEN_FR 100  //103
 #define TH_SEN_FL 150
 
 #define CONTROL_TH_SEN_R TH_SEN_R
@@ -23,7 +23,7 @@
 
 #define SEARCH_SPEED 350
 #define MAX_SPEED 1000
-#define MIN_SPEED (MIN_HZ*PULSE)
+#define MIN_SPEED (MIN_HZ * PULSE)
 
 #define GOAL_X 2
 #define GOAL_Y 6

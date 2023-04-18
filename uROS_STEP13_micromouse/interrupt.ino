@@ -19,9 +19,10 @@ unsigned int Get_timer_counter(void){
 }
 */
 
-void control_interrupt(void) {
-  double spd_r, spd_l,omega;
-  static char temp_cnt=0;
+void control_interrupt(void)
+{
+  double spd_r, spd_l, omega;
+  static char temp_cnt = 0;
   short temp_xy;
 
   speed += r_accel;
@@ -30,13 +31,13 @@ void control_interrupt(void) {
     speed = max_speed;
   }
 
-  if(motor_move == 0){
+  if (motor_move == 0) {
     speed = 0.0;
-  }else if (speed < min_speed) {
+  } else if (speed < min_speed) {
     speed = min_speed;
   }
 
-  if(con_wall.enable == true) {
+  if (con_wall.enable == true) {
     con_wall.p_error = con_wall.error;
     if ((sen_r.is_control == true) && (sen_l.is_control == true)) {
       con_wall.error = sen_r.error - sen_l.error;
@@ -58,60 +59,60 @@ void control_interrupt(void) {
     spd_l = speed;
   }
 
-//odom
-//xは方向
-  double speed2 = (spd_r*RMotorSinged() + spd_l*LMotorSinged())/2.0;
-  omega = (spd_r*RMotorSinged() - spd_l*LMotorSinged())/TREAD_WIDTH*1.00;
-  odom_x += speed2 *0.001 * cos(odom_theta) * 0.001;
-  odom_y += speed2 *0.001 * sin(odom_theta) * 0.001;
-  odom_theta += omega *0.001;
+  //odom
+  //xは方向
+  double speed2 = (spd_r * RMotorSinged() + spd_l * LMotorSinged()) / 2.0;
+  omega = (spd_r * RMotorSinged() - spd_l * LMotorSinged()) / TREAD_WIDTH * 1.00;
+  odom_x += speed2 * 0.001 * cos(odom_theta) * 0.001;
+  odom_y += speed2 * 0.001 * sin(odom_theta) * 0.001;
+  odom_theta += omega * 0.001;
 
-//角度、位置のズレを修正
-    if( ((sen_r.value < (sen_r.ref+20))||(sen_l.value < (sen_l.ref+20))) 
-     && ((sen_r.value > (sen_r.ref-20))||(sen_l.value > (sen_l.ref-20)))  ){
-      temp_cnt++;
-      if(temp_cnt>5){
-        switch(map_control.get_mypos_dir()){
-          case north:
-            if(theta_adj==true){
-              odom_theta=0.0;
-            }
-            break;
-          case east:
-            if(theta_adj==true){
-              odom_theta=-1.57;
-            }
-            break;
-          case south:
-            if(theta_adj==true){
-              odom_theta=3.14;
-            }
-            break;
-          case west:
-            if(theta_adj==true){
-              odom_theta=1.57;
-            }
-            break;
-        }
-        temp_cnt=0;
+  //角度、位置のズレを修正
+  if (
+    ((sen_r.value < (sen_r.ref + 20)) || (sen_l.value < (sen_l.ref + 20))) &&
+    ((sen_r.value > (sen_r.ref - 20)) || (sen_l.value > (sen_l.ref - 20)))) {
+    temp_cnt++;
+    if (temp_cnt > 5) {
+      switch (map_control.get_mypos_dir()) {
+        case north:
+          if (theta_adj == true) {
+            odom_theta = 0.0;
+          }
+          break;
+        case east:
+          if (theta_adj == true) {
+            odom_theta = -1.57;
+          }
+          break;
+        case south:
+          if (theta_adj == true) {
+            odom_theta = 3.14;
+          }
+          break;
+        case west:
+          if (theta_adj == true) {
+            odom_theta = 1.57;
+          }
+          break;
       }
-    }else{
-      temp_cnt=0;
-    } 
+      temp_cnt = 0;
+    }
+  } else {
+    temp_cnt = 0;
+  }
 
-
-  position_r += spd_r*0.001*RMotorSinged() /(TIRE_DIAMETER * PI) * 2 * PI;
-  position_l -= spd_l*0.001*LMotorSinged() /(TIRE_DIAMETER * PI) * 2 * PI;
+  position_r += spd_r * 0.001 * RMotorSinged() / (TIRE_DIAMETER * PI) * 2 * PI;
+  position_l -= spd_l * 0.001 * LMotorSinged() / (TIRE_DIAMETER * PI) * 2 * PI;
 
   SetRStepHz((unsigned short)(spd_r / PULSE));
   SetLStepHz((unsigned short)(spd_l / PULSE));
 }
 
-void sensor_interrupt(void) {
+void sensor_interrupt(void)
+{
   static char cnt = 0;
   short tmp1, tmp2;
   static char bled_cnt = 0;
-
 
   switch (cnt) {
     case 0:
@@ -122,26 +123,26 @@ void sensor_interrupt(void) {
       sen_r.value = GetSensorR();
       sen_l.value = GetSensorL();
 
-      if ((sen_r.value/4 + sen_r.p_value/2 + sen_r.p2_value/4 )> sen_r.th_wall) {
+      if ((sen_r.value / 4 + sen_r.p_value / 2 + sen_r.p2_value / 4) > sen_r.th_wall) {
         sen_r.is_wall = true;
       } else {
         sen_r.is_wall = false;
       }
-      if ((sen_l.ref/4 + sen_l.p_value/2 + sen_l.p2_value/4) > sen_l.th_wall) {
+      if ((sen_l.ref / 4 + sen_l.p_value / 2 + sen_l.p2_value / 4) > sen_l.th_wall) {
         sen_l.is_wall = true;
       } else {
         sen_l.is_wall = false;
       }
 
       if (sen_r.value > sen_r.th_control) {
-        sen_r.error = sen_r.value/4 + sen_r.p_value/2 + sen_r.p2_value/4 - sen_r.ref;
+        sen_r.error = sen_r.value / 4 + sen_r.p_value / 2 + sen_r.p2_value / 4 - sen_r.ref;
         sen_r.is_control = true;
       } else {
         sen_r.error = 0;
         sen_r.is_control = false;
       }
       if (sen_l.value > sen_l.th_control) {
-        sen_l.error = sen_l.value - (sen_l.ref/4 + sen_l.p_value/2 + sen_l.p2_value/4);
+        sen_l.error = sen_l.value - (sen_l.ref / 4 + sen_l.p_value / 2 + sen_l.p2_value / 4);
         sen_l.is_control = true;
       } else {
         sen_l.error = 0;
@@ -165,16 +166,16 @@ void sensor_interrupt(void) {
       sen_fl.p_value = sen_fl.value;
       sen_fr.value = GetSensorFR();
       sen_fl.value = GetSensorFL();
-      if ((sen_fr.value/4 + sen_fr.p_value/2 + sen_fr.p2_value/2) > sen_fr.th_wall) {
+      if ((sen_fr.value / 4 + sen_fr.p_value / 2 + sen_fr.p2_value / 2) > sen_fr.th_wall) {
         sen_fr.is_wall = true;
       } else {
         sen_fr.is_wall = false;
       }
-      if ((sen_fl.value/4 + sen_fl.p_value/2 + sen_fl.p2_value/2) > sen_fl.th_wall) {
+      if ((sen_fl.value / 4 + sen_fl.p_value / 2 + sen_fl.p2_value / 2) > sen_fl.th_wall) {
         sen_fl.is_wall = true;
       } else {
         sen_fl.is_wall = false;
-      }     
+      }
       break;
   }
   cnt++;

@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void control_interrupt(void) {
+void control_interrupt(void)
+{
   double spd_r, spd_l;
 
   speed += r_accel;
@@ -52,10 +53,10 @@ void control_interrupt(void) {
   SetLStepHz((unsigned short)(spd_l / PULSE));
 }
 
-void sensor_interrupt(void) {
+void sensor_interrupt(void)
+{
   static char cnt = 0;
   static char bled_cnt = 0;
-
 
   switch (cnt) {
     case 0:
@@ -112,7 +113,7 @@ void sensor_interrupt(void) {
         bled_cnt = 0;
       }
       battery_value = GetBatteryVolt();
-      if ( ((battery_value - BATT_MIN) * 10 / (BATT_MAX - BATT_MIN)) > bled_cnt) {
+      if (((battery_value - BATT_MIN) * 10 / (BATT_MAX - BATT_MIN)) > bled_cnt) {
         SetBLED(1);
       } else {
         SetBLED(2);

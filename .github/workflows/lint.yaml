@@ -1,0 +1,30 @@
+name: Lint
+
+on:
+  push:
+    paths-ignore:
+    - '**.md'
+  pull_request:
+    paths-ignore:
+    - '**.md'
+  workflow_dispatch:
+
+jobs:
+  arduino-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: arduino/arduino-lint-action@v1
+        with:
+          recursive: true
+          compliance: specification
+  clang-format:
+    needs: arduino-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # 各スケッチファイルの.ino、.hファイルに対してclang-formatによる整形が必要か判定する
+      # 正規表現を簡単にするためzshを使用する
+      - run: sudo apt install -y clang-format zsh
+      - run: clang-format --dry-run -Werror uROS_STEP*/*.(ino|h)
+        shell: zsh {0}

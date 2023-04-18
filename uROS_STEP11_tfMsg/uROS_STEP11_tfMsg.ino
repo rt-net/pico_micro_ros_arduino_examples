@@ -12,21 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// clang-format off
+// メッセージヘッダーファイルを見つけるため、micro_ros_arduino.hを先にインクルードすること
 #include <micro_ros_arduino.h>
-
-#include <stdio.h>
-#include <rcl/rcl.h>
-#include <rcl/error_handling.h>
-#include <rclc/rclc.h>
-#include <rclc/executor.h>
-
-#include <geometry_msgs/msg/twist.h>
 #include <geometry_msgs/msg/transform_stamped.h>
-#include <tf2_msgs/msg/tf_message.h>
+#include <geometry_msgs/msg/twist.h>
+#include <rcl/error_handling.h>
+#include <rcl/rcl.h>
+#include <rclc/executor.h>
+#include <rclc/rclc.h>
 #include <sensor_msgs/msg/joint_state.h>
+#include <stdio.h>
+#include <tf2_msgs/msg/tf_message.h>
+// clang-format on
 
 geometry_msgs__msg__Twist msg;
-tf2_msgs__msg__TFMessage* tf_message;
+tf2_msgs__msg__TFMessage * tf_message;
 sensor_msgs__msg__JointState jstate;
 rosidl_runtime_c__String joint_name[2];
 double positions[2];
@@ -52,12 +53,12 @@ rcl_node_t node;
 #define MIN_HZ 80
 #define TIRE_DIAMETER (48.00)
 #define PULSE (TIRE_DIAMETER * PI / 400.0)
-#define MIN_SPEED (MIN_HZ*PULSE)
+#define MIN_SPEED (MIN_HZ * PULSE)
 #define TREAD_WIDTH (65.0)
 
-hw_timer_t* timer0 = NULL;
-hw_timer_t* timer2 = NULL;
-hw_timer_t* timer3 = NULL;
+hw_timer_t * timer0 = NULL;
+hw_timer_t * timer2 = NULL;
+hw_timer_t * timer3 = NULL;
 
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
@@ -81,17 +82,31 @@ double odom_x, odom_y, odom_theta;
 
 volatile bool motor_move = 0;
 
-#define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){error_loop();}}
-#define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){error_loop();}}
+#define RCCHECK(fn)                \
+  {                                \
+    rcl_ret_t temp_rc = fn;        \
+    if ((temp_rc != RCL_RET_OK)) { \
+      error_loop();                \
+    }                              \
+  }
+#define RCSOFTCHECK(fn)            \
+  {                                \
+    rcl_ret_t temp_rc = fn;        \
+    if ((temp_rc != RCL_RET_OK)) { \
+      error_loop();                \
+    }                              \
+  }
 
-void error_loop() {
+void error_loop()
+{
   while (1) {
     digitalWrite(LED0, !digitalRead(LED0));
     delay(100);
   }
 }
 
-const void euler_to_quat(float x, float y, float z, double* q) {
+const void euler_to_quat(float x, float y, float z, double * q)
+{
   float c1 = cos(y / 2);
   float c2 = cos(z / 2);
   float c3 = cos(x / 2);
@@ -106,18 +121,18 @@ const void euler_to_quat(float x, float y, float z, double* q) {
   q[3] = c1 * s2 * c3 - s1 * c2 * s3;
 }
 
-
-
 //割り込み
 //目標値の更新周期1kHz
-void IRAM_ATTR onTimer0(void) {
+void IRAM_ATTR onTimer0(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   control_interrupt();
   portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
 }
 
 //Rモータの周期数割り込み
-void IRAM_ATTR isr_r(void) {
+void IRAM_ATTR isr_r(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   if (motor_move) {
     if (R_STEP_HZ < 30) R_STEP_HZ = 30;
@@ -133,7 +148,8 @@ void IRAM_ATTR isr_r(void) {
 }
 
 //Lモータの周期数割り込み
-void IRAM_ATTR isr_l(void) {
+void IRAM_ATTR isr_l(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   if (motor_move) {
     if (L_STEP_HZ < 30) L_STEP_HZ = 30;
@@ -149,17 +165,17 @@ void IRAM_ATTR isr_l(void) {
 }
 
 //twist message cb
-void subscription_callback(const void* msgin) {
-  const geometry_msgs__msg__Twist* msg = (const geometry_msgs__msg__Twist*)msgin;
+void subscription_callback(const void * msgin)
+{
+  const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
 
   //linearは[m/s]の単位で入力されるのでPi:Coのシステムに合わせて[mm/s]にする
   speed = msg->linear.x * 1000.0;
-  omega = msg->angular.z ;
-
-
+  omega = msg->angular.z;
 }
 
-void setup() {
+void setup()
+{
   pinMode(LED0, OUTPUT);
   pinMode(LED1, OUTPUT);
   pinMode(LED2, OUTPUT);
@@ -210,46 +226,41 @@ void setup() {
 
   //publisher
   RCCHECK(rclc_publisher_init_default(
-    &publisher,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(tf2_msgs, msg, TFMessage),
-    "/tf"));
+    &publisher, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(tf2_msgs, msg, TFMessage), "/tf"));
 
   RCCHECK(rclc_publisher_init_default(
-    &publisher2,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, JointState),
+    &publisher2, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, JointState),
     "/joint_states"));
 
   //Subscriber
   RCCHECK(rclc_subscription_init_default(
-    &subscriber,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist),
-    "/cmd_vel"));
+    &subscriber, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist), "/cmd_vel"));
 
   // create executor
   RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
-  RCCHECK(rclc_executor_add_subscription(&executor, &subscriber, &msg, &subscription_callback, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(
+    &executor, &subscriber, &msg, &subscription_callback, ON_NEW_DATA));
 
   tf_message = tf2_msgs__msg__TFMessage__create();
   geometry_msgs__msg__TransformStamped__Sequence__init(&tf_message->transforms, 1);
 
   tf_message->transforms.data[0].header.frame_id.data = "/odom";
-  tf_message->transforms.data[0].header.frame_id.size = strlen(tf_message->transforms.data[0].header.frame_id.data);
+  tf_message->transforms.data[0].header.frame_id.size =
+    strlen(tf_message->transforms.data[0].header.frame_id.data);
   tf_message->transforms.data[0].header.frame_id.capacity = 100;
 
-  tf_message->transforms.data[0].child_frame_id.data ="/base_footprint";
-  tf_message->transforms.data[0].child_frame_id.size = strlen(tf_message->transforms.data[0].child_frame_id.data);
+  tf_message->transforms.data[0].child_frame_id.data = "/base_footprint";
+  tf_message->transforms.data[0].child_frame_id.size =
+    strlen(tf_message->transforms.data[0].child_frame_id.data);
   tf_message->transforms.data[0].child_frame_id.capacity = 100;
 
   joint_name[0].data = "left_wheel_joint";
   joint_name[0].size = strlen(joint_name[0].data);
-  joint_name[0].capacity = joint_name[0].size +1;
+  joint_name[0].capacity = joint_name[0].size + 1;
 
   joint_name[1].data = "right_wheel_joint";
   joint_name[1].size = strlen(joint_name[1].data);
-  joint_name[1].capacity = joint_name[1].size +1;
+  joint_name[1].capacity = joint_name[1].size + 1;
 
   jstate.name.data = joint_name;
   jstate.name.size = 2;
@@ -258,11 +269,11 @@ void setup() {
   jstate.position.size = 2;
   jstate.position.capacity = 2;
 
-    digitalWrite(MOTOR_EN, HIGH);
+  digitalWrite(MOTOR_EN, HIGH);
 }
 
-void loop() {
-
+void loop()
+{
   double q[4];
   uint32_t current = micros();
 
@@ -289,5 +300,5 @@ void loop() {
 
   RCCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100)));  //for subscription
 
- delay(10);
+  delay(10);
 }

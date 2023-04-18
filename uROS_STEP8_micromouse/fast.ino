@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-void fast_run(short gx, short gy) {
+void fast_run(short gx, short gy)
+{
   t_direction_glob glob_nextdir;
   int straight_count = 0;
 
@@ -32,7 +32,7 @@ void fast_run(short gx, short gy) {
   }
 
   accelerate(HALF_SECTION, SEARCH_SPEED);
-  straight_count=0;
+  straight_count = 0;
   map_control.set_mypos_dir(glob_nextdir);
   map_control.axis_update();
 
@@ -59,8 +59,8 @@ void fast_run(short gx, short gy) {
     map_control.set_mypos_dir(glob_nextdir);
     map_control.axis_update();
   }
-  if(straight_count>0){
+  if (straight_count > 0) {
     straight(straight_count * SECTION, SEARCH_SPEED, MAX_SPEED, SEARCH_SPEED);
   }
-  decelerate(HALF_SECTION,SEARCH_SPEED);
+  decelerate(HALF_SECTION, SEARCH_SPEED);
 }

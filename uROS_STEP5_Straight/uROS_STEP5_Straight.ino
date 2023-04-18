@@ -30,12 +30,11 @@
 #define MIN_HZ 80
 #define TIRE_DIAMETER (48.00)
 #define PULSE (TIRE_DIAMETER * PI / 400.0)
-#define MIN_SPEED (MIN_HZ*PULSE)
+#define MIN_SPEED (MIN_HZ * PULSE)
 
-
-hw_timer_t* timer0 = NULL;
-hw_timer_t* timer2 = NULL;
-hw_timer_t* timer3 = NULL;
+hw_timer_t * timer0 = NULL;
+hw_timer_t * timer2 = NULL;
+hw_timer_t * timer3 = NULL;
 
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
@@ -45,23 +44,25 @@ unsigned short LStepHz = MIN_HZ;
 volatile unsigned int StepR, StepL;
 double max_speed;
 double min_speed;
-double r_accel =0.0;
-volatile double speed =MIN_SPEED;
+double r_accel = 0.0;
+volatile double speed = MIN_SPEED;
 
-volatile bool motor_move=0;
+volatile bool motor_move = 0;
 
 //割り込み
 //目標値の更新周期1kHz
-void IRAM_ATTR OnTimer0(void) {
+void IRAM_ATTR OnTimer0(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   control_interrupt();
   portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
 }
 
 //Rモータの周期数割り込み
-void IRAM_ATTR IsrR(void) {
+void IRAM_ATTR IsrR(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
-  if(motor_move){
+  if (motor_move) {
     timerAlarmWrite(timer2, 2000000 / RStepHz, true);
     digitalWrite(PWM_R, HIGH);
     for (int i = 0; i < 100; i++) {
@@ -74,9 +75,10 @@ void IRAM_ATTR IsrR(void) {
 }
 
 //Lモータの周期数割り込み
-void IRAM_ATTR IsrL(void) {
+void IRAM_ATTR IsrL(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
-  if(motor_move){
+  if (motor_move) {
     timerAlarmWrite(timer3, 2000000 / LStepHz, true);
     digitalWrite(PWM_L, HIGH);
     for (int i = 0; i < 100; i++) {
@@ -88,8 +90,8 @@ void IRAM_ATTR IsrL(void) {
   portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
 }
 
-
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
   pinMode(LED0, OUTPUT);
   pinMode(LED1, OUTPUT);
@@ -129,18 +131,20 @@ void setup() {
   timerAlarmEnable(timer3);
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
-  while (digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R));
+  while (digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R))
+    ;
   digitalWrite(MOTOR_EN, HIGH);
   delay(1000);
   digitalWrite(LED0, HIGH);
-  accelerate(90,350);
+  accelerate(90, 350);
   digitalWrite(LED1, HIGH);
   digitalWrite(LED2, HIGH);
-  one_step(180,350);
+  one_step(180, 350);
   digitalWrite(LED3, HIGH);
-  decelerate(90,350);
+  decelerate(90, 350);
   digitalWrite(LED0, LOW);
   digitalWrite(LED1, LOW);
   digitalWrite(LED2, LOW);

@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void accelerate(int len, int tar_speed) {
+void accelerate(int len, int tar_speed)
+{
   int obj_step;
   max_speed = tar_speed;
   r_accel = 1.5;
@@ -29,7 +30,8 @@ void accelerate(int len, int tar_speed) {
     ;
 }
 
-void one_step(int len, int tar_speed) {
+void one_step(int len, int tar_speed)
+{
   int obj_step;
   max_speed = tar_speed;
   r_accel = 0.0;
@@ -44,7 +46,8 @@ void one_step(int len, int tar_speed) {
     ;
 }
 
-void decelerate(int len, int tar_speed) {
+void decelerate(int len, int tar_speed)
+{
   int obj_step;
   max_speed = tar_speed;
   r_accel = 0.0;
@@ -55,7 +58,8 @@ void decelerate(int len, int tar_speed) {
   digitalWrite(CW_R, LOW);
   digitalWrite(CW_L, LOW);
 
-  while ((len - (StepR + StepL) / 2.0 * PULSE) > (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * 1.5)))
+  while ((len - (StepR + StepL) / 2.0 * PULSE) >
+         (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * 1.5)))
     ;
   r_accel = -1.5;
   min_speed = MIN_SPEED;

@@ -16,25 +16,28 @@
 #define USE_MICRO_ROS
 
 //マイクロマウスで使用するヘッダ
-#include "device.h"
-#include "parameter.h"
-#include "map_manager.h"
-#include "mytypedef.h"
 #include "FS.h"
 #include "SPIFFS.h"
+#include "device.h"
+#include "map_manager.h"
+#include "mytypedef.h"
+#include "parameter.h"
 
 //micro-ROSで使用するヘッダ
+// clang-format off
+// メッセージヘッダーファイルを見つけるため、micro_ros_arduino.hを先にインクルードすること
 #include <micro_ros_arduino.h>
-#include <stdio.h>
-#include <rcl/rcl.h>
-#include <rcl/error_handling.h>
-#include <rclc/rclc.h>
 #include <geometry_msgs/msg/transform_stamped.h>
-#include <tf2_msgs/msg/tf_message.h>
-#include <sensor_msgs/msg/joint_state.h>
 #include <pico_msgs/msg/light_sensor.h>
+#include <rcl/error_handling.h>
+#include <rcl/rcl.h>
+#include <rclc/rclc.h>
+#include <sensor_msgs/msg/joint_state.h>
 #include <std_msgs/msg/int16.h>
+#include <stdio.h>
+#include <tf2_msgs/msg/tf_message.h>
 #include <visualization_msgs/msg/marker.h>
+// clang-format off
 
 //micro-ROSで使用する変数
 volatile double position_r, position_l;
@@ -58,7 +61,8 @@ map_manager map_control;
 
 volatile bool theta_adj;
 
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
   InitDevice();
 
@@ -80,7 +84,7 @@ void setup() {
 
   motor_move = false;
   fast_task = false;
-  theta_adj =false;
+  theta_adj = false;
   SetRStepHz(MIN_SPEED);
   SetLStepHz(MIN_SPEED);
 
@@ -90,7 +94,8 @@ void setup() {
   __mode = 1;
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
   SetLED(__mode);
   switch (GetSW()) {
@@ -108,8 +113,8 @@ void loop() {
   delay(1);
 }
 
-
-void exec_by_mode(int _mode) {
+void exec_by_mode(int _mode)
+{
   EnableMotor();
   delay(1000);
 

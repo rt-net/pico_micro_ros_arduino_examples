@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-void search_lefthand(void) {
-
+void search_lefthand(void)
+{
   accelerate(HALF_SECTION, SEARCH_SPEED);
 
   while (1) {
@@ -36,8 +35,8 @@ void search_lefthand(void) {
   }
 }
 
-
-void search_adachi(char gx, char gy) {
+void search_adachi(char gx, char gy)
+{
   t_direction_glob glob_nextdir;
   int straight_count = 0;
   t_direction temp_next_dir;
@@ -63,16 +62,14 @@ void search_adachi(char gx, char gy) {
   map_control.set_mypos_dir(glob_nextdir);
   map_control.axis_update();
 
-
   while ((map_control.get_mypos_x() != gx) || (map_control.get_mypos_y() != gy)) {
     map_control.set_wall(sen_fl.is_wall, sen_r.is_wall, sen_l.is_wall);
-    publish_x= map_control.get_mypos_x();
-    publish_y= map_control.get_mypos_y();
-
+    publish_x = map_control.get_mypos_x();
+    publish_y = map_control.get_mypos_y();
 
     switch (map_control.get_nextdir(gx, gy, &glob_nextdir)) {
       case front:
-        one_step(SECTION,SEARCH_SPEED);
+        one_step(SECTION, SEARCH_SPEED);
         break;
       case right:
         decelerate(HALF_SECTION, SEARCH_SPEED);
@@ -96,7 +93,7 @@ void search_adachi(char gx, char gy) {
   }
 
   map_control.set_wall(sen_fl.is_wall, sen_r.is_wall, sen_l.is_wall);
-  publish_x= map_control.get_mypos_x();
-  publish_y= map_control.get_mypos_y();  
+  publish_x = map_control.get_mypos_x();
+  publish_y = map_control.get_mypos_y();
   decelerate(HALF_SECTION, SEARCH_SPEED);
 }

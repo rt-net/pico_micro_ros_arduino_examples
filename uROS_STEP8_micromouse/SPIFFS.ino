@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-
-void listDir(fs::FS &fs, const char *dirname, uint8_t levels) {
+void listDir(fs::FS & fs, const char * dirname, uint8_t levels)
+{
   Serial.printf("Listing directory: %s\r\n", dirname);
 
   File root = fs.open(dirname);
@@ -45,8 +44,8 @@ void listDir(fs::FS &fs, const char *dirname, uint8_t levels) {
   }
 }
 
-
-void map_write(void) {
+void map_write(void)
+{
   String file_tmp;
   unsigned char data_temp;
   file_tmp = "/map.txt";
@@ -65,7 +64,10 @@ void map_write(void) {
   }
   for (int i = 0; i < 16; i++) {
     for (int j = 0; j < 16; j++) {
-      data_temp = map_control.get_wall_data(i, j, north) + (map_control.get_wall_data(i, j, east) << 2) + (map_control.get_wall_data(i, j, south) << 4) + (map_control.get_wall_data(i, j, west) << 6);
+      data_temp = map_control.get_wall_data(i, j, north) +
+                  (map_control.get_wall_data(i, j, east) << 2) +
+                  (map_control.get_wall_data(i, j, south) << 4) +
+                  (map_control.get_wall_data(i, j, west) << 6);
       if (file.write(data_temp)) {  //バイナリ書き込み
       } else {
         Serial.println("- write failed");
@@ -79,7 +81,8 @@ void map_write(void) {
   PWMInterruptStart();
 }
 
-void copy_map(void) {
+void copy_map(void)
+{
   String file_tmp;
   unsigned char read_data;
 

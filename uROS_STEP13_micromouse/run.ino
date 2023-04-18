@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void straight(int len, int init_speed, int max_sp, int finish_speed) {
+void straight(int len, int init_speed, int max_sp, int finish_speed)
+{
   int obj_step;
 
   ControlInterruptStop();
@@ -41,18 +42,19 @@ void straight(int len, int init_speed, int max_sp, int finish_speed) {
   con_wall.enable = true;
   obj_step = (int)((float)len * 2.0 / PULSE);
   MoveDir(MOT_FORWARD, MOT_FORWARD);  //left,right
-  if(len > HALF_SECTION){
+  if (len > HALF_SECTION) {
     theta_adj = true;
   }
   ControlInterruptStart();
 
   motor_move = 1;
-  while ((len - (GetStepR() + GetStepL()) / 2.0 * PULSE) > (((speed * speed) - (finish_speed * finish_speed)) / (2.0 * 1000.0 * SEARCH_ACCEL))){
+  while ((len - (GetStepR() + GetStepL()) / 2.0 * PULSE) >
+         (((speed * speed) - (finish_speed * finish_speed)) / (2.0 * 1000.0 * SEARCH_ACCEL))) {
     delayMicroseconds(500);
   }
   r_accel = -1.0 * SEARCH_ACCEL;
 
-  while ((GetStepR() + GetStepL()) < obj_step){
+  while ((GetStepR() + GetStepL()) < obj_step) {
     delayMicroseconds(500);
   }
 
@@ -70,8 +72,8 @@ void straight(int len, int init_speed, int max_sp, int finish_speed) {
   }
 }
 
-
-void accelerate(int len, int finish_speed) {
+void accelerate(int len, int finish_speed)
+{
   int obj_step;
 
   ControlInterruptStop();
@@ -89,8 +91,7 @@ void accelerate(int len, int finish_speed) {
 
   motor_move = 1;
 
-
-  while ((GetStepR() + GetStepL()) < obj_step){
+  while ((GetStepR() + GetStepL()) < obj_step) {
     delayMicroseconds(500);
   }
 
@@ -102,7 +103,8 @@ void accelerate(int len, int finish_speed) {
   ControlInterruptStart();
 }
 
-void one_step(int len, int tar_speed) {
+void one_step(int len, int tar_speed)
+{
   int obj_step;
   ControlInterruptStop();
   speed = min_speed = max_speed = tar_speed;
@@ -116,7 +118,7 @@ void one_step(int len, int tar_speed) {
   theta_adj = true;
   ControlInterruptStart();
 
-  while ((GetStepR() + GetStepL()) < obj_step){
+  while ((GetStepR() + GetStepL()) < obj_step) {
     delayMicroseconds(500);
   }
   ControlInterruptStop();
@@ -124,11 +126,12 @@ void one_step(int len, int tar_speed) {
   r_accel = 0.0;
   ClearStepR();
   ClearStepL();
-  theta_adj=false;
+  theta_adj = false;
   ControlInterruptStart();
 }
 
-void decelerate(int len, int tar_speed) {
+void decelerate(int len, int tar_speed)
+{
   int obj_step;
   ControlInterruptStop();
   max_speed = tar_speed;
@@ -141,13 +144,14 @@ void decelerate(int len, int tar_speed) {
   MoveDir(MOT_FORWARD, MOT_FORWARD);
   ControlInterruptStart();
 
-  while ((len - (GetStepR() + GetStepL()) / 2.0 * PULSE) > (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * SEARCH_ACCEL))){
+  while ((len - (GetStepR() + GetStepL()) / 2.0 * PULSE) >
+         (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * SEARCH_ACCEL))) {
     delayMicroseconds(500);
   }
   r_accel = -1.0 * SEARCH_ACCEL;
   min_speed = MIN_SPEED;
 
-  while ((GetStepR() + GetStepL()) < obj_step){
+  while ((GetStepR() + GetStepL()) < obj_step) {
     delayMicroseconds(500);
   }
 
@@ -156,8 +160,8 @@ void decelerate(int len, int tar_speed) {
   delay(300);
 }
 
-
-void rotate(t_direction dir, int times) {
+void rotate(t_direction dir, int times)
+{
   int obj_step;
   ControlInterruptStop();
   max_speed = SEARCH_SPEED;
@@ -185,7 +189,8 @@ void rotate(t_direction dir, int times) {
   }
   ControlInterruptStart();
 
-  while (((obj_step - (GetStepR() + GetStepL())) / 2.0 * PULSE) > (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * TURN_ACCEL))) {
+  while (((obj_step - (GetStepR() + GetStepL())) / 2.0 * PULSE) >
+         (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * TURN_ACCEL))) {
     delayMicroseconds(500);
   }
   r_accel = -1.0 * TURN_ACCEL;

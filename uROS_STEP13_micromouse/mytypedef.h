@@ -25,13 +25,6 @@ typedef struct
   bool enable;
 } t_control;
 
-typedef enum
-{
-  MOT_FORWARD,
-  MOT_BACK
-}t_CW_CCW;
+typedef enum { MOT_FORWARD, MOT_BACK } t_CW_CCW;
 
- typedef enum{
-  R90,
-  L90
-}t_sura_mode;
+typedef enum { R90, L90 } t_sura_mode;

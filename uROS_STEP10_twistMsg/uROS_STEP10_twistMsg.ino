@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
+// clang-format off
+// メッセージヘッダーファイルを見つけるため、micro_ros_arduino.hを先にインクルードすること
 #include <micro_ros_arduino.h>
-
-#include <stdio.h>
-#include <rcl/rcl.h>
-#include <rcl/error_handling.h>
-#include <rclc/rclc.h>
-#include <rclc/executor.h>
-
 #include <geometry_msgs/msg/twist.h>
+#include <rcl/error_handling.h>
+#include <rcl/rcl.h>
+#include <rclc/executor.h>
+#include <rclc/rclc.h>
+#include <stdio.h>
+// clang-format on
+
 geometry_msgs__msg__Twist msg;
 
 rcl_subscription_t subscriber;
@@ -47,9 +48,9 @@ rcl_node_t node;
 #define MIN_SPEED (MIN_HZ * PULSE)
 #define TREAD_WIDTH (65.0)
 
-hw_timer_t* timer0 = NULL;
-hw_timer_t* timer2 = NULL;
-hw_timer_t* timer3 = NULL;
+hw_timer_t * timer0 = NULL;
+hw_timer_t * timer2 = NULL;
+hw_timer_t * timer3 = NULL;
 
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
@@ -70,18 +71,23 @@ double omega = 0;
 
 volatile bool motor_move = 0;
 
-#define RCCHECK(fn) \
-  { \
-    rcl_ret_t temp_rc = fn; \
-    if ((temp_rc != RCL_RET_OK)) { error_loop(); } \
+#define RCCHECK(fn)                \
+  {                                \
+    rcl_ret_t temp_rc = fn;        \
+    if ((temp_rc != RCL_RET_OK)) { \
+      error_loop();                \
+    }                              \
   }
-#define RCSOFTCHECK(fn) \
-  { \
-    rcl_ret_t temp_rc = fn; \
-    if ((temp_rc != RCL_RET_OK)) { error_loop(); } \
+#define RCSOFTCHECK(fn)            \
+  {                                \
+    rcl_ret_t temp_rc = fn;        \
+    if ((temp_rc != RCL_RET_OK)) { \
+      error_loop();                \
+    }                              \
   }
 
-void error_loop() {
+void error_loop()
+{
   while (1) {
     digitalWrite(LED0, !digitalRead(LED0));
     delay(100);
@@ -90,14 +96,16 @@ void error_loop() {
 
 //割り込み
 //目標値の更新周期1kHz
-void IRAM_ATTR OnTimer0(void) {
+void IRAM_ATTR OnTimer0(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   control_interrupt();
   portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
 }
 
 //Rモータの周期数割り込み
-void IRAM_ATTR IsrR(void) {
+void IRAM_ATTR IsrR(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   if (motor_move) {
     if (RStepHz < 30) RStepHz = 30;
@@ -113,7 +121,8 @@ void IRAM_ATTR IsrR(void) {
 }
 
 //Lモータの周期数割り込み
-void IRAM_ATTR IsrL(void) {
+void IRAM_ATTR IsrL(void)
+{
   portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
   if (motor_move) {
     if (LStepHz < 30) LStepHz = 30;
@@ -128,17 +137,17 @@ void IRAM_ATTR IsrL(void) {
   portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
 }
 
-
 //twist message cb
-void subscription_callback(const void* msgin) {
-  const geometry_msgs__msg__Twist* msg = (const geometry_msgs__msg__Twist*)msgin;
+void subscription_callback(const void * msgin)
+{
+  const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
 
   speed = msg->linear.x * 1000.0;
   omega = msg->angular.z;
-
 }
 
-void setup() {
+void setup()
+{
   //  set_microros_transports();
   pinMode(LED0, OUTPUT);
   pinMode(LED1, OUTPUT);
@@ -147,7 +156,7 @@ void setup() {
 
   digitalWrite(LED1, HIGH);
   set_microros_wifi_transports("使用するWiFiのAP名", "Wi-Fiのパスワード", "PCのIPアドレス", 8888);
- 
+
   digitalWrite(LED2, HIGH);
 
   //motor disable
@@ -190,19 +199,18 @@ void setup() {
 
   // create subscriber
   RCCHECK(rclc_subscription_init_default(
-    &subscriber,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist),
-    "/cmd_vel"));
+    &subscriber, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist), "/cmd_vel"));
 
   // create executor
   RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
-  RCCHECK(rclc_executor_add_subscription(&executor, &subscriber, &msg, &subscription_callback, ON_NEW_DATA));
+  RCCHECK(rclc_executor_add_subscription(
+    &executor, &subscriber, &msg, &subscription_callback, ON_NEW_DATA));
 
   digitalWrite(MOTOR_EN, HIGH);
 }
 
-void loop() {
+void loop()
+{
   delay(10);
   RCCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100)));
 }

@@ -29,10 +29,11 @@ volatile short sensor_r_value;
 volatile short sensor_l_value;
 volatile short battery_value;
 
-hw_timer_t* timer1 = NULL;
+hw_timer_t * timer1 = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
-void IRAM_ATTR OnTimer1(void) {
+void IRAM_ATTR OnTimer1(void)
+{
   static char cnt = 0;
   portENTER_CRITICAL_ISR(&timerMux);
   switch (cnt) {
@@ -75,8 +76,8 @@ void IRAM_ATTR OnTimer1(void) {
   portEXIT_CRITICAL_ISR(&timerMux);
 }
 
-
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
   //Sensor 発光off
   pinMode(SLED_FR, OUTPUT);
@@ -96,7 +97,8 @@ void setup() {
   timerAlarmEnable(timer1);
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
   Serial.printf("r_sen  is %d\n\r", sensor_r_value);
   Serial.printf("fr_sen is %d\n\r", sensor_fr_value);

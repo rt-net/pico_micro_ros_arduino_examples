@@ -23,7 +23,7 @@
 
 #define SEARCH_SPEED 350
 #define MAX_SPEED 1000
-#define MIN_SPEED (MIN_HZ*PULSE)
+#define MIN_SPEED (MIN_HZ * PULSE)
 
 #define GOAL_X 3
 #define GOAL_Y 3
