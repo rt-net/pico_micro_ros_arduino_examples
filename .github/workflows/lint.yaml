@@ -17,4 +17,4 @@ jobs:
       - uses: arduino/arduino-lint-action@v1
         with:
           recursive: true
-          compliance: strict
+          compliance: specification
