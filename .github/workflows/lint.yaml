@@ -26,3 +26,4 @@ jobs:
       - run: sudo apt install -y clang-format
       # 各スケッチファイルの.ino、.hファイルに対してclang-formatによる整形が必要か判定する
       - run: clang-format --dry-run -Werror uROS_STEP*/*.(ino|h)
+        shell: zsh
