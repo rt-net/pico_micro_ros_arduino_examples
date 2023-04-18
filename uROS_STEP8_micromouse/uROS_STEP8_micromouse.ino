@@ -19,7 +19,7 @@
 #include "mytypedef.h"
 #include "parameter.h"
 
-signed char __mode;
+signed char g_mode;
 short battery_value;
 t_sensor sen_r, sen_l, sen_fr, sen_fl;
 t_control con_wall;
@@ -37,34 +37,34 @@ void setup()
   initAll();
 
   disableBuzzer();
-  __mode = 1;
+  g_mode = 1;
 }
 
 void loop()
 {
   // put your main code here, to run repeatedly:
-  setLED(__mode);
+  setLED(g_mode);
   switch (getSW()) {
     case SW_LM:
-      __mode = decButton(__mode, 1, 15);
+      g_mode = decButton(g_mode, 1, 15);
       break;
     case SW_RM:
-      __mode = incButton(__mode, 15, 1);
+      g_mode = incButton(g_mode, 15, 1);
       break;
     case SW_CM:
       okButton();
-      execByMode(__mode);
+      execByMode(g_mode);
       break;
   }
   delay(1);
 }
 
-void execByMode(int _mode)
+void execByMode(int mode)
 {
   enableMotor();
   delay(1000);
 
-  switch (_mode) {
+  switch (mode) {
     case 1:
       searchLefthand();
       break;
