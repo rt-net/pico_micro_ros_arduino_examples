@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// clang-format off
+// メッセージヘッダーファイルを見つけるため、micro_ros_arduino.hを先にインクルードすること
 #include <micro_ros_arduino.h>
 #include <pico_msgs/msg/light_sensor.h>
 #include <rcl/error_handling.h>
 #include <rcl/rcl.h>
 #include <rclc/rclc.h>
 #include <stdio.h>
-pico_msgs__msg__LightSensor sensor_msg;
-
 #include <std_msgs/msg/int16.h>
+// clang-format off
+
+pico_msgs__msg__LightSensor sensor_msg;
 std_msgs__msg__Int16 bat_msg;
 
 rcl_publisher_t publisher_sensor, publisher_battery;

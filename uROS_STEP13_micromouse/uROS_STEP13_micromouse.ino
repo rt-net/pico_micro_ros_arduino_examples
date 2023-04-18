@@ -24,8 +24,10 @@
 #include "parameter.h"
 
 //micro-ROSで使用するヘッダ
-#include <geometry_msgs/msg/transform_stamped.h>
+// clang-format off
+// メッセージヘッダーファイルを見つけるため、micro_ros_arduino.hを先にインクルードすること
 #include <micro_ros_arduino.h>
+#include <geometry_msgs/msg/transform_stamped.h>
 #include <pico_msgs/msg/light_sensor.h>
 #include <rcl/error_handling.h>
 #include <rcl/rcl.h>
@@ -35,6 +37,7 @@
 #include <stdio.h>
 #include <tf2_msgs/msg/tf_message.h>
 #include <visualization_msgs/msg/marker.h>
+// clang-format off
 
 //micro-ROSで使用する変数
 volatile double position_r, position_l;

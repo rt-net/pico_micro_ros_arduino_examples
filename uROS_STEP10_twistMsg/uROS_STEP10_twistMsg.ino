@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <geometry_msgs/msg/twist.h>
+// clang-format off
+// メッセージヘッダーファイルを見つけるため、micro_ros_arduino.hを先にインクルードすること
 #include <micro_ros_arduino.h>
+#include <geometry_msgs/msg/twist.h>
 #include <rcl/error_handling.h>
 #include <rcl/rcl.h>
 #include <rclc/executor.h>
 #include <rclc/rclc.h>
 #include <stdio.h>
+// clang-format on
+
 geometry_msgs__msg__Twist msg;
 
 rcl_subscription_t subscriber;
