@@ -49,7 +49,7 @@ rcl_node_t node;
 
 hw_timer_t * timer1 = NULL;
 
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
 volatile short sensor_fr_value;
 volatile short sensor_fl_value;
@@ -61,7 +61,7 @@ volatile short battery_value;
   {                                \
     rcl_ret_t temp_rc = fn;        \
     if ((temp_rc != RCL_RET_OK)) { \
-      error_loop();                \
+      errorLoop();                \
     }                              \
   }
 #define RCSOFTCHECK(fn)            \
@@ -71,7 +71,7 @@ volatile short battery_value;
     }                              \
   }
 
-void error_loop()
+void errorLoop()
 {
   while (1) {
     digitalWrite(LED0, !digitalRead(LED0));
@@ -82,7 +82,7 @@ void error_loop()
 void IRAM_ATTR onTimer1(void)
 {
   static char cnt = 0;
-  portENTER_CRITICAL_ISR(&timerMux);
+  portENTER_CRITICAL_ISR(&timer_mux);
   switch (cnt) {
     case 0:
       digitalWrite(SLED_FR, HIGH);  //LED点灯
@@ -120,10 +120,10 @@ void IRAM_ATTR onTimer1(void)
   }
   cnt++;
   if (cnt == 4) cnt = 0;
-  portEXIT_CRITICAL_ISR(&timerMux);
+  portEXIT_CRITICAL_ISR(&timer_mux);
 }
 
-void publisher_task(void * pvParameters)
+void publisherTask(void * pvParameters)
 {
   while (1) {
     sensor_msg.forward_r = sensor_fr_value;
@@ -183,7 +183,7 @@ void setup()
 
   xTaskCreateUniversal(
     //  xTaskCreatePinnedToCore(
-    publisher_task, "publisher_task", 4096, NULL, 1, NULL,
+    publisherTask, "publisherTask", 4096, NULL, 1, NULL,
     //    PRO_CPU_NUM
     //    APP_CPU_NUM
     CONFIG_ARDUINO_RUNNING_CORE);
