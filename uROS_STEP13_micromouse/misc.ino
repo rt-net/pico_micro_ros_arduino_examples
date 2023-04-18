@@ -12,57 +12,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-short inc_button(short _data, short limit, short limit_data)
+short incButton(short _data, short limit, short limit_data)
 {
   _data++;
   if (_data > limit) {
     _data = limit_data;
   }
-  EnableBuzzer(INC_FREQ);
+  enableBuzzer(INC_FREQ);
   delay(30);
-  DisableBuzzer();
+  disableBuzzer();
   return _data;
 }
-short dec_button(short _data, short limit, short limit_data)
+short decButton(short _data, short limit, short limit_data)
 {
   _data--;
   if (_data < limit) {
     _data = limit_data;
   }
-  EnableBuzzer(DEC_FREQ);
+  enableBuzzer(DEC_FREQ);
   delay(30);
-  DisableBuzzer();
+  disableBuzzer();
   return _data;
 }
 
-void ok_button(void)
+void okButton(void)
 {
-  EnableBuzzer(DEC_FREQ);
+  enableBuzzer(DEC_FREQ);
   delay(80);
-  EnableBuzzer(INC_FREQ);
+  enableBuzzer(INC_FREQ);
   delay(80);
-  DisableBuzzer();
+  disableBuzzer();
 }
 
-void goal_appeal(void)  //ゴールしたことをアピールする
+void goalAppeal(void)  //ゴールしたことをアピールする
 {
   unsigned char led_data;
 
   int wtime = 100;
 
-  DisableMotor();
-  map_write();
+  disableMotor();
+  mapWrite();
 
   for (int j = 0; j < 10; j++) {
     led_data = 1;
     for (int i = 0; i < 4; i++) {
-      SetLED(led_data);
+      setLED(led_data);
       led_data <<= 1;
       delay(wtime);
     }
     led_data = 8;
     for (int i = 0; i < 4; i++) {
-      SetLED(led_data);
+      setLED(led_data);
       led_data >>= 1;
       delay(wtime);
     }
@@ -70,5 +70,5 @@ void goal_appeal(void)  //ゴールしたことをアピールする
   }
 
   delay(500);
-  EnableMotor();
+  enableMotor();
 }

@@ -12,28 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void map_manager::position_init(void)
+void MapManager::positionInit(void)
 {
   mypos.x = mypos.y = 0;
   mypos.dir = north;
 }
 
-void map_manager::set_mypos(char x, char y, t_direction_glob dir)
+void MapManager::setMyPos(char x, char y, t_direction_glob dir)
 {
   mypos.x = x;
   mypos.y = y;
   mypos.dir = dir;
 }
 
-void map_manager::set_mypos_dir(t_direction_glob dir) { mypos.dir = dir; }
+void MapManager::setMyPosDir(t_direction_glob dir) { mypos.dir = dir; }
 
-short map_manager::get_mypos_x(void) { return mypos.x; }
+short MapManager::getMyPosX(void) { return mypos.x; }
 
-short map_manager::get_mypos_y(void) { return mypos.y; }
+short MapManager::getMyPosY(void) { return mypos.y; }
 
-t_direction_glob map_manager::get_mypos_dir(void) { return mypos.dir; }
+t_direction_glob MapManager::getMyPosDir(void) { return mypos.dir; }
 
-char map_manager::get_wall_data(char x, char y, t_direction_glob dir)
+char MapManager::getWallData(char x, char y, t_direction_glob dir)
 {
   switch (dir) {
     case north:
@@ -52,7 +52,7 @@ char map_manager::get_wall_data(char x, char y, t_direction_glob dir)
   return 99;
 }
 
-void map_manager::set_wall_data(char x, char y, t_direction_glob dir, char data)
+void MapManager::setWallData(char x, char y, t_direction_glob dir, char data)
 {
   switch (dir) {
     case north:
@@ -70,17 +70,17 @@ void map_manager::set_wall_data(char x, char y, t_direction_glob dir, char data)
   }
 }
 
-unsigned short map_manager::get_step_map_data(char x, char y) { return steps_map[x][y]; }
+unsigned short MapManager::getStepMapData(char x, char y) { return steps_map[x][y]; }
 
-char map_manager::get_goal_x(void) { return goal_mx; }
+char MapManager::getGoalX(void) { return goal_mx; }
 
-char map_manager::get_goal_y(void) { return goal_my; }
+char MapManager::getGoalY(void) { return goal_my; }
 
-void map_manager::set_goal_x(short data) { goal_mx = data; }
+void MapManager::setGoalX(short data) { goal_mx = data; }
 
-void map_manager::set_goal_y(short data) { goal_my = data; }
+void MapManager::setGoalY(short data) { goal_my = data; }
 
-void map_manager::make_map2(int x, int y)
+void MapManager::makeMap2(int x, int y)
 {
   bool change_flag;
 
@@ -136,7 +136,7 @@ void map_manager::make_map2(int x, int y)
   } while (change_flag == true);
 }
 
-void map_manager::make_search_map(int x, int y)
+void MapManager::makeSearchMap(int x, int y)
 {
   bool change_flag;
 
@@ -193,7 +193,7 @@ void map_manager::make_search_map(int x, int y)
 }
 
 //コンストラクタ
-map_manager::map_manager()
+MapManager::MapManager()
 {
   int i, j;
 
@@ -218,7 +218,7 @@ map_manager::map_manager()
   wall[0][0].north = wall[0][1].south = NOWALL;
 }
 
-void map_manager::axis_update(void)
+void MapManager::axisUpdate(void)
 {
   switch (mypos.dir) {
     case north:
@@ -236,7 +236,7 @@ void map_manager::axis_update(void)
   }
 }
 
-void map_manager::next_dir(t_direction dir)
+void MapManager::nextDir(t_direction dir)
 {
   if (dir == right) {
     switch (mypos.dir) {
@@ -271,7 +271,7 @@ void map_manager::next_dir(t_direction dir)
   }
 }
 
-void map_manager::set_wall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L)  //壁情報を記録
+void MapManager::setWall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L)  //壁情報を記録
 {
   switch (mypos.dir) {
     case north:
@@ -309,7 +309,7 @@ void map_manager::set_wall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L)  //壁�
   }
 }
 
-int map_manager::get_priority(char x, char y, t_direction_glob dir)
+int MapManager::getPriority(char x, char y, t_direction_glob dir)
 {
   int priority;
 
@@ -334,16 +334,16 @@ int map_manager::get_priority(char x, char y, t_direction_glob dir)
   return priority;
 }
 
-t_direction map_manager::get_nextdir(char x, char y, t_direction_glob * dir)
+t_direction MapManager::getNextDir(char x, char y, t_direction_glob * dir)
 {
   int little, priority, tmp_priority;
 
-  make_search_map(x, y);
+  makeSearchMap(x, y);
   little = 65535;
   priority = 0;
 
   if ((wall[mypos.x][mypos.y].north != WALL) && (mypos.y < (MAZESIZE_Y - 1))) {
-    tmp_priority = get_priority(mypos.x, mypos.y + 1, north);
+    tmp_priority = getPriority(mypos.x, mypos.y + 1, north);
     if (steps_map[mypos.x][mypos.y + 1] < little) {
       little = steps_map[mypos.x][mypos.y + 1];
       *dir = north;
@@ -357,7 +357,7 @@ t_direction map_manager::get_nextdir(char x, char y, t_direction_glob * dir)
   }
 
   if ((wall[mypos.x][mypos.y].east != WALL) && (mypos.x < (MAZESIZE_X - 1))) {
-    tmp_priority = get_priority(mypos.x + 1, mypos.y, east);
+    tmp_priority = getPriority(mypos.x + 1, mypos.y, east);
     if (steps_map[mypos.x + 1][mypos.y] < little) {
       little = steps_map[mypos.x + 1][mypos.y];
       *dir = east;
@@ -371,7 +371,7 @@ t_direction map_manager::get_nextdir(char x, char y, t_direction_glob * dir)
   }
 
   if ((wall[mypos.x][mypos.y].south != WALL) && (mypos.y > 0)) {
-    tmp_priority = get_priority(mypos.x, mypos.y - 1, south);
+    tmp_priority = getPriority(mypos.x, mypos.y - 1, south);
     if (steps_map[mypos.x][mypos.y - 1] < little) {
       little = steps_map[mypos.x][mypos.y - 1];
       *dir = south;
@@ -385,7 +385,7 @@ t_direction map_manager::get_nextdir(char x, char y, t_direction_glob * dir)
   }
 
   if ((wall[mypos.x][mypos.y].west != WALL) && (mypos.x > 0)) {
-    tmp_priority = get_priority(mypos.x - 1, mypos.y, west);
+    tmp_priority = getPriority(mypos.x - 1, mypos.y, west);
     if (steps_map[mypos.x - 1][mypos.y] < little) {
       little = steps_map[mypos.x - 1][mypos.y];
       *dir = west;
@@ -400,9 +400,9 @@ t_direction map_manager::get_nextdir(char x, char y, t_direction_glob * dir)
 
   if (steps_map[mypos.x][mypos.y] == 65535) {
     while (1) {
-      SetLED(0x0a);
+      setLED(0x0a);
       delay(500);
-      SetLED(0x05);
+      setLED(0x05);
       delay(500);
     }
   } else {
@@ -475,17 +475,17 @@ t_direction map_manager::get_nextdir(char x, char y, t_direction_glob * dir)
   }
 }
 
-t_direction map_manager::get_nextdir2(short x, short y, t_direction_glob * dir)
+t_direction MapManager::getNextDir2(short x, short y, t_direction_glob * dir)
 {
   int little, priority, tmp_priority;
 
-  make_map2(x, y);
+  makeMap2(x, y);
   little = 65535;
 
   priority = 0;
 
   if ((wall[mypos.x][mypos.y].north == NOWALL) && ((mypos.y + 1) < MAZESIZE_Y)) {
-    tmp_priority = get_priority(mypos.x, mypos.y + 1, north);
+    tmp_priority = getPriority(mypos.x, mypos.y + 1, north);
     if (steps_map[mypos.x][mypos.y + 1] < little) {
       little = steps_map[mypos.x][mypos.y + 1];
       *dir = north;
@@ -499,7 +499,7 @@ t_direction map_manager::get_nextdir2(short x, short y, t_direction_glob * dir)
   }
 
   if ((wall[mypos.x][mypos.y].east == NOWALL) && ((mypos.x + 1) < MAZESIZE_X)) {
-    tmp_priority = get_priority(mypos.x + 1, mypos.y, east);
+    tmp_priority = getPriority(mypos.x + 1, mypos.y, east);
     if (steps_map[mypos.x + 1][mypos.y] < little) {
       little = steps_map[mypos.x + 1][mypos.y];
       *dir = east;
@@ -513,7 +513,7 @@ t_direction map_manager::get_nextdir2(short x, short y, t_direction_glob * dir)
   }
 
   if ((wall[mypos.x][mypos.y].south == NOWALL) && (mypos.y > 0)) {
-    tmp_priority = get_priority(mypos.x, mypos.y - 1, south);
+    tmp_priority = getPriority(mypos.x, mypos.y - 1, south);
     if (steps_map[mypos.x][mypos.y - 1] < little) {
       little = steps_map[mypos.x][mypos.y - 1];
       *dir = south;
@@ -527,7 +527,7 @@ t_direction map_manager::get_nextdir2(short x, short y, t_direction_glob * dir)
   }
 
   if ((wall[mypos.x][mypos.y].west == NOWALL) && (mypos.x > 0)) {
-    tmp_priority = get_priority(mypos.x - 1, mypos.y, west);
+    tmp_priority = getPriority(mypos.x - 1, mypos.y, west);
     if (steps_map[mypos.x - 1][mypos.y] < little) {
       little = steps_map[mypos.x - 1][mypos.y];
       *dir = west;
@@ -541,14 +541,14 @@ t_direction map_manager::get_nextdir2(short x, short y, t_direction_glob * dir)
   }
 
   if (steps_map[mypos.x][mypos.y] == 65535) {  //Goalにいけない
-    DisableMotor();
-    ControlInterruptStop();
-    SensorInterruptStop();
+    disableMotor();
+    controlInterruptStop();
+    sensorInterruptStop();
     PWMInterruptStop();
     while (1) {
-      SetLED(0x0a);
+      setLED(0x0a);
       delay(500);
-      SetLED(0x05);
+      setLED(0x05);
       delay(500);
     }
   } else {

@@ -14,23 +14,23 @@
 
 unsigned char second_run[256];
 
-void fast_run(short gx, short gy)
+void fastRun(short gx, short gy)
 {
   t_direction_glob glob_nextdir;
   int straight_count = 0;
   int i = 0;
 
   //rvizに表示するマーカーの座標の初期化
-  start_x = map_control.get_mypos_x();
-  start_y = map_control.get_mypos_y();
-  start_dir = map_control.get_mypos_dir();
+  start_x = map_control.getMyPosX();
+  start_y = map_control.getMyPosY();
+  start_dir = map_control.getMyPosDir();
 
   //マーカー用のデータを作成
-  t_direction temp_next_dir = map_control.get_nextdir2(gx, gy, &glob_nextdir);
-  map_control.set_mypos_dir(glob_nextdir);
-  map_control.axis_update();
-  while ((map_control.get_mypos_x() != gx) || (map_control.get_mypos_y() != gy)) {
-    switch (map_control.get_nextdir2(gx, gy, &glob_nextdir)) {
+  t_direction temp_next_dir = map_control.getNextDir2(gx, gy, &glob_nextdir);
+  map_control.setMyPosDir(glob_nextdir);
+  map_control.axisUpdate();
+  while ((map_control.getMyPosX() != gx) || (map_control.getMyPosY() != gy)) {
+    switch (map_control.getNextDir2(gx, gy, &glob_nextdir)) {
       case front:
         straight_count++;
         break;
@@ -45,30 +45,30 @@ void fast_run(short gx, short gy)
         straight_count = 0;
         break;
     }
-    map_control.set_mypos_dir(glob_nextdir);
-    map_control.axis_update();
+    map_control.setMyPosDir(glob_nextdir);
+    map_control.axisUpdate();
   }
 
   second_run[i++] = straight_count;
   second_run[i++] = 127;
 
-  map_control.set_mypos_dir(start_dir);
+  map_control.setMyPosDir(start_dir);
 
   //second_runにあるデータに沿って走行する。
   switch (temp_next_dir) {
     break;
     case right:
       rotate(right, 1);  //右に曲がって
-      map_control.next_dir(right);
+      map_control.nextDir(right);
       break;
     case left:
       rotate(left, 1);  //左に曲がって
-      map_control.next_dir(left);
+      map_control.nextDir(left);
       break;
     case rear:
       rotate(right, 2);  //180度に旋回して
-      map_control.next_dir(right);
-      map_control.next_dir(right);
+      map_control.nextDir(right);
+      map_control.nextDir(right);
       break;
   }
 
@@ -86,12 +86,12 @@ void fast_run(short gx, short gy)
       break;
     } else if (second_run[i] == R90) {
       decelerate(HALF_SECTION, SEARCH_SPEED);
-      map_control.next_dir(right);
+      map_control.nextDir(right);
       rotate(right, 1);
       accelerate(HALF_SECTION, SEARCH_SPEED);
     } else if (second_run[i] == L90) {
       decelerate(HALF_SECTION, SEARCH_SPEED);
-      map_control.next_dir(left);
+      map_control.nextDir(left);
       rotate(left, 1);
       accelerate(HALF_SECTION, SEARCH_SPEED);
     }

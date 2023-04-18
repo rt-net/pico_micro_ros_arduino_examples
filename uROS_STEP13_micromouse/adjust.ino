@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void map_view(void)
+void mapView(void)
 {
   Serial.printf("\x1b[2j");
   Serial.printf("\x1b[0;0H");
   Serial.printf("\n\r+");
   for (int i = 0; i < MAZESIZE_X; i++) {
-    switch (map_control.get_wall_data(i, MAZESIZE_Y - 1, north)) {  //黒色は"[30m"
+    switch (map_control.getWallData(i, MAZESIZE_Y - 1, north)) {  //黒色は"[30m"
       case NOWALL:
         Serial.printf("\x1b[37m  +");  //NOWALL
         break;
@@ -35,7 +35,7 @@ void map_view(void)
   }
   Serial.printf("\n\r");
   for (int j = (MAZESIZE_Y - 1); j > -1; j--) {
-    switch (map_control.get_wall_data(0, j, west)) {
+    switch (map_control.getWallData(0, j, west)) {
       case NOWALL:
         Serial.printf("\x1b[37m ");  //NOWALL
         break;
@@ -50,7 +50,7 @@ void map_view(void)
         break;
     }
     for (int i = 0; i < MAZESIZE_X; i++) {
-      switch (map_control.get_wall_data(i, j, east)) {
+      switch (map_control.getWallData(i, j, east)) {
         case NOWALL:
           Serial.printf("\x1b[37m   ");  //NOWALL
           break;
@@ -67,7 +67,7 @@ void map_view(void)
     }
     Serial.printf("\n\r+");
     for (int i = 0; i < MAZESIZE_X; i++) {
-      switch (map_control.get_wall_data(i, j, south)) {
+      switch (map_control.getWallData(i, j, south)) {
         case NOWALL:
           Serial.printf("\x1b[37m  +");  //NOWALL
           break;
@@ -86,10 +86,10 @@ void map_view(void)
   }
 }
 
-void view_adc(void)
+void viewAdc(void)
 {
   int i;
-  DisableMotor();
+  disableMotor();
 
   while (1) {
     Serial.printf("r_sen        is\t%d   \r\n", sen_r.value);
@@ -104,9 +104,9 @@ void view_adc(void)
   }
 }
 
-void straight_check(int section_check)
+void straightCheck(int section_check)
 {
-  EnableMotor();
+  enableMotor();
   delay(1000);
   accelerate(HALF_SECTION, SEARCH_SPEED);
   if (section_check > 1) {
@@ -114,45 +114,45 @@ void straight_check(int section_check)
   }
   decelerate(HALF_SECTION, SEARCH_SPEED);
 
-  DisableMotor();
+  disableMotor();
 }
 
-void go_and_turn_right(void)
+void goAndTurnRight(void)
 {
-  EnableMotor();
+  enableMotor();
   delay(1000);
   for (int i = 0; i < 8; i++) {
     rotate(right, 1);
   }
-  DisableMotor();
+  disableMotor();
 }
 
-void adjust_menu(void)
+void adjustMenu(void)
 {
   unsigned char _mode = 1;
   char LED3_data;
   char sw;
 
   while (1) {
-    SetLED(_mode);
+    setLED(_mode);
     while (1) {
-      sw = GetSW();
+      sw = getSW();
       if (sw != 0) break;
       delay(33);
       LED3_data ^= 1;
-      SetLED((_mode & 0x7) + ((LED3_data << 3) & 0x08));
+      setLED((_mode & 0x7) + ((LED3_data << 3) & 0x08));
     }
     LED3_data = 0;
     switch (sw) {
       case SW_RM:
-        _mode = inc_button(_mode, 7, 1);
+        _mode = incButton(_mode, 7, 1);
         break;
       case SW_LM:
-        _mode = dec_button(_mode, 1, 7);
+        _mode = decButton(_mode, 1, 7);
         break;
       case SW_CM:
-        ok_button();
-        if (exec_by_mode_adjust(_mode) == 1) {
+        okButton();
+        if (execByModeAdjust(_mode) == 1) {
           return;
         }
         break;
@@ -160,23 +160,23 @@ void adjust_menu(void)
   }
 }
 
-unsigned char exec_by_mode_adjust(unsigned char _mode)
+unsigned char execByModeAdjust(unsigned char _mode)
 {
-  DisableMotor();
+  disableMotor();
   switch (_mode) {
     case 1:
-      view_adc();
+      viewAdc();
       break;
     case 2:
-      straight_check(7);
+      straightCheck(7);
       break;
 
     case 3:
-      go_and_turn_right();
+      goAndTurnRight();
       break;
     case 4:
-      copy_map();
-      map_view();
+      copyMap();
+      mapView();
       break;
 
     case 5:
