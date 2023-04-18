@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void control_interrupt(void){
-
+void control_interrupt(void)
+{
   speed += r_accel;
 
-  if(speed > max_speed){
+  if (speed > max_speed) {
     speed = max_speed;
   }
-  if(speed < min_speed){
+  if (speed < min_speed) {
     speed = min_speed;
   }
 
-  LStepHz = RStepHz =   (unsigned short)(speed/PULSE);
-
+  LStepHz = RStepHz = (unsigned short)(speed / PULSE);
 }

@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-void map_view(void) {
+void map_view(void)
+{
   Serial.printf("\x1b[2j");
   Serial.printf("\x1b[0;0H");
   Serial.printf("\n\r+");
   for (int i = 0; i < MAZESIZE_X; i++) {
-
     switch (map_control.get_wall_data(i, MAZESIZE_Y - 1, north)) {  //黒色は"[30m"
       case NOWALL:
         Serial.printf("\x1b[37m  +");  //NOWALL
@@ -87,7 +86,8 @@ void map_view(void) {
   }
 }
 
-void view_adc(void) {
+void view_adc(void)
+{
   int i;
   DisableMotor();
 
@@ -104,7 +104,8 @@ void view_adc(void) {
   }
 }
 
-void straight_check(int section_check) {
+void straight_check(int section_check)
+{
   EnableMotor();
   delay(1000);
   accelerate(HALF_SECTION, SEARCH_SPEED);
@@ -116,8 +117,8 @@ void straight_check(int section_check) {
   DisableMotor();
 }
 
-
-void go_and_turn_right(void) {
+void go_and_turn_right(void)
+{
   EnableMotor();
   delay(1000);
   for (int i = 0; i < 8; i++) {
@@ -126,8 +127,8 @@ void go_and_turn_right(void) {
   DisableMotor();
 }
 
-
-void adjust_menu(void) {
+void adjust_menu(void)
+{
   unsigned char _mode = 1;
   char LED3_data;
   char sw;
@@ -159,7 +160,8 @@ void adjust_menu(void) {
   }
 }
 
-unsigned char exec_by_mode_adjust(unsigned char _mode) {
+unsigned char exec_by_mode_adjust(unsigned char _mode)
+{
   DisableMotor();
   switch (_mode) {
     case 1:

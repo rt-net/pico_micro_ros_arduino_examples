@@ -24,6 +24,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: sudo apt install -y clang-format
-      - run: clang-format --dry-run -Werror uROS_STEP1_LED/*
-
-
+      # 各スケッチファイルの.ino、.hファイルに対してclang-formatによる整形が必要か判定する
+      - run: clang-format --dry-run -Werror uROS_STEP*/*.(ino|h)

@@ -9,7 +9,6 @@
 #define WALL 1      //壁がある場合の値
 #define VWALL 3     //仮想壁の値(未使用)
 
-
 typedef struct
 {
   unsigned char west : 2;   //西の壁情報bit7-6
@@ -18,36 +17,28 @@ typedef struct
   unsigned char north : 2;  //北の壁情報 bit1-0
 } t_wall;                   //壁情報を格納する構造体(ビットフィールド)
 
-typedef enum {
-  front,
-  right,
-  left,
-  rear
-} t_direction;
+typedef enum { front, right, left, rear } t_direction;
 
-typedef enum {
-  north,
-  east,
-  south,
-  west
-} t_direction_glob;
+typedef enum { north, east, south, west } t_direction_glob;
 
-typedef struct {
+typedef struct
+{
   char x;
   char y;
   t_direction_glob dir;
 } t_position;
 
-
-class map_manager {
+class map_manager
+{
 private:
   unsigned short steps_map[MAZESIZE_X][MAZESIZE_Y];  //歩数マップ
   t_wall wall[MAZESIZE_X][MAZESIZE_Y];               //壁の情報を格納する構造体配列
   t_position mypos;
   short goal_mx, goal_my;
+
 public:
   void view(char view_weight_f);
-//  unsigned short *GET_WALL_POINTER(void);
+  //  unsigned short *GET_WALL_POINTER(void);
   void position_init(void);
   void set_mypos(char x, char y, t_direction_glob dir);
   void set_mypos_dir(t_direction_glob dir);
@@ -64,8 +55,8 @@ public:
 
   void make_map2(int x, int y);
   void make_search_map(int x, int y);
-  t_direction get_nextdir2(short x, short y, t_direction_glob *dir);
-  t_direction get_nextdir(char x, char y, t_direction_glob *dir);
+  t_direction get_nextdir2(short x, short y, t_direction_glob * dir);
+  t_direction get_nextdir(char x, char y, t_direction_glob * dir);
   void axis_update(void);
   void next_dir(t_direction dir);
   void wallch(int x, int y, int x2, int y2);

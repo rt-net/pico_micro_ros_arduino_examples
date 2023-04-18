@@ -26,13 +26,14 @@
 #define INC_FREQ 2000
 #define DEC_FREQ 1000
 
-#define FREQ_C 523//ド
-#define FREQ_D 587//レ
-#define FREQ_E 659//ミ
+#define FREQ_C 523  //ド
+#define FREQ_D 587  //レ
+#define FREQ_E 659  //ミ
 
 char g_mode;
 
-void SetLED(char data){
+void SetLED(char data)
+{
   if (data & 0x01) {
     digitalWrite(LED0, HIGH);
   } else {
@@ -55,8 +56,9 @@ void SetLED(char data){
   }
 }
 
-void exec_by_mode(char mode){
-  switch(mode){
+void exec_by_mode(char mode)
+{
+  switch (mode) {
     case 1:
       ledcWriteTone(0, FREQ_C);
       delay(1000);
@@ -75,60 +77,63 @@ void exec_by_mode(char mode){
   }
 }
 
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
-  pinMode(LED0,OUTPUT);
-  pinMode(LED1,OUTPUT);
-  pinMode(LED2,OUTPUT);
-  pinMode(LED3,OUTPUT);
+  pinMode(LED0, OUTPUT);
+  pinMode(LED1, OUTPUT);
+  pinMode(LED2, OUTPUT);
+  pinMode(LED3, OUTPUT);
 
-  pinMode(SW_L,INPUT);
-  pinMode(SW_C,INPUT);
-  pinMode(SW_R,INPUT);
+  pinMode(SW_L, INPUT);
+  pinMode(SW_C, INPUT);
+  pinMode(SW_R, INPUT);
 
   ledcSetup(0, 440, 10);
   ledcAttachPin(BUZZER, 0);
   ledcWrite(0, 1024);
 
-  g_mode =1;
+  g_mode = 1;
   SetLED(g_mode);
-
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
-  while(digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R));
-  if(digitalRead(SW_R)==0){
+  while (digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R))
+    ;
+  if (digitalRead(SW_R) == 0) {
     g_mode++;
-    if(g_mode>15){
-      g_mode=15;
-    }else{
+    if (g_mode > 15) {
+      g_mode = 15;
+    } else {
       ledcWriteTone(0, INC_FREQ);
       delay(30);
-      ledcWrite(0, 1024);      
-    }
-    SetLED(g_mode);
-  }
-  if(digitalRead(SW_L)==0){
-    g_mode--;
-    if(g_mode < 1){
-      g_mode=1;
-    }else{
-      ledcWriteTone(0, DEC_FREQ);
-      delay(30);
-      ledcWrite(0, 1024);      
-    }
-    SetLED(g_mode);
-  }
-  if(digitalRead(SW_C)==0){
-      ledcWriteTone(0, INC_FREQ);
-      delay(80);
-      ledcWriteTone(0, DEC_FREQ);
-      delay(80);
       ledcWrite(0, 1024);
-      delay(300);
-      exec_by_mode(g_mode);
+    }
+    SetLED(g_mode);
   }
-  while(!(digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R)));
+  if (digitalRead(SW_L) == 0) {
+    g_mode--;
+    if (g_mode < 1) {
+      g_mode = 1;
+    } else {
+      ledcWriteTone(0, DEC_FREQ);
+      delay(30);
+      ledcWrite(0, 1024);
+    }
+    SetLED(g_mode);
+  }
+  if (digitalRead(SW_C) == 0) {
+    ledcWriteTone(0, INC_FREQ);
+    delay(80);
+    ledcWriteTone(0, DEC_FREQ);
+    delay(80);
+    ledcWrite(0, 1024);
+    delay(300);
+    exec_by_mode(g_mode);
+  }
+  while (!(digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R)))
+    ;
   delay(30);
 }

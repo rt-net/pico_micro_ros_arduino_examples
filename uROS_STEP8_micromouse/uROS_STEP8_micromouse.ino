@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "device.h"
-#include "mytypedef.h"
-#include "parameter.h"
-#include "map_manager.h"
-
 #include "FS.h"
 #include "SPIFFS.h"
+#include "device.h"
+#include "map_manager.h"
+#include "mytypedef.h"
+#include "parameter.h"
 
 signed char __mode;
 short battery_value;
@@ -31,8 +30,8 @@ volatile double speed;
 volatile bool motor_move;
 map_manager map_control;
 
-
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
 
   InitAll();
@@ -41,7 +40,8 @@ void setup() {
   __mode = 1;
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
   SetLED(__mode);
   switch (GetSW()) {
@@ -59,8 +59,8 @@ void loop() {
   delay(1);
 }
 
-
-void exec_by_mode(int _mode) {
+void exec_by_mode(int _mode)
+{
   EnableMotor();
   delay(1000);
 
