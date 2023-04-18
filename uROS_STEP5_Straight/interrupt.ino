@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void control_interrupt(void)
+void controlInterrupt(void)
 {
   speed += r_accel;
 
@@ -23,5 +23,5 @@ void control_interrupt(void)
     speed = min_speed;
   }
 
-  LStepHz = RStepHz = (unsigned short)(speed / PULSE);
+  l_step_hz = r_step_hz = (unsigned short)(speed / PULSE);
 }
