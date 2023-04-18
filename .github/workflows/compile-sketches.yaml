@@ -1,4 +1,4 @@
-name: CI
+name: Compile Sketches
 
 on:
   push:
