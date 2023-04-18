@@ -18,3 +18,12 @@ jobs:
         with:
           recursive: true
           compliance: specification
+  clang-format:
+    needs: arduino-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo apt install -y clang-format
+      - run: clang-format --dry-run -Werror uROS_STEP1_LED/*
+
+
