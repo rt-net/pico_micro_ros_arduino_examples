@@ -37,7 +37,6 @@ jobs:
               -Wno-error=unused-but-set-variable \
               -Wno-error=switch \
               -Wno-error=char-subscripts \
-              -Wno-error=return-type \
               -Wno-error=type-limits \
               -Wno-error=ignored-qualifiers \
               -Wno-error=implicit-function-declaration"
