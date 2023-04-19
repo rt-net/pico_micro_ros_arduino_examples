@@ -35,7 +35,6 @@ jobs:
             - "compiler.cpp.extra_flags= \
               -Wno-error=unused-but-set-parameter \
               -Wno-error=unused-but-set-variable \
-              -Wno-error=switch \
               -Wno-error=char-subscripts \
               -Wno-error=type-limits \
               -Wno-error=ignored-qualifiers \

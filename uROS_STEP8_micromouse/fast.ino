@@ -19,7 +19,6 @@ void fastRun(short gx, short gy)
 
   t_direction temp_next_dir = g_map_control.getNextDir2(gx, gy, &glob_nextdir);
   switch (temp_next_dir) {
-    break;
     case right:
       rotate(right, 1);  //右に曲がって
       break;
@@ -28,6 +27,8 @@ void fastRun(short gx, short gy)
       break;
     case rear:
       rotate(right, 2);  //180度に旋回して
+      break;
+    default:
       break;
   }
 
@@ -54,6 +55,8 @@ void fastRun(short gx, short gy)
         decelerate(HALF_SECTION, SEARCH_SPEED);
         rotate(left, 1);
         accelerate(HALF_SECTION, SEARCH_SPEED);
+        break;
+      default:
         break;
     }
     g_map_control.setMyPosDir(glob_nextdir);

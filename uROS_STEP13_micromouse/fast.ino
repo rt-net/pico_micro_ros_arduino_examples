@@ -44,6 +44,8 @@ void fastRun(short gx, short gy)
         g_second_run[i++] = L90;
         straight_count = 0;
         break;
+      default:
+        break;
     }
     g_map_control.setMyPosDir(glob_nextdir);
     g_map_control.axisUpdate();
@@ -56,7 +58,6 @@ void fastRun(short gx, short gy)
 
   //second_runにあるデータに沿って走行する。
   switch (temp_next_dir) {
-    break;
     case right:
       rotate(right, 1);  //右に曲がって
       g_map_control.nextDir(right);
@@ -69,6 +70,8 @@ void fastRun(short gx, short gy)
       rotate(right, 2);  //180度に旋回して
       g_map_control.nextDir(right);
       g_map_control.nextDir(right);
+      break;
+    default:
       break;
   }
 
