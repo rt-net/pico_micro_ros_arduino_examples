@@ -23,26 +23,26 @@
 #define AD1 4
 #define AD0 8
 
-volatile short sensor_fr_value;
-volatile short sensor_fl_value;
-volatile short sensor_r_value;
-volatile short sensor_l_value;
-volatile short battery_value;
+volatile short g_sensor_value_fr;
+volatile short g_sensor_value_fl;
+volatile short g_sensor_value_r;
+volatile short g_sensor_value_l;
+volatile short g_battery_value;
 
-hw_timer_t * timer1 = NULL;
-portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
+hw_timer_t * g_timer1 = NULL;
+portMUX_TYPE g_timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
 void IRAM_ATTR onTimer1(void)
 {
   static char cnt = 0;
-  portENTER_CRITICAL_ISR(&timer_mux);
+  portENTER_CRITICAL_ISR(&g_timer_mux);
   switch (cnt) {
     case 0:
       digitalWrite(SLED_FR, HIGH);  //LED点灯
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sensor_fr_value = analogRead(AD1);
+      g_sensor_value_fr = analogRead(AD1);
       digitalWrite(SLED_FR, LOW);  //LED消灯
       break;
     case 1:
@@ -50,7 +50,7 @@ void IRAM_ATTR onTimer1(void)
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sensor_fl_value = analogRead(AD2);
+      g_sensor_value_fl = analogRead(AD2);
       digitalWrite(SLED_FL, LOW);  //LED消灯
       break;
     case 2:
@@ -58,7 +58,7 @@ void IRAM_ATTR onTimer1(void)
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sensor_r_value = analogRead(AD3);
+      g_sensor_value_r = analogRead(AD3);
       digitalWrite(SLED_R, LOW);  //LED消灯
       break;
     case 3:
@@ -66,14 +66,14 @@ void IRAM_ATTR onTimer1(void)
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sensor_l_value = analogRead(AD4);
+      g_sensor_value_l = analogRead(AD4);
       digitalWrite(SLED_L, LOW);  //LED消灯
-      battery_value = (double)analogReadMilliVolts(AD0) / 10.0 * (10.0 + 51.0);
+      g_battery_value = (double)analogReadMilliVolts(AD0) / 10.0 * (10.0 + 51.0);
       break;
   }
   cnt++;
   if (cnt == 4) cnt = 0;
-  portEXIT_CRITICAL_ISR(&timer_mux);
+  portEXIT_CRITICAL_ISR(&g_timer_mux);
 }
 
 void setup()
@@ -91,19 +91,19 @@ void setup()
 
   Serial.begin(115200);
 
-  timer1 = timerBegin(1, 80, true);  //1us
-  timerAttachInterrupt(timer1, &onTimer1, true);
-  timerAlarmWrite(timer1, 250, true);  //4kHz
-  timerAlarmEnable(timer1);
+  g_timer1 = timerBegin(1, 80, true);  //1us
+  timerAttachInterrupt(g_timer1, &onTimer1, true);
+  timerAlarmWrite(g_timer1, 250, true);  //4kHz
+  timerAlarmEnable(g_timer1);
 }
 
 void loop()
 {
   // put your main code here, to run repeatedly:
-  Serial.printf("r_sen  is %d\n\r", sensor_r_value);
-  Serial.printf("fr_sen is %d\n\r", sensor_fr_value);
-  Serial.printf("fl_sen is %d\n\r", sensor_fl_value);
-  Serial.printf("l_sen  is %d\n\r", sensor_l_value);
-  Serial.printf("VDD    is %d\n\r", battery_value);
+  Serial.printf("r_sen  is %d\n\r", g_sensor_value_r);
+  Serial.printf("fr_sen is %d\n\r", g_sensor_value_fr);
+  Serial.printf("fl_sen is %d\n\r", g_sensor_value_fl);
+  Serial.printf("l_sen  is %d\n\r", g_sensor_value_l);
+  Serial.printf("VDD    is %d\n\r", g_battery_value);
   delay(100);
 }
