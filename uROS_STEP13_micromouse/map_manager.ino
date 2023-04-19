@@ -471,6 +471,8 @@ t_direction MapManager::getNextDir(char x, char y, t_direction_glob * dir)
         break;
     }
   }
+
+  return front;
 }
 
 t_direction MapManager::getNextDir2(short x, short y, t_direction_glob * dir)
@@ -617,4 +619,6 @@ t_direction MapManager::getNextDir2(short x, short y, t_direction_glob * dir)
         break;
     }
   }
+
+  return front;
 }
