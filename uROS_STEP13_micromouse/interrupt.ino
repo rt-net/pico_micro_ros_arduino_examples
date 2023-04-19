@@ -21,77 +21,77 @@ unsigned int Get_timer_counter(void){
 
 void controlInterrupt(void)
 {
-  double spd_r, spd_l, omega;
+  double spd_r, spd_l, g_omega;
   static char temp_cnt = 0;
   short temp_xy;
 
-  speed += r_accel;
+  g_speed += g_accel;
 
-  if (speed > max_speed) {
-    speed = max_speed;
+  if (g_speed > g_max_speed) {
+    g_speed = g_max_speed;
   }
 
-  if (motor_move == 0) {
-    speed = 0.0;
-  } else if (speed < min_speed) {
-    speed = min_speed;
+  if (g_motor_move == 0) {
+    g_speed = 0.0;
+  } else if (g_speed < g_min_speed) {
+    g_speed = g_min_speed;
   }
 
-  if (con_wall.enable == true) {
-    con_wall.p_error = con_wall.error;
-    if ((sen_r.is_control == true) && (sen_l.is_control == true)) {
-      con_wall.error = sen_r.error - sen_l.error;
+  if (g_con_wall.enable == true) {
+    g_con_wall.p_error = g_con_wall.error;
+    if ((g_sen_r.is_control == true) && (g_sen_l.is_control == true)) {
+      g_con_wall.error = g_sen_r.error - g_sen_l.error;
     } else {
-      con_wall.error = 2.0 * (sen_r.error - sen_l.error);
+      g_con_wall.error = 2.0 * (g_sen_r.error - g_sen_l.error);
     }
-    con_wall.diff = con_wall.error - con_wall.p_error;
-    con_wall.sum += con_wall.error;
-    if (con_wall.sum > con_wall.sum_max) {
-      con_wall.sum = con_wall.sum_max;
-    } else if (con_wall.sum < (-con_wall.sum_max)) {
-      con_wall.sum = -con_wall.sum_max;
+    g_con_wall.diff = g_con_wall.error - g_con_wall.p_error;
+    g_con_wall.sum += g_con_wall.error;
+    if (g_con_wall.sum > g_con_wall.sum_max) {
+      g_con_wall.sum = g_con_wall.sum_max;
+    } else if (g_con_wall.sum < (-g_con_wall.sum_max)) {
+      g_con_wall.sum = -g_con_wall.sum_max;
     }
-    con_wall.control = 0.001 * speed * con_wall.kp * con_wall.error;
-    spd_r = speed + con_wall.control;
-    spd_l = speed - con_wall.control;
+    g_con_wall.control = 0.001 * g_speed * g_con_wall.kp * g_con_wall.error;
+    spd_r = g_speed + g_con_wall.control;
+    spd_l = g_speed - g_con_wall.control;
   } else {
-    spd_r = speed;
-    spd_l = speed;
+    spd_r = g_speed;
+    spd_l = g_speed;
   }
 
   //odom
   //xは方向
   double speed2 = (spd_r * motorSignedR() + spd_l * motorSignedL()) / 2.0;
-  omega = (spd_r * motorSignedR() - spd_l * motorSignedL()) / TREAD_WIDTH * 1.00;
-  odom_x += speed2 * 0.001 * cos(odom_theta) * 0.001;
-  odom_y += speed2 * 0.001 * sin(odom_theta) * 0.001;
-  odom_theta += omega * 0.001;
+  g_omega = (spd_r * motorSignedR() - spd_l * motorSignedL()) / TREAD_WIDTH * 1.00;
+  g_odom_x += speed2 * 0.001 * cos(g_odom_theta) * 0.001;
+  g_odom_y += speed2 * 0.001 * sin(g_odom_theta) * 0.001;
+  g_odom_theta += g_omega * 0.001;
 
   //角度、位置のズレを修正
   if (
-    ((sen_r.value < (sen_r.ref + 20)) || (sen_l.value < (sen_l.ref + 20))) &&
-    ((sen_r.value > (sen_r.ref - 20)) || (sen_l.value > (sen_l.ref - 20)))) {
+    ((g_sen_r.value < (g_sen_r.ref + 20)) || (g_sen_l.value < (g_sen_l.ref + 20))) &&
+    ((g_sen_r.value > (g_sen_r.ref - 20)) || (g_sen_l.value > (g_sen_l.ref - 20)))) {
     temp_cnt++;
     if (temp_cnt > 5) {
-      switch (map_control.getMyPosDir()) {
+      switch (g_map_control.getMyPosDir()) {
         case north:
-          if (theta_adj == true) {
-            odom_theta = 0.0;
+          if (g_theta_adj == true) {
+            g_odom_theta = 0.0;
           }
           break;
         case east:
-          if (theta_adj == true) {
-            odom_theta = -1.57;
+          if (g_theta_adj == true) {
+            g_odom_theta = -1.57;
           }
           break;
         case south:
-          if (theta_adj == true) {
-            odom_theta = 3.14;
+          if (g_theta_adj == true) {
+            g_odom_theta = 3.14;
           }
           break;
         case west:
-          if (theta_adj == true) {
-            odom_theta = 1.57;
+          if (g_theta_adj == true) {
+            g_odom_theta = 1.57;
           }
           break;
       }
@@ -101,8 +101,8 @@ void controlInterrupt(void)
     temp_cnt = 0;
   }
 
-  position_r += spd_r * 0.001 * motorSignedR() / (TIRE_DIAMETER * PI) * 2 * PI;
-  position_l -= spd_l * 0.001 * motorSignedL() / (TIRE_DIAMETER * PI) * 2 * PI;
+  g_position_r += spd_r * 0.001 * motorSignedR() / (TIRE_DIAMETER * PI) * 2 * PI;
+  g_position_l -= spd_l * 0.001 * motorSignedL() / (TIRE_DIAMETER * PI) * 2 * PI;
 
   setRStepHz((unsigned short)(spd_r / PULSE));
   setLStepHz((unsigned short)(spd_l / PULSE));
@@ -116,37 +116,39 @@ void sensorInterrupt(void)
 
   switch (cnt) {
     case 0:
-      sen_r.p2_value = sen_r.p_value;
-      sen_l.p2_value = sen_l.p_value;
-      sen_r.p_value = sen_r.value;
-      sen_l.p_value = sen_l.value;
-      sen_r.value = getSensorR();
-      sen_l.value = getSensorL();
+      g_sen_r.p2_value = g_sen_r.p_value;
+      g_sen_l.p2_value = g_sen_l.p_value;
+      g_sen_r.p_value = g_sen_r.value;
+      g_sen_l.p_value = g_sen_l.value;
+      g_sen_r.value = getSensorR();
+      g_sen_l.value = getSensorL();
 
-      if ((sen_r.value / 4 + sen_r.p_value / 2 + sen_r.p2_value / 4) > sen_r.th_wall) {
-        sen_r.is_wall = true;
+      if ((g_sen_r.value / 4 + g_sen_r.p_value / 2 + g_sen_r.p2_value / 4) > g_sen_r.th_wall) {
+        g_sen_r.is_wall = true;
       } else {
-        sen_r.is_wall = false;
+        g_sen_r.is_wall = false;
       }
-      if ((sen_l.ref / 4 + sen_l.p_value / 2 + sen_l.p2_value / 4) > sen_l.th_wall) {
-        sen_l.is_wall = true;
+      if ((g_sen_l.ref / 4 + g_sen_l.p_value / 2 + g_sen_l.p2_value / 4) > g_sen_l.th_wall) {
+        g_sen_l.is_wall = true;
       } else {
-        sen_l.is_wall = false;
+        g_sen_l.is_wall = false;
       }
 
-      if (sen_r.value > sen_r.th_control) {
-        sen_r.error = sen_r.value / 4 + sen_r.p_value / 2 + sen_r.p2_value / 4 - sen_r.ref;
-        sen_r.is_control = true;
+      if (g_sen_r.value > g_sen_r.th_control) {
+        g_sen_r.error =
+          g_sen_r.value / 4 + g_sen_r.p_value / 2 + g_sen_r.p2_value / 4 - g_sen_r.ref;
+        g_sen_r.is_control = true;
       } else {
-        sen_r.error = 0;
-        sen_r.is_control = false;
+        g_sen_r.error = 0;
+        g_sen_r.is_control = false;
       }
-      if (sen_l.value > sen_l.th_control) {
-        sen_l.error = sen_l.value - (sen_l.ref / 4 + sen_l.p_value / 2 + sen_l.p2_value / 4);
-        sen_l.is_control = true;
+      if (g_sen_l.value > g_sen_l.th_control) {
+        g_sen_l.error =
+          g_sen_l.value - (g_sen_l.ref / 4 + g_sen_l.p_value / 2 + g_sen_l.p2_value / 4);
+        g_sen_l.is_control = true;
       } else {
-        sen_l.error = 0;
-        sen_l.is_control = false;
+        g_sen_l.error = 0;
+        g_sen_l.is_control = false;
       }
       break;
     case 1:
@@ -154,27 +156,27 @@ void sensorInterrupt(void)
       if (bled_cnt > 10) {
         bled_cnt = 0;
       }
-      battery_value = getBatteryVolt();
-      if (((battery_value - BATT_MIN) * 10 / (BATT_MAX - BATT_MIN)) > bled_cnt) {
+      g_battery_value = getBatteryVolt();
+      if (((g_battery_value - BATT_MIN) * 10 / (BATT_MAX - BATT_MIN)) > bled_cnt) {
         setBLED(1);
       } else {
         setBLED(2);
       }
-      sen_fr.p2_value = sen_fr.p_value;
-      sen_fl.p2_value = sen_fl.p_value;
-      sen_fr.p_value = sen_fr.value;
-      sen_fl.p_value = sen_fl.value;
-      sen_fr.value = getSensorFR();
-      sen_fl.value = getSensorFL();
-      if ((sen_fr.value / 4 + sen_fr.p_value / 2 + sen_fr.p2_value / 2) > sen_fr.th_wall) {
-        sen_fr.is_wall = true;
+      g_sen_fr.p2_value = g_sen_fr.p_value;
+      g_sen_fl.p2_value = g_sen_fl.p_value;
+      g_sen_fr.p_value = g_sen_fr.value;
+      g_sen_fl.p_value = g_sen_fl.value;
+      g_sen_fr.value = getSensorFR();
+      g_sen_fl.value = getSensorFL();
+      if ((g_sen_fr.value / 4 + g_sen_fr.p_value / 2 + g_sen_fr.p2_value / 2) > g_sen_fr.th_wall) {
+        g_sen_fr.is_wall = true;
       } else {
-        sen_fr.is_wall = false;
+        g_sen_fr.is_wall = false;
       }
-      if ((sen_fl.value / 4 + sen_fl.p_value / 2 + sen_fl.p2_value / 2) > sen_fl.th_wall) {
-        sen_fl.is_wall = true;
+      if ((g_sen_fl.value / 4 + g_sen_fl.p_value / 2 + g_sen_fl.p2_value / 2) > g_sen_fl.th_wall) {
+        g_sen_fl.is_wall = true;
       } else {
-        sen_fl.is_wall = false;
+        g_sen_fl.is_wall = false;
       }
       break;
   }

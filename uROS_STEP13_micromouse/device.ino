@@ -14,28 +14,28 @@
 
 #include "driver/adc.h"
 
-hw_timer_t * timer0 = NULL;
-hw_timer_t * timer1 = NULL;
-hw_timer_t * timer2 = NULL;
-hw_timer_t * timer3 = NULL;
+hw_timer_t * g_timer0 = NULL;
+hw_timer_t * g_timer1 = NULL;
+hw_timer_t * g_timer2 = NULL;
+hw_timer_t * g_timer3 = NULL;
 
 volatile double motor_signed_r, motor_signed_l;
-volatile unsigned short r_step_hz, l_step_hz;
-volatile unsigned int step_r, step_l;
+volatile unsigned short g_step_hz_r, g_step_hz_l;
+volatile unsigned int g_step_r, g_step_l;
 
-portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE g_timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
-void setRStepHz(short data) { r_step_hz = data; }
+void setRStepHz(short data) { g_step_hz_r = data; }
 
-void setLStepHz(short data) { l_step_hz = data; }
+void setLStepHz(short data) { g_step_hz_l = data; }
 
-void clearStepR(void) { step_r = 0; }
+void clearStepR(void) { g_step_r = 0; }
 
-void clearStepL(void) { step_l = 0; }
+void clearStepL(void) { g_step_l = 0; }
 
-unsigned int getStepR(void) { return step_r; }
+unsigned int getStepR(void) { return g_step_r; }
 
-unsigned int getStepL(void) { return step_l; }
+unsigned int getStepL(void) { return g_step_l; }
 
 double motorSignedR(void) { return motor_signed_r; }
 
@@ -43,65 +43,65 @@ double motorSignedL(void) { return motor_signed_l; }
 
 void IRAM_ATTR onTimer0(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);
+  portENTER_CRITICAL_ISR(&g_timer_mux);
   controlInterrupt();
-  portEXIT_CRITICAL_ISR(&timer_mux);
+  portEXIT_CRITICAL_ISR(&g_timer_mux);
 }
 
 void IRAM_ATTR onTimer1(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);
+  portENTER_CRITICAL_ISR(&g_timer_mux);
   sensorInterrupt();
-  portEXIT_CRITICAL_ISR(&timer_mux);
+  portEXIT_CRITICAL_ISR(&g_timer_mux);
 }
 
 void IRAM_ATTR isrR(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);
-  if (motor_move) {
-    if (r_step_hz < 30) r_step_hz = 30;
-    timerAlarmWrite(timer2, 2000000 / r_step_hz, true);
+  portENTER_CRITICAL_ISR(&g_timer_mux);
+  if (g_motor_move) {
+    if (g_step_hz_r < 30) g_step_hz_r = 30;
+    timerAlarmWrite(g_timer2, 2000000 / g_step_hz_r, true);
     digitalWrite(PWM_R, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     }
     digitalWrite(PWM_R, LOW);
-    step_r++;
+    g_step_r++;
   }
-  portEXIT_CRITICAL_ISR(&timer_mux);
+  portEXIT_CRITICAL_ISR(&g_timer_mux);
 }
 
 void IRAM_ATTR isrL(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);
-  if (motor_move) {
-    if (l_step_hz < 30) l_step_hz = 30;
-    timerAlarmWrite(timer3, 2000000 / l_step_hz, true);
+  portENTER_CRITICAL_ISR(&g_timer_mux);
+  if (g_motor_move) {
+    if (g_step_hz_l < 30) g_step_hz_l = 30;
+    timerAlarmWrite(g_timer3, 2000000 / g_step_hz_l, true);
     digitalWrite(PWM_L, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     };
     digitalWrite(PWM_L, LOW);
-    step_l++;
+    g_step_l++;
   }
-  portEXIT_CRITICAL_ISR(&timer_mux);
+  portEXIT_CRITICAL_ISR(&g_timer_mux);
 }
 
-void controlInterruptStart(void) { timerAlarmEnable(timer0); }
-void controlInterruptStop(void) { timerAlarmDisable(timer0); }
+void controlInterruptStart(void) { timerAlarmEnable(g_timer0); }
+void controlInterruptStop(void) { timerAlarmDisable(g_timer0); }
 
-void sensorInterruptStart(void) { timerAlarmEnable(timer1); }
-void sensorInterruptStop(void) { timerAlarmDisable(timer1); }
+void sensorInterruptStart(void) { timerAlarmEnable(g_timer1); }
+void sensorInterruptStop(void) { timerAlarmDisable(g_timer1); }
 
 void PWMInterruptStart(void)
 {
-  timerAlarmEnable(timer2);
-  timerAlarmEnable(timer3);
+  timerAlarmEnable(g_timer2);
+  timerAlarmEnable(g_timer3);
 }
 void PWMInterruptStop(void)
 {
-  timerAlarmDisable(timer2);
-  timerAlarmDisable(timer3);
+  timerAlarmDisable(g_timer2);
+  timerAlarmDisable(g_timer3);
 }
 
 void initDevice(void)
@@ -149,25 +149,25 @@ void initDevice(void)
     }
   }
 
-  timer0 = timerBegin(0, 80, true);
-  timerAttachInterrupt(timer0, &onTimer0, false);
-  timerAlarmWrite(timer0, 1000, true);
-  timerAlarmEnable(timer0);
+  g_timer0 = timerBegin(0, 80, true);
+  timerAttachInterrupt(g_timer0, &onTimer0, false);
+  timerAlarmWrite(g_timer0, 1000, true);
+  timerAlarmEnable(g_timer0);
 
-  timer1 = timerBegin(1, 80, true);
-  timerAttachInterrupt(timer1, &onTimer1, true);
-  timerAlarmWrite(timer1, 500, true);
-  timerAlarmEnable(timer1);
+  g_timer1 = timerBegin(1, 80, true);
+  timerAttachInterrupt(g_timer1, &onTimer1, true);
+  timerAlarmWrite(g_timer1, 500, true);
+  timerAlarmEnable(g_timer1);
 
-  timer2 = timerBegin(2, 40, true);
-  timerAttachInterrupt(timer2, &isrR, false);
-  timerAlarmWrite(timer2, 13333, true);
-  timerAlarmEnable(timer2);
+  g_timer2 = timerBegin(2, 40, true);
+  timerAttachInterrupt(g_timer2, &isrR, false);
+  timerAlarmWrite(g_timer2, 13333, true);
+  timerAlarmEnable(g_timer2);
 
-  timer3 = timerBegin(3, 40, true);
-  timerAttachInterrupt(timer3, &isrL, false);
-  timerAlarmWrite(timer3, 13333, true);
-  timerAlarmEnable(timer3);
+  g_timer3 = timerBegin(3, 40, true);
+  timerAttachInterrupt(g_timer3, &isrL, false);
+  timerAlarmWrite(g_timer3, 13333, true);
+  timerAlarmEnable(g_timer3);
 
   Serial.begin(115200);
 
