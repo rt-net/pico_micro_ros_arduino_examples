@@ -41,8 +41,9 @@ void setup()
 void loop()
 {
   // put your main code here, to run repeatedly:
-  while (digitalRead(SW_L) && digitalRead(SW_C) && digitalRead(SW_R))
-    ;
+  while (digitalRead(SW_L) && digitalRead(SW_C) && digitalRead(SW_R)) {
+    continue;
+  }
   if (digitalRead(SW_R) == 0) {
     digitalWrite(LED3, (++state_r) & 0x01);
   }
@@ -54,7 +55,8 @@ void loop()
     digitalWrite(LED0, (++state_l) & 0x01);
   }
   delay(30);
-  while (!(digitalRead(SW_L) && digitalRead(SW_C) && digitalRead(SW_R)))
-    ;
+  while (!(digitalRead(SW_L) && digitalRead(SW_C) && digitalRead(SW_R))) {
+    continue;
+  }
   delay(30);
 }

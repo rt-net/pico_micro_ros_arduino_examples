@@ -26,8 +26,9 @@ void accelerate(int len, int tar_speed)
   digitalWrite(CW_L, LOW);
   motor_move = 1;
 
-  while ((step_r + step_l) < obj_step)
-    ;
+  while ((step_r + step_l) < obj_step) {
+    continue;
+  }
 }
 
 void oneStep(int len, int tar_speed)
@@ -42,8 +43,9 @@ void oneStep(int len, int tar_speed)
   digitalWrite(CW_R, LOW);
   digitalWrite(CW_L, LOW);
 
-  while ((step_r + step_l) < obj_step)
-    ;
+  while ((step_r + step_l) < obj_step) {
+    continue;
+  }
 }
 
 void decelerate(int len, int tar_speed)
@@ -59,13 +61,15 @@ void decelerate(int len, int tar_speed)
   digitalWrite(CW_L, LOW);
 
   while ((len - (step_r + step_l) / 2.0 * PULSE) >
-         (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * 1.5)))
-    ;
+         (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * 1.5))) {
+    continue;
+  }
   r_accel = -1.5;
   min_speed = MIN_SPEED;
 
-  while ((step_r + step_l) < obj_step)
-    ;
+  while ((step_r + step_l) < obj_step) {
+    continue;
+  }
 
   motor_move = 0;
 }

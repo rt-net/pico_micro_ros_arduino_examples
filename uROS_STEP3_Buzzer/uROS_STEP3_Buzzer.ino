@@ -100,8 +100,9 @@ void setup()
 void loop()
 {
   // put your main code here, to run repeatedly:
-  while (digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R))
-    ;
+  while (digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R)) {
+    continue;
+  }
   if (digitalRead(SW_R) == 0) {
     g_mode++;
     if (g_mode > 15) {
@@ -133,7 +134,8 @@ void loop()
     delay(300);
     execByMode(g_mode);
   }
-  while (!(digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R)))
-    ;
+  while (!(digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R))) {
+    continue;
+  }
   delay(30);
 }

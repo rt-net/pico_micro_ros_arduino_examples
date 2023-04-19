@@ -45,12 +45,14 @@ void straight(int len, int init_speed, int max_sp, int finish_speed)
 
   motor_move = 1;
   while ((len - (getStepR() + getStepL()) / 2.0 * PULSE) >
-         (((speed * speed) - (finish_speed * finish_speed)) / (2.0 * 1000.0 * SEARCH_ACCEL)))
-    ;
+         (((speed * speed) - (finish_speed * finish_speed)) / (2.0 * 1000.0 * SEARCH_ACCEL))) {
+    continue;
+  }
   r_accel = -1.0 * SEARCH_ACCEL;
 
-  while ((getStepR() + getStepL()) < obj_step)
-    ;
+  while ((getStepR() + getStepL()) < obj_step) {
+    continue;
+  }
 
   if (finish_speed == SEARCH_SPEED) {
     controlInterruptStop();
@@ -83,8 +85,9 @@ void accelerate(int len, int finish_speed)
 
   motor_move = 1;
 
-  while ((getStepR() + getStepL()) < obj_step)
-    ;
+  while ((getStepR() + getStepL()) < obj_step) {
+    continue;
+  }
 
   controlInterruptStop();
   max_speed = min_speed = speed = finish_speed;
@@ -107,8 +110,9 @@ void oneStep(int len, int tar_speed)
   moveDir(MOT_FORWARD, MOT_FORWARD);
   controlInterruptStart();
 
-  while ((getStepR() + getStepL()) < obj_step)
-    ;
+  while ((getStepR() + getStepL()) < obj_step) {
+    continue;
+  }
   controlInterruptStop();
   max_speed = min_speed = speed = tar_speed;
   r_accel = 0.0;
@@ -133,13 +137,15 @@ void decelerate(int len, int tar_speed)
   controlInterruptStart();
 
   while ((len - (getStepR() + getStepL()) / 2.0 * PULSE) >
-         (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * SEARCH_ACCEL)))
-    ;
+         (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * SEARCH_ACCEL))) {
+    continue;
+  }
   r_accel = -1.0 * SEARCH_ACCEL;
   min_speed = MIN_SPEED;
 
-  while ((getStepR() + getStepL()) < obj_step)
-    ;
+  while ((getStepR() + getStepL()) < obj_step) {
+    continue;
+  }
 
   motor_move = 0;
 
@@ -176,12 +182,14 @@ void rotate(t_direction dir, int times)
   controlInterruptStart();
 
   while (((obj_step - (getStepR() + getStepL())) / 2.0 * PULSE) >
-         (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * TURN_ACCEL)))
-    ;
+         (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * TURN_ACCEL))) {
+    continue;
+  }
   r_accel = -1.0 * TURN_ACCEL;
 
-  while ((getStepR() + getStepL()) < obj_step)
-    ;
+  while ((getStepR() + getStepL()) < obj_step) {
+    continue;
+  }
 
   motor_move = 0;
   delay(300);

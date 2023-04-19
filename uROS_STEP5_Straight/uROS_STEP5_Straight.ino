@@ -134,8 +134,9 @@ void setup()
 void loop()
 {
   // put your main code here, to run repeatedly:
-  while (digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R))
-    ;
+  while (digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R)) {
+    continue;
+  }
   digitalWrite(MOTOR_EN, HIGH);
   delay(1000);
   digitalWrite(LED0, HIGH);
