@@ -33,10 +33,7 @@ jobs:
           cli-compile-flags: |  # 警告がエラーとして扱われるので、対処しない警告はエラーから除外する
             - --build-property
             - "compiler.cpp.extra_flags= \
-              -Wno-error=unused-but-set-parameter \
-              -Wno-error=unused-but-set-variable \
-              -Wno-error=type-limits \
-              -Wno-error=implicit-function-declaration"
+              -Wno-error=type-limits"  # micro_ros_arduino側のエラーを防ぐ
           sketch-paths: |
             - uROS_STEP1_LED
             - uROS_STEP2_SWITCH
