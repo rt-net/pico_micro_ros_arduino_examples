@@ -65,4 +65,4 @@ public:
   MapManager();
 };
 
-#endif
+#endif  // MAP_MANAGER_H_

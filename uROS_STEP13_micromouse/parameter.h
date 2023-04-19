@@ -1,3 +1,6 @@
+#ifndef PARAMETER_H_
+#define PARAMETER_H_
+
 #define TIRE_DIAMETER (48.1)  //47.55
 #define TREAD_WIDTH (66.0)    //67.1
 #define TREAD_CIRCUIT (TREAD_WIDTH * PI / 4.0)
@@ -36,3 +39,5 @@
 
 #define HALF_SECTION 90
 #define SECTION 180
+
+#endif  // PARAMETER_H_
