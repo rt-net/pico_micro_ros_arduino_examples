@@ -23,7 +23,6 @@ void controlInterrupt(void)
 {
   double spd_r, spd_l, g_omega;
   static char temp_cnt = 0;
-  short temp_xy;
 
   g_speed += g_accel;
 
