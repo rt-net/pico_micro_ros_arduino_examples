@@ -1,4 +1,4 @@
-#ifndef DEVICE_H_ 
+#ifndef DEVICE_H_
 #define DEVICE_H_
 
 #define LED0 1

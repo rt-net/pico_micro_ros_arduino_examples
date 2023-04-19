@@ -17,13 +17,13 @@ void searchLefthand(void)
   accelerate(HALF_SECTION, SEARCH_SPEED);
 
   while (1) {
-    if (sen_l.is_wall == false) {
+    if (g_sen_l.is_wall == false) {
       decelerate(HALF_SECTION, SEARCH_SPEED);
       rotate(left, 1);
       accelerate(HALF_SECTION, SEARCH_SPEED);
-    } else if ((sen_fl.is_wall == false) && (sen_fr.is_wall == false)) {
+    } else if ((g_sen_fl.is_wall == false) && (g_sen_fr.is_wall == false)) {
       straight(SECTION, SEARCH_SPEED, SEARCH_SPEED, SEARCH_SPEED);
-    } else if (sen_r.is_wall == false) {
+    } else if (g_sen_r.is_wall == false) {
       decelerate(HALF_SECTION, SEARCH_SPEED);
       rotate(right, 1);
       accelerate(HALF_SECTION, SEARCH_SPEED);
@@ -41,7 +41,7 @@ void searchAdachi(char gx, char gy)
   int straight_count = 0;
   t_direction temp_next_dir;
 
-  temp_next_dir = map_control.getNextDir(gx, gy, &glob_nextdir);
+  temp_next_dir = g_map_control.getNextDir(gx, gy, &glob_nextdir);
 
   switch (temp_next_dir) {
     case front:
@@ -59,13 +59,13 @@ void searchAdachi(char gx, char gy)
 
   accelerate(HALF_SECTION, SEARCH_SPEED);
 
-  map_control.setMyPosDir(glob_nextdir);
-  map_control.axisUpdate();
+  g_map_control.setMyPosDir(glob_nextdir);
+  g_map_control.axisUpdate();
 
-  while ((map_control.getMyPosX() != gx) || (map_control.getMyPosY() != gy)) {
-    map_control.setWall(sen_fr.is_wall, sen_r.is_wall, sen_l.is_wall);
+  while ((g_map_control.getMyPosX() != gx) || (g_map_control.getMyPosY() != gy)) {
+    g_map_control.setWall(g_sen_fr.is_wall, g_sen_r.is_wall, g_sen_l.is_wall);
 
-    switch (map_control.getNextDir(gx, gy, &glob_nextdir)) {
+    switch (g_map_control.getNextDir(gx, gy, &glob_nextdir)) {
       case front:
         oneStep(SECTION, SEARCH_SPEED);
         break;
@@ -86,10 +86,10 @@ void searchAdachi(char gx, char gy)
         break;
     }
 
-    map_control.setMyPosDir(glob_nextdir);  //方向を更新
-    map_control.axisUpdate();
+    g_map_control.setMyPosDir(glob_nextdir);  //方向を更新
+    g_map_control.axisUpdate();
   }
 
-  map_control.setWall(sen_fr.is_wall, sen_r.is_wall, sen_l.is_wall);
+  g_map_control.setWall(g_sen_fr.is_wall, g_sen_r.is_wall, g_sen_l.is_wall);
   decelerate(HALF_SECTION, SEARCH_SPEED);
 }

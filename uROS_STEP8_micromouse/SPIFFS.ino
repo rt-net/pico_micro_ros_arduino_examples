@@ -64,9 +64,10 @@ void mapWrite(void)
   }
   for (int i = 0; i < 16; i++) {
     for (int j = 0; j < 16; j++) {
-      data_temp =
-        map_control.getWallData(i, j, north) + (map_control.getWallData(i, j, east) << 2) +
-        (map_control.getWallData(i, j, south) << 4) + (map_control.getWallData(i, j, west) << 6);
+      data_temp = g_map_control.getWallData(i, j, north) +
+                  (g_map_control.getWallData(i, j, east) << 2) +
+                  (g_map_control.getWallData(i, j, south) << 4) +
+                  (g_map_control.getWallData(i, j, west) << 6);
       if (file.write(data_temp)) {  //バイナリ書き込み
       } else {
         Serial.println("- write failed");
@@ -98,10 +99,10 @@ void copyMap(void)
     for (int j = 0; j < 16; j++) {
       if (file.available()) {
         read_data = file.read();
-        map_control.setWallData(i, j, north, read_data & 0x03);
-        map_control.setWallData(i, j, east, (read_data >> 2) & 0x03);
-        map_control.setWallData(i, j, south, (read_data >> 4) & 0x03);
-        map_control.setWallData(i, j, west, (read_data >> 6) & 0x03);
+        g_map_control.setWallData(i, j, north, read_data & 0x03);
+        g_map_control.setWallData(i, j, east, (read_data >> 2) & 0x03);
+        g_map_control.setWallData(i, j, south, (read_data >> 4) & 0x03);
+        g_map_control.setWallData(i, j, west, (read_data >> 6) & 0x03);
       } else {
         Serial.println("Read Error");
       }

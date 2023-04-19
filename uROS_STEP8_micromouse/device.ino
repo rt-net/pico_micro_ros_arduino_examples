@@ -12,89 +12,89 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-hw_timer_t * timer0 = NULL;
-hw_timer_t * timer1 = NULL;
-hw_timer_t * timer2 = NULL;
-hw_timer_t * timer3 = NULL;
+hw_timer_t * g_timer0 = NULL;
+hw_timer_t * g_timer1 = NULL;
+hw_timer_t * g_timer2 = NULL;
+hw_timer_t * g_timer3 = NULL;
 
-volatile unsigned short r_step_hz, l_step_hz;
-volatile unsigned int step_r, step_l;
+volatile unsigned short g_step_hz_r, g_step_hz_l;
+volatile unsigned int g_step_r, g_step_l;
 
-portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE g_timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
-void setRStepHz(short data) { r_step_hz = data; }
+void setRStepHz(short data) { g_step_hz_r = data; }
 
-void setLStepHz(short data) { l_step_hz = data; }
+void setLStepHz(short data) { g_step_hz_l = data; }
 
-void clearStepR(void) { step_r = 0; }
+void clearStepR(void) { g_step_r = 0; }
 
-void clearStepL(void) { step_l = 0; }
+void clearStepL(void) { g_step_l = 0; }
 
-unsigned int getStepR(void) { return step_r; }
+unsigned int getStepR(void) { return g_step_r; }
 
-unsigned int getStepL(void) { return step_l; }
+unsigned int getStepL(void) { return g_step_l; }
 
 void IRAM_ATTR onTimer0(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);
+  portENTER_CRITICAL_ISR(&g_timer_mux);
   controlInterrupt();
-  portEXIT_CRITICAL_ISR(&timer_mux);
+  portEXIT_CRITICAL_ISR(&g_timer_mux);
 }
 
 void IRAM_ATTR onTimer1(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);
+  portENTER_CRITICAL_ISR(&g_timer_mux);
   sensorInterrupt();
-  portEXIT_CRITICAL_ISR(&timer_mux);
+  portEXIT_CRITICAL_ISR(&g_timer_mux);
 }
 
 void IRAM_ATTR isrR(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);
-  if (motor_move) {
-    if (r_step_hz < 30) r_step_hz = 30;
-    timerAlarmWrite(timer2, 2000000 / r_step_hz, true);
+  portENTER_CRITICAL_ISR(&g_timer_mux);
+  if (g_motor_move) {
+    if (g_step_hz_r < 30) g_step_hz_r = 30;
+    timerAlarmWrite(g_timer2, 2000000 / g_step_hz_r, true);
     digitalWrite(PWM_R, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     }
     digitalWrite(PWM_R, LOW);
-    step_r++;
+    g_step_r++;
   }
-  portEXIT_CRITICAL_ISR(&timer_mux);
+  portEXIT_CRITICAL_ISR(&g_timer_mux);
 }
 
 void IRAM_ATTR isrL(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);
-  if (motor_move) {
-    if (l_step_hz < 30) l_step_hz = 30;
-    timerAlarmWrite(timer3, 2000000 / l_step_hz, true);
+  portENTER_CRITICAL_ISR(&g_timer_mux);
+  if (g_motor_move) {
+    if (g_step_hz_l < 30) g_step_hz_l = 30;
+    timerAlarmWrite(g_timer3, 2000000 / g_step_hz_l, true);
     digitalWrite(PWM_L, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     };
     digitalWrite(PWM_L, LOW);
-    step_l++;
+    g_step_l++;
   }
-  portEXIT_CRITICAL_ISR(&timer_mux);
+  portEXIT_CRITICAL_ISR(&g_timer_mux);
 }
 
-void controlInterruptStart(void) { timerAlarmEnable(timer0); }
-void controlInterruptStop(void) { timerAlarmDisable(timer0); }
+void controlInterruptStart(void) { timerAlarmEnable(g_timer0); }
+void controlInterruptStop(void) { timerAlarmDisable(g_timer0); }
 
-void sensorInterruptStart(void) { timerAlarmEnable(timer1); }
-void sensorInterruptStop(void) { timerAlarmDisable(timer1); }
+void sensorInterruptStart(void) { timerAlarmEnable(g_timer1); }
+void sensorInterruptStop(void) { timerAlarmDisable(g_timer1); }
 
 void PWMInterruptStart(void)
 {
-  timerAlarmEnable(timer2);
-  timerAlarmEnable(timer3);
+  timerAlarmEnable(g_timer2);
+  timerAlarmEnable(g_timer3);
 }
 void PWMInterruptStop(void)
 {
-  timerAlarmDisable(timer2);
-  timerAlarmDisable(timer3);
+  timerAlarmDisable(g_timer2);
+  timerAlarmDisable(g_timer3);
 }
 
 void initAll(void)
@@ -142,45 +142,45 @@ void initAll(void)
     }
   }
 
-  timer0 = timerBegin(0, 80, true);
-  timerAttachInterrupt(timer0, &onTimer0, false);
-  timerAlarmWrite(timer0, 1000, true);
-  timerAlarmEnable(timer0);
+  g_timer0 = timerBegin(0, 80, true);
+  timerAttachInterrupt(g_timer0, &onTimer0, false);
+  timerAlarmWrite(g_timer0, 1000, true);
+  timerAlarmEnable(g_timer0);
 
-  timer1 = timerBegin(1, 80, true);
-  timerAttachInterrupt(timer1, &onTimer1, false);
-  timerAlarmWrite(timer1, 250, true);
-  timerAlarmEnable(timer1);
+  g_timer1 = timerBegin(1, 80, true);
+  timerAttachInterrupt(g_timer1, &onTimer1, false);
+  timerAlarmWrite(g_timer1, 250, true);
+  timerAlarmEnable(g_timer1);
 
-  timer2 = timerBegin(2, 40, true);
-  timerAttachInterrupt(timer2, &isrR, false);
-  timerAlarmWrite(timer2, 13333, true);
-  timerAlarmEnable(timer2);
+  g_timer2 = timerBegin(2, 40, true);
+  timerAttachInterrupt(g_timer2, &isrR, false);
+  timerAlarmWrite(g_timer2, 13333, true);
+  timerAlarmEnable(g_timer2);
 
-  timer3 = timerBegin(3, 40, true);
-  timerAttachInterrupt(timer3, &isrL, false);
-  timerAlarmWrite(timer3, 13333, true);
-  timerAlarmEnable(timer3);
+  g_timer3 = timerBegin(3, 40, true);
+  timerAttachInterrupt(g_timer3, &isrL, false);
+  timerAlarmWrite(g_timer3, 13333, true);
+  timerAlarmEnable(g_timer3);
 
   Serial.begin(115200);
 
-  sen_r.ref = REF_SEN_R;
-  sen_l.ref = REF_SEN_L;
-  sen_r.th_wall = TH_SEN_R;
-  sen_l.th_wall = TH_SEN_L;
+  g_sen_r.ref = REF_SEN_R;
+  g_sen_l.ref = REF_SEN_L;
+  g_sen_r.th_wall = TH_SEN_R;
+  g_sen_l.th_wall = TH_SEN_L;
 
-  sen_fr.th_wall = TH_SEN_FR;
-  sen_fl.th_wall = TH_SEN_FL;
+  g_sen_fr.th_wall = TH_SEN_FR;
+  g_sen_fl.th_wall = TH_SEN_FL;
 
-  sen_r.th_control = CONTROL_TH_SEN_R;
-  sen_l.th_control = CONTROL_TH_SEN_L;
+  g_sen_r.th_control = CONTROL_TH_SEN_R;
+  g_sen_l.th_control = CONTROL_TH_SEN_L;
 
-  con_wall.kp = CON_WALL_KP;
+  g_con_wall.kp = CON_WALL_KP;
 
-  map_control.setGoalX(GOAL_X);
-  map_control.setGoalY(GOAL_Y);
+  g_map_control.setGoalX(GOAL_X);
+  g_map_control.setGoalY(GOAL_Y);
 
-  motor_move = false;
+  g_motor_move = false;
   setRStepHz(MIN_SPEED);
   setLStepHz(MIN_SPEED);
 
@@ -190,21 +190,21 @@ void initAll(void)
 }
 
 //LED
-void setLED(unsigned char _data)
+void setLED(unsigned char data)
 {
-  digitalWrite(LED0, _data & 0x01);
-  digitalWrite(LED1, (_data >> 1) & 0x01);
-  digitalWrite(LED2, (_data >> 2) & 0x01);
-  digitalWrite(LED3, (_data >> 3) & 0x01);
+  digitalWrite(LED0, data & 0x01);
+  digitalWrite(LED1, (data >> 1) & 0x01);
+  digitalWrite(LED2, (data >> 2) & 0x01);
+  digitalWrite(LED3, (data >> 3) & 0x01);
 }
-void setBLED(char _data)
+void setBLED(char data)
 {
-  if (_data & 0x01) {
+  if (data & 0x01) {
     digitalWrite(BLED0, HIGH);
   } else {
     digitalWrite(BLED0, LOW);
   }
-  if (_data & 0x02) {
+  if (data & 0x02) {
     digitalWrite(BLED1, HIGH);
   } else {
     digitalWrite(BLED1, LOW);
