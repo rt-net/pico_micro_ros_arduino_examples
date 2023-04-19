@@ -177,21 +177,21 @@ void initDevice(void)
 }
 
 //LED
-void setLED(unsigned char _data)
+void setLED(unsigned char data)
 {
-  digitalWrite(LED0, _data & 0x01);
-  digitalWrite(LED1, (_data >> 1) & 0x01);
-  digitalWrite(LED2, (_data >> 2) & 0x01);
-  digitalWrite(LED3, (_data >> 3) & 0x01);
+  digitalWrite(LED0, data & 0x01);
+  digitalWrite(LED1, (data >> 1) & 0x01);
+  digitalWrite(LED2, (data >> 2) & 0x01);
+  digitalWrite(LED3, (data >> 3) & 0x01);
 }
-void setBLED(char _data)
+void setBLED(char data)
 {
-  if (_data & 0x01) {
+  if (data & 0x01) {
     digitalWrite(BLED0, HIGH);
   } else {
     digitalWrite(BLED0, LOW);
   }
-  if (_data & 0x02) {
+  if (data & 0x02) {
     digitalWrite(BLED1, HIGH);
   } else {
     digitalWrite(BLED1, LOW);
