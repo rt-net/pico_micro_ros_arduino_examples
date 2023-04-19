@@ -14,14 +14,14 @@
 
 void controlInterrupt(void)
 {
-  speed += r_accel;
+  g_speed += g_accel;
 
-  if (speed > max_speed) {
-    speed = max_speed;
+  if (g_speed > g_max_speed) {
+    g_speed = g_max_speed;
   }
-  if (speed < min_speed) {
-    speed = min_speed;
+  if (g_speed < g_min_speed) {
+    g_speed = g_min_speed;
   }
 
-  l_step_hz = r_step_hz = (unsigned short)(speed / PULSE);
+  g_step_hz_l = g_step_hz_r = (unsigned short)(g_speed / PULSE);
 }
