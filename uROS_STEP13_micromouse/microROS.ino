@@ -30,7 +30,7 @@ rcl_node_t node;
   {                                \
     rcl_ret_t temp_rc = fn;        \
     if ((temp_rc != RCL_RET_OK)) { \
-      error_loop();                \
+      errorLoop();                 \
     }                              \
   }
 #define RCSOFTCHECK(fn)            \
@@ -144,7 +144,7 @@ void marker_set(int start2_x, int start2_y, t_direction_glob dir)
 }
 
 //micro-ROS function
-void error_loop()
+void errorLoop()
 {
   while (1) {
     digitalWrite(LED0, !digitalRead(LED0));
@@ -152,7 +152,7 @@ void error_loop()
   }
 }
 
-const void euler_to_quat(float x, float y, float z, double * q)
+const void eulerToQuat(float x, float y, float z, double * q)
 {
   float c1 = cos(y / 2);
   float c2 = cos(z / 2);
@@ -406,7 +406,7 @@ void fast_path_add_publish(int x, int y, t_direction_glob dir)
 }
 
 //mico-ROSのタスク
-void publisher_task(void * pvParameters)
+void publisherTask(void * pvParameters)
 {
   double q[4];
   uint32_t current;
@@ -417,7 +417,7 @@ void publisher_task(void * pvParameters)
     jstate.header.stamp.sec = current / 1000000;
     jstate.header.stamp.nanosec = current - jstate.header.stamp.sec * 1000000;
 
-    euler_to_quat(0, 0, odom_theta, q);
+    eulerToQuat(0, 0, odom_theta, q);
     tf_message->transforms.data[0].transform.translation.x = odom_x;
     tf_message->transforms.data[0].transform.translation.y = odom_y;
     tf_message->transforms.data[0].transform.translation.z = 0.0;
@@ -443,7 +443,7 @@ void publisher_task(void * pvParameters)
     RCSOFTCHECK(rcl_publish(&publisher_sensor, &sensor_msg, NULL));
     RCSOFTCHECK(rcl_publish(&publisher_battery, &bat_msg, NULL));
 
-    switch (map_control.get_wall_data(publish_x, publish_y, north)) {
+    switch (map_control.getWallData(publish_x, publish_y, north)) {
       case WALL:
         wall_publish(publish_y, publish_x, north);
         break;
@@ -452,7 +452,7 @@ void publisher_task(void * pvParameters)
         break;
     }
 
-    switch (map_control.get_wall_data(publish_x, publish_y, east)) {
+    switch (map_control.getWallData(publish_x, publish_y, east)) {
       case WALL:
         wall_publish(publish_y, publish_x, east);
         break;
@@ -461,7 +461,7 @@ void publisher_task(void * pvParameters)
         break;
     }
 
-    switch (map_control.get_wall_data(publish_x, publish_y, south)) {
+    switch (map_control.getWallData(publish_x, publish_y, south)) {
       case WALL:
         wall_publish(publish_y, publish_x, south);
         break;
@@ -470,7 +470,7 @@ void publisher_task(void * pvParameters)
         break;
     }
 
-    switch (map_control.get_wall_data(publish_x, publish_y, west)) {
+    switch (map_control.getWallData(publish_x, publish_y, west)) {
       case WALL:
         wall_publish(publish_y, publish_x, west);
         break;
@@ -487,19 +487,19 @@ void publisher_task(void * pvParameters)
   }
 }
 
-void init_microROS(void)
+void initMicroROS(void)
 {
   char a = 0;
 
   set_microros_wifi_transports("使用するWiFiのAP名", "Wi-Fiのパスワード", "PCのIPアドレス", 8888);
 
-  SetLED(1);
+  setLED(1);
   delay(1000);
-  SetLED(3);
+  setLED(3);
   delay(1000);
-  SetLED(7);
+  setLED(7);
   delay(1000);
-  SetLED(15);
+  setLED(15);
   delay(1000);
 
   allocator = rcl_get_default_allocator();
@@ -579,8 +579,8 @@ void init_microROS(void)
   marker_msg.color.g = 1.0f;
   marker_msg.color.b = 0.0f;
   marker_msg.color.a = 1.0f;
-  marker_msg.pose.position.x = map_control.get_goal_y() * 0.180;
-  marker_msg.pose.position.y = -1 * map_control.get_goal_x() * 0.180;
+  marker_msg.pose.position.x = map_control.getGoalY() * 0.180;
+  marker_msg.pose.position.y = -1 * map_control.getGoalX() * 0.180;
   marker_msg.pose.position.z = 0.050;
   marker_msg.pose.orientation.y = 1.0;  //矢印を下にするためy軸を回転
   RCSOFTCHECK(rcl_publish(&publisher_marker, &marker_msg, NULL));
@@ -589,7 +589,7 @@ void init_microROS(void)
   marker_msg.pose.orientation.y = 0.0;  //向きを戻す
 
   for (int i = 0; i < 17; i++) {  //rviz x axis
-    SetLED(a++);
+    setLED(a++);
     for (int j = 0; j < 17; j++) {  //rviz y axis
       pole_publish(i, j);
       delay(15);
@@ -638,7 +638,7 @@ void init_microROS(void)
 
   xTaskCreateUniversal(
     //  xTaskCreatePinnedToCore(
-    publisher_task, "publisher_task", 4096,
+    publisherTask, "publisherTask", 4096,
     //    8192,  //4096,
     NULL, 1, NULL,
     //    PRO_CPU_NUM

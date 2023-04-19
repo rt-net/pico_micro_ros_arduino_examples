@@ -36,12 +36,12 @@ hw_timer_t * timer0 = NULL;
 hw_timer_t * timer2 = NULL;
 hw_timer_t * timer3 = NULL;
 
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
-unsigned short RStepHz = MIN_HZ;
-unsigned short LStepHz = MIN_HZ;
+unsigned short r_step_hz = MIN_HZ;
+unsigned short l_step_hz = MIN_HZ;
 
-volatile unsigned int StepR, StepL;
+volatile unsigned int step_r, step_l;
 double max_speed;
 double min_speed;
 double r_accel = 0.0;
@@ -51,43 +51,43 @@ volatile bool motor_move = 0;
 
 //割り込み
 //目標値の更新周期1kHz
-void IRAM_ATTR OnTimer0(void)
+void IRAM_ATTR onTimer0(void)
 {
-  portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
-  control_interrupt();
-  portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
+  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
+  controlInterrupt();
+  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
 }
 
 //Rモータの周期数割り込み
-void IRAM_ATTR IsrR(void)
+void IRAM_ATTR isrR(void)
 {
-  portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
+  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
   if (motor_move) {
-    timerAlarmWrite(timer2, 2000000 / RStepHz, true);
+    timerAlarmWrite(timer2, 2000000 / r_step_hz, true);
     digitalWrite(PWM_R, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     }
     digitalWrite(PWM_R, LOW);
-    StepR++;
+    step_r++;
   }
-  portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
+  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
 }
 
 //Lモータの周期数割り込み
-void IRAM_ATTR IsrL(void)
+void IRAM_ATTR isrL(void)
 {
-  portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
+  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
   if (motor_move) {
-    timerAlarmWrite(timer3, 2000000 / LStepHz, true);
+    timerAlarmWrite(timer3, 2000000 / l_step_hz, true);
     digitalWrite(PWM_L, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     };
     digitalWrite(PWM_L, LOW);
-    StepL++;
+    step_l++;
   }
-  portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
+  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
 }
 
 void setup()
@@ -116,17 +116,17 @@ void setup()
   digitalWrite(PWM_L, LOW);
 
   timer0 = timerBegin(0, 80, true);  //1us
-  timerAttachInterrupt(timer0, &OnTimer0, true);
+  timerAttachInterrupt(timer0, &onTimer0, true);
   timerAlarmWrite(timer0, 1000, true);  //1kHz
   timerAlarmEnable(timer0);
 
   timer2 = timerBegin(2, 40, true);  //0.5us
-  timerAttachInterrupt(timer2, IsrR, true);
+  timerAttachInterrupt(timer2, isrR, true);
   timerAlarmWrite(timer2, 13333, true);  //150Hz
   timerAlarmEnable(timer2);
 
   timer3 = timerBegin(3, 40, true);  //0.5us
-  timerAttachInterrupt(timer3, &IsrL, true);
+  timerAttachInterrupt(timer3, &isrL, true);
   timerAlarmWrite(timer3, 13333, true);  //150Hz
   timerAlarmEnable(timer3);
 }
@@ -142,7 +142,7 @@ void loop()
   accelerate(90, 350);
   digitalWrite(LED1, HIGH);
   digitalWrite(LED2, HIGH);
-  one_step(180, 350);
+  oneStep(180, 350);
   digitalWrite(LED3, HIGH);
   decelerate(90, 350);
   digitalWrite(LED0, LOW);

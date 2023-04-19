@@ -30,12 +30,12 @@ volatile short sensor_l_value;
 volatile short battery_value;
 
 hw_timer_t * timer1 = NULL;
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
-void IRAM_ATTR OnTimer1(void)
+void IRAM_ATTR onTimer1(void)
 {
   static char cnt = 0;
-  portENTER_CRITICAL_ISR(&timerMux);
+  portENTER_CRITICAL_ISR(&timer_mux);
   switch (cnt) {
     case 0:
       digitalWrite(SLED_FR, HIGH);  //LED点灯
@@ -73,7 +73,7 @@ void IRAM_ATTR OnTimer1(void)
   }
   cnt++;
   if (cnt == 4) cnt = 0;
-  portEXIT_CRITICAL_ISR(&timerMux);
+  portEXIT_CRITICAL_ISR(&timer_mux);
 }
 
 void setup()
@@ -92,7 +92,7 @@ void setup()
   Serial.begin(115200);
 
   timer1 = timerBegin(1, 80, true);  //1us
-  timerAttachInterrupt(timer1, &OnTimer1, true);
+  timerAttachInterrupt(timer1, &onTimer1, true);
   timerAlarmWrite(timer1, 250, true);  //4kHz
   timerAlarmEnable(timer1);
 }

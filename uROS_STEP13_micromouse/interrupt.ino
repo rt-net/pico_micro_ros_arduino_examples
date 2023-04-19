@@ -19,7 +19,7 @@ unsigned int Get_timer_counter(void){
 }
 */
 
-void control_interrupt(void)
+void controlInterrupt(void)
 {
   double spd_r, spd_l, omega;
   static char temp_cnt = 0;
@@ -61,8 +61,8 @@ void control_interrupt(void)
 
   //odom
   //xは方向
-  double speed2 = (spd_r * RMotorSinged() + spd_l * LMotorSinged()) / 2.0;
-  omega = (spd_r * RMotorSinged() - spd_l * LMotorSinged()) / TREAD_WIDTH * 1.00;
+  double speed2 = (spd_r * motorSignedR() + spd_l * motorSignedL()) / 2.0;
+  omega = (spd_r * motorSignedR() - spd_l * motorSignedL()) / TREAD_WIDTH * 1.00;
   odom_x += speed2 * 0.001 * cos(odom_theta) * 0.001;
   odom_y += speed2 * 0.001 * sin(odom_theta) * 0.001;
   odom_theta += omega * 0.001;
@@ -73,7 +73,7 @@ void control_interrupt(void)
     ((sen_r.value > (sen_r.ref - 20)) || (sen_l.value > (sen_l.ref - 20)))) {
     temp_cnt++;
     if (temp_cnt > 5) {
-      switch (map_control.get_mypos_dir()) {
+      switch (map_control.getMyPosDir()) {
         case north:
           if (theta_adj == true) {
             odom_theta = 0.0;
@@ -101,14 +101,14 @@ void control_interrupt(void)
     temp_cnt = 0;
   }
 
-  position_r += spd_r * 0.001 * RMotorSinged() / (TIRE_DIAMETER * PI) * 2 * PI;
-  position_l -= spd_l * 0.001 * LMotorSinged() / (TIRE_DIAMETER * PI) * 2 * PI;
+  position_r += spd_r * 0.001 * motorSignedR() / (TIRE_DIAMETER * PI) * 2 * PI;
+  position_l -= spd_l * 0.001 * motorSignedL() / (TIRE_DIAMETER * PI) * 2 * PI;
 
-  SetRStepHz((unsigned short)(spd_r / PULSE));
-  SetLStepHz((unsigned short)(spd_l / PULSE));
+  setRStepHz((unsigned short)(spd_r / PULSE));
+  setLStepHz((unsigned short)(spd_l / PULSE));
 }
 
-void sensor_interrupt(void)
+void sensorInterrupt(void)
 {
   static char cnt = 0;
   short tmp1, tmp2;
@@ -120,8 +120,8 @@ void sensor_interrupt(void)
       sen_l.p2_value = sen_l.p_value;
       sen_r.p_value = sen_r.value;
       sen_l.p_value = sen_l.value;
-      sen_r.value = GetSensorR();
-      sen_l.value = GetSensorL();
+      sen_r.value = getSensorR();
+      sen_l.value = getSensorL();
 
       if ((sen_r.value / 4 + sen_r.p_value / 2 + sen_r.p2_value / 4) > sen_r.th_wall) {
         sen_r.is_wall = true;
@@ -154,18 +154,18 @@ void sensor_interrupt(void)
       if (bled_cnt > 10) {
         bled_cnt = 0;
       }
-      battery_value = GetBatteryVolt();
+      battery_value = getBatteryVolt();
       if (((battery_value - BATT_MIN) * 10 / (BATT_MAX - BATT_MIN)) > bled_cnt) {
-        SetBLED(1);
+        setBLED(1);
       } else {
-        SetBLED(2);
+        setBLED(2);
       }
       sen_fr.p2_value = sen_fr.p_value;
       sen_fl.p2_value = sen_fl.p_value;
       sen_fr.p_value = sen_fr.value;
       sen_fl.p_value = sen_fl.value;
-      sen_fr.value = GetSensorFR();
-      sen_fl.value = GetSensorFL();
+      sen_fr.value = getSensorFR();
+      sen_fl.value = getSensorFL();
       if ((sen_fr.value / 4 + sen_fr.p_value / 2 + sen_fr.p2_value / 2) > sen_fr.th_wall) {
         sen_fr.is_wall = true;
       } else {

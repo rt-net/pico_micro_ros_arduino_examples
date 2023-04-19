@@ -16,7 +16,7 @@ void straight(int len, int init_speed, int max_sp, int finish_speed)
 {
   int obj_step;
 
-  ControlInterruptStop();
+  controlInterruptStop();
   max_speed = max_sp;
   r_accel = SEARCH_ACCEL;
 
@@ -33,40 +33,40 @@ void straight(int len, int init_speed, int max_sp, int finish_speed)
   } else {
     min_speed = finish_speed;
   }
-  SetRStepHz((unsigned short)(speed / PULSE));
-  SetLStepHz((unsigned short)(speed / PULSE));
+  setRStepHz((unsigned short)(speed / PULSE));
+  setLStepHz((unsigned short)(speed / PULSE));
 
-  ClearStepR();
-  ClearStepL();
+  clearStepR();
+  clearStepL();
 
   con_wall.enable = true;
   obj_step = (int)((float)len * 2.0 / PULSE);
-  MoveDir(MOT_FORWARD, MOT_FORWARD);  //left,right
+  moveDir(MOT_FORWARD, MOT_FORWARD);  //left,right
   if (len > HALF_SECTION) {
     theta_adj = true;
   }
-  ControlInterruptStart();
+  controlInterruptStart();
 
   motor_move = 1;
-  while ((len - (GetStepR() + GetStepL()) / 2.0 * PULSE) >
+  while ((len - (getStepR() + getStepL()) / 2.0 * PULSE) >
          (((speed * speed) - (finish_speed * finish_speed)) / (2.0 * 1000.0 * SEARCH_ACCEL))) {
     delayMicroseconds(500);
   }
   r_accel = -1.0 * SEARCH_ACCEL;
 
-  while ((GetStepR() + GetStepL()) < obj_step) {
+  while ((getStepR() + getStepL()) < obj_step) {
     delayMicroseconds(500);
   }
 
   theta_adj = false;
 
   if (finish_speed == SEARCH_SPEED) {
-    ControlInterruptStop();
+    controlInterruptStop();
     max_speed = min_speed = speed = finish_speed;
     r_accel = 0.0;
-    ClearStepR();
-    ClearStepL();
-    ControlInterruptStart();
+    clearStepR();
+    clearStepL();
+    controlInterruptStart();
   } else {
     motor_move = 0;
   }
@@ -76,82 +76,82 @@ void accelerate(int len, int finish_speed)
 {
   int obj_step;
 
-  ControlInterruptStop();
+  controlInterruptStop();
   max_speed = finish_speed;
   r_accel = SEARCH_ACCEL;
   speed = min_speed = MIN_SPEED;
-  SetRStepHz((unsigned short)(speed / PULSE));
-  SetLStepHz((unsigned short)(speed / PULSE));
-  ClearStepR();
-  ClearStepL();
+  setRStepHz((unsigned short)(speed / PULSE));
+  setLStepHz((unsigned short)(speed / PULSE));
+  clearStepR();
+  clearStepL();
   con_wall.enable = true;
   obj_step = (int)((float)len * 2.0 / PULSE);
-  MoveDir(MOT_FORWARD, MOT_FORWARD);
-  ControlInterruptStart();
+  moveDir(MOT_FORWARD, MOT_FORWARD);
+  controlInterruptStart();
 
   motor_move = 1;
 
-  while ((GetStepR() + GetStepL()) < obj_step) {
+  while ((getStepR() + getStepL()) < obj_step) {
     delayMicroseconds(500);
   }
 
-  ControlInterruptStop();
+  controlInterruptStop();
   max_speed = min_speed = speed = finish_speed;
   r_accel = 0.0;
-  ClearStepR();
-  ClearStepL();
-  ControlInterruptStart();
+  clearStepR();
+  clearStepL();
+  controlInterruptStart();
 }
 
-void one_step(int len, int tar_speed)
+void oneStep(int len, int tar_speed)
 {
   int obj_step;
-  ControlInterruptStop();
+  controlInterruptStop();
   speed = min_speed = max_speed = tar_speed;
   r_accel = 0.0;
-  SetRStepHz((unsigned short)(speed / PULSE));
-  SetLStepHz((unsigned short)(speed / PULSE));
+  setRStepHz((unsigned short)(speed / PULSE));
+  setLStepHz((unsigned short)(speed / PULSE));
   con_wall.enable = true;
   obj_step = (int)((float)len * 2.0 / PULSE);
-  MoveDir(MOT_FORWARD, MOT_FORWARD);
+  moveDir(MOT_FORWARD, MOT_FORWARD);
 
   theta_adj = true;
-  ControlInterruptStart();
+  controlInterruptStart();
 
-  while ((GetStepR() + GetStepL()) < obj_step) {
+  while ((getStepR() + getStepL()) < obj_step) {
     delayMicroseconds(500);
   }
-  ControlInterruptStop();
+  controlInterruptStop();
   max_speed = min_speed = speed = tar_speed;
   r_accel = 0.0;
-  ClearStepR();
-  ClearStepL();
+  clearStepR();
+  clearStepL();
   theta_adj = false;
-  ControlInterruptStart();
+  controlInterruptStart();
 }
 
 void decelerate(int len, int tar_speed)
 {
   int obj_step;
-  ControlInterruptStop();
+  controlInterruptStop();
   max_speed = tar_speed;
   r_accel = 0.0;
   speed = min_speed = tar_speed;
-  SetRStepHz((unsigned short)(speed / PULSE));
-  SetLStepHz((unsigned short)(speed / PULSE));
+  setRStepHz((unsigned short)(speed / PULSE));
+  setLStepHz((unsigned short)(speed / PULSE));
   con_wall.enable = true;
   obj_step = (int)((float)len * 2.0 / PULSE);
-  MoveDir(MOT_FORWARD, MOT_FORWARD);
-  ControlInterruptStart();
+  moveDir(MOT_FORWARD, MOT_FORWARD);
+  controlInterruptStart();
 
-  while ((len - (GetStepR() + GetStepL()) / 2.0 * PULSE) >
+  while ((len - (getStepR() + getStepL()) / 2.0 * PULSE) >
          (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * SEARCH_ACCEL))) {
     delayMicroseconds(500);
   }
   r_accel = -1.0 * SEARCH_ACCEL;
   min_speed = MIN_SPEED;
 
-  while ((GetStepR() + GetStepL()) < obj_step) {
+  while ((getStepR() + getStepL()) < obj_step) {
     delayMicroseconds(500);
   }
 
@@ -163,39 +163,39 @@ void decelerate(int len, int tar_speed)
 void rotate(t_direction dir, int times)
 {
   int obj_step;
-  ControlInterruptStop();
+  controlInterruptStop();
   max_speed = SEARCH_SPEED;
   r_accel = TURN_ACCEL;
   speed = min_speed = MIN_SPEED;
-  SetRStepHz((unsigned short)(speed / PULSE));
-  SetLStepHz((unsigned short)(speed / PULSE));
-  ClearStepR();
-  ClearStepL();
+  setRStepHz((unsigned short)(speed / PULSE));
+  setLStepHz((unsigned short)(speed / PULSE));
+  clearStepR();
+  clearStepL();
   con_wall.enable = false;
   obj_step = (int)(TREAD_WIDTH * PI / 4.0 * (float)times * 2.0 / PULSE);
 
   switch (dir) {
     case right:
-      MoveDir(MOT_FORWARD, MOT_BACK);
+      moveDir(MOT_FORWARD, MOT_BACK);
       motor_move = 1;
       break;
     case left:
-      MoveDir(MOT_BACK, MOT_FORWARD);
+      moveDir(MOT_BACK, MOT_FORWARD);
       motor_move = 1;
       break;
     default:
       motor_move = 0;
       break;
   }
-  ControlInterruptStart();
+  controlInterruptStart();
 
-  while (((obj_step - (GetStepR() + GetStepL())) / 2.0 * PULSE) >
+  while (((obj_step - (getStepR() + getStepL())) / 2.0 * PULSE) >
          (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * TURN_ACCEL))) {
     delayMicroseconds(500);
   }
   r_accel = -1.0 * TURN_ACCEL;
 
-  while ((GetStepR() + GetStepL()) < obj_step) {
+  while ((getStepR() + getStepL()) < obj_step) {
     delayMicroseconds(500);
   }
 

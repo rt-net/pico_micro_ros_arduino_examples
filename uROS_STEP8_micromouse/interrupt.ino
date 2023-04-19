@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void control_interrupt(void)
+void controlInterrupt(void)
 {
   double spd_r, spd_l;
 
@@ -49,11 +49,11 @@ void control_interrupt(void)
   if (spd_r < MIN_SPEED) spd_r = MIN_SPEED;
   if (spd_l < MIN_SPEED) spd_l = MIN_SPEED;
 
-  SetRStepHz((unsigned short)(spd_r / PULSE));
-  SetLStepHz((unsigned short)(spd_l / PULSE));
+  setRStepHz((unsigned short)(spd_r / PULSE));
+  setLStepHz((unsigned short)(spd_l / PULSE));
 }
 
-void sensor_interrupt(void)
+void sensorInterrupt(void)
 {
   static char cnt = 0;
   static char bled_cnt = 0;
@@ -61,7 +61,7 @@ void sensor_interrupt(void)
   switch (cnt) {
     case 0:
       sen_fr.p_value = sen_fr.value;
-      sen_fr.value = GetSensorFR();
+      sen_fr.value = getSensorFR();
       if (sen_fr.value > sen_fr.th_wall) {
         sen_fr.is_wall = true;
       } else {
@@ -70,7 +70,7 @@ void sensor_interrupt(void)
       break;
     case 1:
       sen_fl.p_value = sen_fl.value;
-      sen_fl.value = GetSensorFL();
+      sen_fl.value = getSensorFL();
       if (sen_fl.value > sen_fl.th_wall) {
         sen_fl.is_wall = true;
       } else {
@@ -79,7 +79,7 @@ void sensor_interrupt(void)
       break;
     case 2:
       sen_r.p_value = sen_r.value;
-      sen_r.value = GetSensorR();
+      sen_r.value = getSensorR();
       if (sen_r.value > sen_r.th_wall) {
         sen_r.is_wall = true;
       } else {
@@ -95,7 +95,7 @@ void sensor_interrupt(void)
       break;
     case 3:
       sen_l.p_value = sen_l.value;
-      sen_l.value = GetSensorL();
+      sen_l.value = getSensorL();
       if (sen_l.value > sen_l.th_wall) {
         sen_l.is_wall = true;
       } else {
@@ -112,11 +112,11 @@ void sensor_interrupt(void)
       if (bled_cnt > 10) {
         bled_cnt = 0;
       }
-      battery_value = GetBatteryVolt();
+      battery_value = getBatteryVolt();
       if (((battery_value - BATT_MIN) * 10 / (BATT_MAX - BATT_MIN)) > bled_cnt) {
-        SetBLED(1);
+        setBLED(1);
       } else {
-        SetBLED(2);
+        setBLED(2);
       }
       break;
   }

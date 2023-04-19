@@ -52,12 +52,12 @@ hw_timer_t * timer0 = NULL;
 hw_timer_t * timer2 = NULL;
 hw_timer_t * timer3 = NULL;
 
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
-unsigned short RStepHz = MIN_HZ;
-unsigned short LStepHz = MIN_HZ;
+unsigned short r_step_hz = MIN_HZ;
+unsigned short l_step_hz = MIN_HZ;
 
-volatile unsigned int StepR, StepL;
+volatile unsigned int step_r, step_l;
 
 volatile double max_speed = MIN_SPEED;
 volatile double min_speed = MIN_SPEED;
@@ -75,18 +75,18 @@ volatile bool motor_move = 0;
   {                                \
     rcl_ret_t temp_rc = fn;        \
     if ((temp_rc != RCL_RET_OK)) { \
-      error_loop();                \
+      errorLoop();                 \
     }                              \
   }
 #define RCSOFTCHECK(fn)            \
   {                                \
     rcl_ret_t temp_rc = fn;        \
     if ((temp_rc != RCL_RET_OK)) { \
-      error_loop();                \
+      errorLoop();                 \
     }                              \
   }
 
-void error_loop()
+void errorLoop()
 {
   while (1) {
     digitalWrite(LED0, !digitalRead(LED0));
@@ -96,49 +96,49 @@ void error_loop()
 
 //割り込み
 //目標値の更新周期1kHz
-void IRAM_ATTR OnTimer0(void)
+void IRAM_ATTR onTimer0(void)
 {
-  portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
-  control_interrupt();
-  portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
+  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
+  controlInterrupt();
+  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
 }
 
 //Rモータの周期数割り込み
-void IRAM_ATTR IsrR(void)
+void IRAM_ATTR isrR(void)
 {
-  portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
+  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
   if (motor_move) {
-    if (RStepHz < 30) RStepHz = 30;
-    timerAlarmWrite(timer2, 2000000 / RStepHz, true);
+    if (r_step_hz < 30) r_step_hz = 30;
+    timerAlarmWrite(timer2, 2000000 / r_step_hz, true);
     digitalWrite(PWM_R, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     }
     digitalWrite(PWM_R, LOW);
-    StepR++;
+    step_r++;
   }
-  portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
+  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
 }
 
 //Lモータの周期数割り込み
-void IRAM_ATTR IsrL(void)
+void IRAM_ATTR isrL(void)
 {
-  portENTER_CRITICAL_ISR(&timerMux);  //割り込み禁止
+  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
   if (motor_move) {
-    if (LStepHz < 30) LStepHz = 30;
-    timerAlarmWrite(timer3, 2000000 / LStepHz, true);
+    if (l_step_hz < 30) l_step_hz = 30;
+    timerAlarmWrite(timer3, 2000000 / l_step_hz, true);
     digitalWrite(PWM_L, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     };
     digitalWrite(PWM_L, LOW);
-    StepL++;
+    step_l++;
   }
-  portEXIT_CRITICAL_ISR(&timerMux);  //割り込み許可
+  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
 }
 
 //twist message cb
-void subscription_callback(const void * msgin)
+void subscriptionCallback(const void * msgin)
 {
   const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
 
@@ -175,17 +175,17 @@ void setup()
   delay(2000);
 
   timer0 = timerBegin(0, 80, true);  //1us
-  timerAttachInterrupt(timer0, &OnTimer0, true);
+  timerAttachInterrupt(timer0, &onTimer0, true);
   timerAlarmWrite(timer0, 1000, true);  //1kHz
   timerAlarmEnable(timer0);
 
   timer2 = timerBegin(2, 40, true);  //0.5us
-  timerAttachInterrupt(timer2, &IsrR, true);
+  timerAttachInterrupt(timer2, &isrR, true);
   timerAlarmWrite(timer2, 13333, true);  //150Hz
   timerAlarmEnable(timer2);
 
   timer3 = timerBegin(3, 40, true);  //0.5us
-  timerAttachInterrupt(timer3, &IsrL, true);
+  timerAttachInterrupt(timer3, &isrL, true);
   timerAlarmWrite(timer3, 13333, true);  //150Hz
   timerAlarmEnable(timer3);
 
@@ -204,7 +204,7 @@ void setup()
   // create executor
   RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
   RCCHECK(rclc_executor_add_subscription(
-    &executor, &subscriber, &msg, &subscription_callback, ON_NEW_DATA));
+    &executor, &subscriber, &msg, &subscriptionCallback, ON_NEW_DATA));
 
   digitalWrite(MOTOR_EN, HIGH);
 }

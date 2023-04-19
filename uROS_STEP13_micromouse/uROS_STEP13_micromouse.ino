@@ -49,7 +49,7 @@ volatile int start_x, start_y;        //最短経路のマーカーの初期値�
 volatile t_direction_glob start_dir;  //最短経路のマーカーの初期値で使用
 
 //マイクロマウスで使用する変数
-signed char __mode;
+signed char g_mode;
 short battery_value;
 t_sensor sen_r, sen_l, sen_fr, sen_fl;
 t_control con_wall;
@@ -57,14 +57,14 @@ volatile double r_accel;
 volatile double max_speed, min_speed;
 volatile double speed = 0.0;
 volatile bool motor_move;
-map_manager map_control;
+MapManager map_control;
 
 volatile bool theta_adj;
 
 void setup()
 {
   // put your setup code here, to run once:
-  InitDevice();
+  initDevice();
 
   sen_r.ref = REF_SEN_R;
   sen_l.ref = REF_SEN_L;
@@ -79,80 +79,80 @@ void setup()
 
   con_wall.kp = CON_WALL_KP;
 
-  map_control.set_goal_x(GOAL_X);
-  map_control.set_goal_y(GOAL_Y);
+  map_control.setGoalX(GOAL_X);
+  map_control.setGoalY(GOAL_Y);
 
   motor_move = false;
   fast_task = false;
   theta_adj = false;
-  SetRStepHz(MIN_SPEED);
-  SetLStepHz(MIN_SPEED);
+  setRStepHz(MIN_SPEED);
+  setLStepHz(MIN_SPEED);
 
 #if defined(USE_MICRO_ROS)
-  init_microROS();
+  initMicroROS();
 #endif
-  __mode = 1;
+  g_mode = 1;
 }
 
 void loop()
 {
   // put your main code here, to run repeatedly:
-  SetLED(__mode);
-  switch (GetSW()) {
+  setLED(g_mode);
+  switch (getSW()) {
     case SW_LM:
-      __mode = dec_button(__mode, 1, 15);
+      g_mode = decButton(g_mode, 1, 15);
       break;
     case SW_RM:
-      __mode = inc_button(__mode, 15, 1);
+      g_mode = incButton(g_mode, 15, 1);
       break;
     case SW_CM:
-      ok_button();
-      exec_by_mode(__mode);
+      okButton();
+      execByMode(g_mode);
       break;
   }
   delay(1);
 }
 
-void exec_by_mode(int _mode)
+void execByMode(int mode)
 {
-  EnableMotor();
+  enableMotor();
   delay(1000);
 
-  ControlInterruptStop();
+  controlInterruptStop();
   odom_x = 0;
   odom_y = -0.0;
   odom_theta = 0.0;
-  ControlInterruptStart();
+  controlInterruptStart();
 
-  switch (__mode) {
+  switch (g_mode) {
     case 1:
-      search_lefthand();
+      searchLefthand();
       break;
     case 2:  //足立法
-      map_control.position_init();
-      search_adachi(map_control.get_goal_x(), map_control.get_goal_y());
+      map_control.positionInit();
+      searchAdachi(map_control.getGoalX(), map_control.getGoalY());
       rotate(right, 2);
-      map_control.next_dir(right);
-      map_control.next_dir(right);
-      goal_appeal();
-      search_adachi(0, 0);
+      map_control.nextDir(right);
+      map_control.nextDir(right);
+      goalAppeal();
+      searchAdachi(0, 0);
       rotate(right, 2);
-      map_control.next_dir(right);
-      map_control.next_dir(right);
-      map_write();
+      map_control.nextDir(right);
+      map_control.nextDir(right);
+      mapWrite();
       break;
     case 3:  //最短走行
-      copy_map();
-      map_control.position_init();
-      fast_run(map_control.get_goal_x(), map_control.get_goal_y());
+      copyMap();
+      map_control.positionInit();
+      fastRun(map_control.getGoalX(), map_control.getGoalY());
       rotate(right, 2);
-      map_control.next_dir(right);
-      map_control.next_dir(right);
-      goal_appeal();
-      fast_run(0, 0);
+      map_control.nextDir(right);
+      map_control.nextDir(right);
+      goalAppeal();
+      fastRun(0, 0);
       rotate(right, 2);
-      map_control.next_dir(right);
-      map_control.next_dir(right);
+      map_control.nextDir(right);
+      map_control.nextDir(right);
       break;
     case 4:
       break;
@@ -177,9 +177,9 @@ void exec_by_mode(int _mode)
     case 14:
       break;
     case 15:
-      DisableMotor();
-      adjust_menu();  //調整メニューに行く
+      disableMotor();
+      adjustMenu();  //調整メニューに行く
       break;
   }
-  DisableMotor();
+  disableMotor();
 }

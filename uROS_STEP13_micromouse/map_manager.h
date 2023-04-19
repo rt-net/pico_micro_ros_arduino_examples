@@ -1,5 +1,5 @@
-#ifndef map_manager_H_
-#define map_manager_H_
+#ifndef MAP_MANAGER_H_
+#define MAP_MANAGER_H_
 
 #define MAZESIZE_X (16)  //迷路の大きさ(MAZESIZE_X * MAZESIZE_Y)迷路
 #define MAZESIZE_Y (16)  //迷路の大きさ(MAZESIZE_Y * MAZESIZE_Y)迷路
@@ -28,7 +28,7 @@ typedef struct
   t_direction_glob dir;
 } t_position;
 
-class map_manager
+class MapManager
 {
 private:
   unsigned short steps_map[MAZESIZE_X][MAZESIZE_Y];  //歩数マップ
@@ -38,31 +38,31 @@ private:
 
 public:
   void view(char view_weight_f);
-  void position_init(void);
-  void set_mypos(char x, char y, t_direction_glob dir);
-  void set_mypos_dir(t_direction_glob dir);
-  short get_mypos_x(void);
-  short get_mypos_y(void);
-  t_direction_glob get_mypos_dir(void);
-  char get_wall_data(char x, char y, t_direction_glob dir);
-  void set_wall_data(char x, char y, t_direction_glob dir, char data);
-  unsigned short get_step_map_data(char x, char y);
-  char get_goal_x(void);
-  char get_goal_y(void);
-  void set_goal_x(short data);
-  void set_goal_y(short data);
+  void positionInit(void);
+  void setMyPos(char x, char y, t_direction_glob dir);
+  void setMyPosDir(t_direction_glob dir);
+  short getMyPosX(void);
+  short getMyPosY(void);
+  t_direction_glob getMyPosDir(void);
+  char getWallData(char x, char y, t_direction_glob dir);
+  void setWallData(char x, char y, t_direction_glob dir, char data);
+  unsigned short getStepMapData(char x, char y);
+  char getGoalX(void);
+  char getGoalY(void);
+  void setGoalX(short data);
+  void setGoalY(short data);
 
-  void make_map2(int x, int y);
-  void make_search_map(int x, int y);
-  t_direction get_nextdir2(short x, short y, t_direction_glob * dir);
-  t_direction get_nextdir(char x, char y, t_direction_glob * dir);
-  void axis_update(void);
-  void next_dir(t_direction dir);
+  void makeMap2(int x, int y);
+  void makeSearchMap(int x, int y);
+  t_direction getNextDir2(short x, short y, t_direction_glob * dir);
+  t_direction getNextDir(char x, char y, t_direction_glob * dir);
+  void axisUpdate(void);
+  void nextDir(t_direction dir);
   void wallch(int x, int y, int x2, int y2);
-  void set_wall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L);
-  int get_priority(char x, char y, t_direction_glob dir);
+  void setWall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L);
+  int getPriority(char x, char y, t_direction_glob dir);
 
-  map_manager();
+  MapManager();
 };
 
 #endif

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void fast_run(short gx, short gy)
+void fastRun(short gx, short gy)
 {
   t_direction_glob glob_nextdir;
   int straight_count = 0;
 
-  t_direction temp_next_dir = map_control.get_nextdir2(gx, gy, &glob_nextdir);
+  t_direction temp_next_dir = map_control.getNextDir2(gx, gy, &glob_nextdir);
   switch (temp_next_dir) {
     break;
     case right:
@@ -33,11 +33,11 @@ void fast_run(short gx, short gy)
 
   accelerate(HALF_SECTION, SEARCH_SPEED);
   straight_count = 0;
-  map_control.set_mypos_dir(glob_nextdir);
-  map_control.axis_update();
+  map_control.setMyPosDir(glob_nextdir);
+  map_control.axisUpdate();
 
-  while ((map_control.get_mypos_x() != gx) || (map_control.get_mypos_y() != gy)) {
-    switch (map_control.get_nextdir2(gx, gy, &glob_nextdir)) {
+  while ((map_control.getMyPosX() != gx) || (map_control.getMyPosY() != gy)) {
+    switch (map_control.getNextDir2(gx, gy, &glob_nextdir)) {
       case front:
         straight_count++;
         break;
@@ -56,8 +56,8 @@ void fast_run(short gx, short gy)
         accelerate(HALF_SECTION, SEARCH_SPEED);
         break;
     }
-    map_control.set_mypos_dir(glob_nextdir);
-    map_control.axis_update();
+    map_control.setMyPosDir(glob_nextdir);
+    map_control.axisUpdate();
   }
   if (straight_count > 0) {
     straight(straight_count * SECTION, SEARCH_SPEED, MAX_SPEED, SEARCH_SPEED);

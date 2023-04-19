@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void search_lefthand(void)
+void searchLefthand(void)
 {
   accelerate(HALF_SECTION, SEARCH_SPEED);
 
@@ -35,13 +35,13 @@ void search_lefthand(void)
   }
 }
 
-void search_adachi(char gx, char gy)
+void searchAdachi(char gx, char gy)
 {
   t_direction_glob glob_nextdir;
   int straight_count = 0;
   t_direction temp_next_dir;
 
-  temp_next_dir = map_control.get_nextdir(gx, gy, &glob_nextdir);
+  temp_next_dir = map_control.getNextDir(gx, gy, &glob_nextdir);
 
   switch (temp_next_dir) {
     case front:
@@ -59,15 +59,15 @@ void search_adachi(char gx, char gy)
 
   accelerate(HALF_SECTION, SEARCH_SPEED);
 
-  map_control.set_mypos_dir(glob_nextdir);
-  map_control.axis_update();
+  map_control.setMyPosDir(glob_nextdir);
+  map_control.axisUpdate();
 
-  while ((map_control.get_mypos_x() != gx) || (map_control.get_mypos_y() != gy)) {
-    map_control.set_wall(sen_fr.is_wall, sen_r.is_wall, sen_l.is_wall);
+  while ((map_control.getMyPosX() != gx) || (map_control.getMyPosY() != gy)) {
+    map_control.setWall(sen_fr.is_wall, sen_r.is_wall, sen_l.is_wall);
 
-    switch (map_control.get_nextdir(gx, gy, &glob_nextdir)) {
+    switch (map_control.getNextDir(gx, gy, &glob_nextdir)) {
       case front:
-        one_step(SECTION, SEARCH_SPEED);
+        oneStep(SECTION, SEARCH_SPEED);
         break;
       case right:
         decelerate(HALF_SECTION, SEARCH_SPEED);
@@ -86,10 +86,10 @@ void search_adachi(char gx, char gy)
         break;
     }
 
-    map_control.set_mypos_dir(glob_nextdir);  //方向を更新
-    map_control.axis_update();
+    map_control.setMyPosDir(glob_nextdir);  //方向を更新
+    map_control.axisUpdate();
   }
 
-  map_control.set_wall(sen_fr.is_wall, sen_r.is_wall, sen_l.is_wall);
+  map_control.setWall(sen_fr.is_wall, sen_r.is_wall, sen_l.is_wall);
   decelerate(HALF_SECTION, SEARCH_SPEED);
 }

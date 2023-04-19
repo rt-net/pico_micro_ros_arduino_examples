@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void control_interrupt(void)
+void controlInterrupt(void)
 {
   double speed_r, speed_l;
 
@@ -36,7 +36,7 @@ void control_interrupt(void)
   } else if (speed_r < MIN_SPEED) {
     speed_r = MIN_SPEED;
   }
-  RStepHz = (signed short)(speed_r / PULSE);
+  r_step_hz = (signed short)(speed_r / PULSE);
 
   if (speed_l > 0) {
     digitalWrite(CW_L, LOW);
@@ -45,5 +45,5 @@ void control_interrupt(void)
     speed_l *= -1.0;
   }
   if (speed_l < MIN_SPEED) speed_l = MIN_SPEED;
-  LStepHz = (signed short)(speed_l / PULSE);
+  l_step_hz = (signed short)(speed_l / PULSE);
 }

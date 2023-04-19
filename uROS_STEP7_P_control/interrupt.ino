@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void control_interrupt(void)
+void controlInterrupt(void)
 {
   double spd_r, spd_l;
 
@@ -43,11 +43,11 @@ void control_interrupt(void)
     spd_l = min_speed;
   }
 
-  RStepHz = (unsigned short)(spd_r / PULSE);
-  LStepHz = (unsigned short)(spd_l / PULSE);
+  r_step_hz = (unsigned short)(spd_r / PULSE);
+  l_step_hz = (unsigned short)(spd_l / PULSE);
 }
 
-void sensor_interrupt(void)
+void sensorInterrupt(void)
 {
   static char cnt = 0;
   static char bled_cnt = 0;
