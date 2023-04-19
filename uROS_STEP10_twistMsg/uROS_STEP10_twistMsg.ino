@@ -23,13 +23,13 @@
 #include <stdio.h>
 // clang-format on
 
-geometry_msgs__msg__Twist msg;
+geometry_msgs__msg__Twist g_msg;
 
-rcl_subscription_t subscriber;
-rclc_executor_t executor;
-rcl_allocator_t allocator;
-rclc_support_t support;
-rcl_node_t node;
+rcl_subscription_t g_subscriber;
+rclc_executor_t g_executor;
+rcl_allocator_t g_allocator;
+rclc_support_t g_support;
+rcl_node_t g_node;
 
 #define LED0 1
 #define LED1 2
@@ -48,28 +48,28 @@ rcl_node_t node;
 #define MIN_SPEED (MIN_HZ * PULSE)
 #define TREAD_WIDTH (65.0)
 
-hw_timer_t * timer0 = NULL;
-hw_timer_t * timer2 = NULL;
-hw_timer_t * timer3 = NULL;
+hw_timer_t * g_timer0 = NULL;
+hw_timer_t * g_timer2 = NULL;
+hw_timer_t * g_timer3 = NULL;
 
-portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE g_timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
-unsigned short r_step_hz = MIN_HZ;
-unsigned short l_step_hz = MIN_HZ;
+unsigned short g_step_hz_r = MIN_HZ;
+unsigned short g_step_hz_l = MIN_HZ;
 
-volatile unsigned int step_r, step_l;
+volatile unsigned int g_step_r, g_step_l;
 
-volatile double max_speed = MIN_SPEED;
-volatile double min_speed = MIN_SPEED;
-volatile double r_accel = 0.0;
-volatile double speed = 0.0;
+volatile double g_max_speed = MIN_SPEED;
+volatile double g_min_speed = MIN_SPEED;
+volatile double g_accel = 0.0;
+volatile double g_speed = 0.0;
 
-double max_omega;
-double min_omega;
-double r_acc_omega = 0.0;
-double omega = 0;
+double g_max_omega;
+double g_min_omega;
+double g_acc_omega = 0.0;
+double g_omega = 0;
 
-volatile bool motor_move = 0;
+volatile bool g_motor_move = 0;
 
 #define RCCHECK(fn)                \
   {                                \
@@ -98,52 +98,52 @@ void errorLoop()
 //目標値の更新周期1kHz
 void IRAM_ATTR onTimer0(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
+  portENTER_CRITICAL_ISR(&g_timer_mux);  //割り込み禁止
   controlInterrupt();
-  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
+  portEXIT_CRITICAL_ISR(&g_timer_mux);  //割り込み許可
 }
 
 //Rモータの周期数割り込み
 void IRAM_ATTR isrR(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
-  if (motor_move) {
-    if (r_step_hz < 30) r_step_hz = 30;
-    timerAlarmWrite(timer2, 2000000 / r_step_hz, true);
+  portENTER_CRITICAL_ISR(&g_timer_mux);  //割り込み禁止
+  if (g_motor_move) {
+    if (g_step_hz_r < 30) g_step_hz_r = 30;
+    timerAlarmWrite(g_timer2, 2000000 / g_step_hz_r, true);
     digitalWrite(PWM_R, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     }
     digitalWrite(PWM_R, LOW);
-    step_r++;
+    g_step_r++;
   }
-  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
+  portEXIT_CRITICAL_ISR(&g_timer_mux);  //割り込み許可
 }
 
 //Lモータの周期数割り込み
 void IRAM_ATTR isrL(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
-  if (motor_move) {
-    if (l_step_hz < 30) l_step_hz = 30;
-    timerAlarmWrite(timer3, 2000000 / l_step_hz, true);
+  portENTER_CRITICAL_ISR(&g_timer_mux);  //割り込み禁止
+  if (g_motor_move) {
+    if (g_step_hz_l < 30) g_step_hz_l = 30;
+    timerAlarmWrite(g_timer3, 2000000 / g_step_hz_l, true);
     digitalWrite(PWM_L, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     };
     digitalWrite(PWM_L, LOW);
-    step_l++;
+    g_step_l++;
   }
-  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
+  portEXIT_CRITICAL_ISR(&g_timer_mux);  //割り込み許可
 }
 
 //twist message cb
 void subscriptionCallback(const void * msgin)
 {
-  const geometry_msgs__msg__Twist * msg = (const geometry_msgs__msg__Twist *)msgin;
+  const geometry_msgs__msg__Twist * g_msg = (const geometry_msgs__msg__Twist *)msgin;
 
-  speed = msg->linear.x * 1000.0;
-  omega = msg->angular.z;
+  g_speed = g_msg->linear.x * 1000.0;
+  g_omega = g_msg->angular.z;
 }
 
 void setup()
@@ -174,37 +174,37 @@ void setup()
 
   delay(2000);
 
-  timer0 = timerBegin(0, 80, true);  //1us
-  timerAttachInterrupt(timer0, &onTimer0, true);
-  timerAlarmWrite(timer0, 1000, true);  //1kHz
-  timerAlarmEnable(timer0);
+  g_timer0 = timerBegin(0, 80, true);  //1us
+  timerAttachInterrupt(g_timer0, &onTimer0, true);
+  timerAlarmWrite(g_timer0, 1000, true);  //1kHz
+  timerAlarmEnable(g_timer0);
 
-  timer2 = timerBegin(2, 40, true);  //0.5us
-  timerAttachInterrupt(timer2, &isrR, true);
-  timerAlarmWrite(timer2, 13333, true);  //150Hz
-  timerAlarmEnable(timer2);
+  g_timer2 = timerBegin(2, 40, true);  //0.5us
+  timerAttachInterrupt(g_timer2, &isrR, true);
+  timerAlarmWrite(g_timer2, 13333, true);  //150Hz
+  timerAlarmEnable(g_timer2);
 
-  timer3 = timerBegin(3, 40, true);  //0.5us
-  timerAttachInterrupt(timer3, &isrL, true);
-  timerAlarmWrite(timer3, 13333, true);  //150Hz
-  timerAlarmEnable(timer3);
+  g_timer3 = timerBegin(3, 40, true);  //0.5us
+  timerAttachInterrupt(g_timer3, &isrL, true);
+  timerAlarmWrite(g_timer3, 13333, true);  //150Hz
+  timerAlarmEnable(g_timer3);
 
-  allocator = rcl_get_default_allocator();
+  g_allocator = rcl_get_default_allocator();
 
   //create init_options
-  RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
+  RCCHECK(rclc_support_init(&g_support, 0, NULL, &g_allocator));
 
-  // create node
-  RCCHECK(rclc_node_init_default(&node, "micro_ros_pico_node", "", &support));
+  // create g_node
+  RCCHECK(rclc_node_init_default(&g_node, "micro_ros_pico_node", "", &g_support));
 
-  // create subscriber
+  // create g_subscriber
   RCCHECK(rclc_subscription_init_default(
-    &subscriber, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist), "/cmd_vel"));
+    &g_subscriber, &g_node, ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist), "/cmd_vel"));
 
-  // create executor
-  RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
+  // create g_executor
+  RCCHECK(rclc_executor_init(&g_executor, &g_support.context, 1, &g_allocator));
   RCCHECK(rclc_executor_add_subscription(
-    &executor, &subscriber, &msg, &subscriptionCallback, ON_NEW_DATA));
+    &g_executor, &g_subscriber, &g_msg, &subscriptionCallback, ON_NEW_DATA));
 
   digitalWrite(MOTOR_EN, HIGH);
 }
@@ -212,5 +212,5 @@ void setup()
 void loop()
 {
   delay(10);
-  RCCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100)));
+  RCCHECK(rclc_executor_spin_some(&g_executor, RCL_MS_TO_NS(100)));
 }
