@@ -21,7 +21,7 @@
 #define SW_C 11
 #define SW_R 12
 
-int state_r, state_c, state_l;
+int g_state_r, g_state_c, g_state_l;
 
 void setup()
 {
@@ -35,7 +35,7 @@ void setup()
   pinMode(SW_C, INPUT);
   pinMode(SW_R, INPUT);
 
-  state_r = state_c = state_l = 0;
+  g_state_r = g_state_c = g_state_l = 0;
 }
 
 void loop()
@@ -45,14 +45,14 @@ void loop()
     continue;
   }
   if (digitalRead(SW_R) == 0) {
-    digitalWrite(LED3, (++state_r) & 0x01);
+    digitalWrite(LED3, (++g_state_r) & 0x01);
   }
   if (digitalRead(SW_C) == 0) {
-    digitalWrite(LED2, (++state_c) & 0x01);
-    digitalWrite(LED1, (state_c)&0x01);
+    digitalWrite(LED2, (++g_state_c) & 0x01);
+    digitalWrite(LED1, (g_state_c)&0x01);
   }
   if (digitalRead(SW_L) == 0) {
-    digitalWrite(LED0, (++state_l) & 0x01);
+    digitalWrite(LED0, (++g_state_l) & 0x01);
   }
   delay(30);
   while (!(digitalRead(SW_L) && digitalRead(SW_C) && digitalRead(SW_R))) {
