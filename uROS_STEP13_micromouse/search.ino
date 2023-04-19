@@ -38,7 +38,6 @@ void searchLefthand(void)
 void searchAdachi(char gx, char gy)
 {
   t_direction_glob glob_nextdir;
-  int straight_count = 0;
   t_direction temp_next_dir;
 
   temp_next_dir = g_map_control.getNextDir(gx, gy, &glob_nextdir);

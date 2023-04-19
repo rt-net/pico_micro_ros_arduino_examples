@@ -237,7 +237,6 @@ void moveDir(t_CW_CCW left_CW, t_CW_CCW right_CW)
 //SWITCH
 unsigned char getSW(void)
 {
-  int i;
   unsigned char ret = 0;
   if (digitalRead(SW_R) == LOW) {
     do {

@@ -88,7 +88,6 @@ void mapView(void)
 
 void viewAdc(void)
 {
-  int i;
   disableMotor();
 
   while (1) {

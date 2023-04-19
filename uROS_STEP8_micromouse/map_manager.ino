@@ -199,8 +199,6 @@ void MapManager::makeSearchMap(int x, int y)
 //コンストラクタ
 MapManager::MapManager()
 {
-  int i, j;
-
   for (int i = 0; i < MAZESIZE_X; i++) {
     for (int j = 0; j < MAZESIZE_Y; j++) {
       wall[i][j].north = wall[i][j].east = wall[i][j].south = wall[i][j].west =

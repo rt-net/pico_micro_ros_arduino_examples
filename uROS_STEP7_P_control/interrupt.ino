@@ -50,7 +50,6 @@ void controlInterrupt(void)
 void sensorInterrupt(void)
 {
   static char cnt = 0;
-  static char bled_cnt = 0;
 
   switch (cnt) {
     case 0:

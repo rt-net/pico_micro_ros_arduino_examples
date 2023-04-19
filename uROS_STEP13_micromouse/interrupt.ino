@@ -111,7 +111,6 @@ void controlInterrupt(void)
 void sensorInterrupt(void)
 {
   static char cnt = 0;
-  short tmp1, tmp2;
   static char bled_cnt = 0;
 
   switch (cnt) {
