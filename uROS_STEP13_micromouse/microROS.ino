@@ -152,7 +152,7 @@ void errorLoop()
   }
 }
 
-const void eulerToQuat(float x, float y, float z, double * q)
+void eulerToQuat(float x, float y, float z, double * q)
 {
   float c1 = cos(y / 2);
   float c2 = cos(z / 2);
