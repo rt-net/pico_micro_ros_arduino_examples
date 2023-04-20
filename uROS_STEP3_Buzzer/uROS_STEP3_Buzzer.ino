@@ -74,6 +74,9 @@ void execByMode(char mode)
       delay(1000);
       ledcWrite(0, 1024);
       break;
+    default:
+      ledcWrite(0, 1024);
+      break;
   }
 }
 
