@@ -120,6 +120,8 @@ void execByMode(int mode)
       disableMotor();
       adjustMenu();  //調整メニューに行く
       break;
+    default:
+      break;
   }
   disableMotor();
 }
