@@ -119,6 +119,9 @@ void sensorInterrupt(void)
         setBLED(2);
       }
       break;
+    default:
+      Serial.printf("sensor state error\n\r");
+      break;
   }
   cnt++;
   if (cnt == 4) cnt = 0;

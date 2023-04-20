@@ -177,6 +177,9 @@ void sensorInterrupt(void)
         g_sen_fl.is_wall = false;
       }
       break;
+    default:
+      Serial.printf("sensor state error\n\r");
+      break;
   }
   cnt++;
   if (cnt == 2) cnt = 0;

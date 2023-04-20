@@ -109,6 +109,8 @@ void loop()
       okButton();
       execByMode(g_mode);
       break;
+    default:
+      break;
   }
   delay(1);
 }
@@ -179,6 +181,9 @@ void execByMode(int mode)
     case 15:
       disableMotor();
       adjustMenu();  //調整メニューに行く
+      break;
+    default:
+      Serial.printf("SelectMode input Error\n\r");
       break;
   }
   disableMotor();

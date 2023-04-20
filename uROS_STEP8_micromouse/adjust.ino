@@ -155,6 +155,8 @@ void adjustMenu(void)
           return;
         }
         break;
+      default:
+        break;
     }
   }
 }
@@ -184,7 +186,7 @@ unsigned char execByModeAdjust(unsigned char mode)
     case 6:
       break;
 
-    case 7:
+    default:
       return 1;
       break;
   }
