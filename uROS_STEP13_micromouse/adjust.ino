@@ -18,7 +18,7 @@ void mapView(void)
   Serial.printf("\x1b[0;0H");
   Serial.printf("\n\r+");
   for (int i = 0; i < MAZESIZE_X; i++) {
-    switch (map_control.getWallData(i, MAZESIZE_Y - 1, north)) {  //黒色は"[30m"
+    switch (g_map_control.getWallData(i, MAZESIZE_Y - 1, north)) {  //黒色は"[30m"
       case NOWALL:
         Serial.printf("\x1b[37m  +");  //NOWALL
         break;
@@ -35,7 +35,7 @@ void mapView(void)
   }
   Serial.printf("\n\r");
   for (int j = (MAZESIZE_Y - 1); j > -1; j--) {
-    switch (map_control.getWallData(0, j, west)) {
+    switch (g_map_control.getWallData(0, j, west)) {
       case NOWALL:
         Serial.printf("\x1b[37m ");  //NOWALL
         break;
@@ -50,7 +50,7 @@ void mapView(void)
         break;
     }
     for (int i = 0; i < MAZESIZE_X; i++) {
-      switch (map_control.getWallData(i, j, east)) {
+      switch (g_map_control.getWallData(i, j, east)) {
         case NOWALL:
           Serial.printf("\x1b[37m   ");  //NOWALL
           break;
@@ -67,7 +67,7 @@ void mapView(void)
     }
     Serial.printf("\n\r+");
     for (int i = 0; i < MAZESIZE_X; i++) {
-      switch (map_control.getWallData(i, j, south)) {
+      switch (g_map_control.getWallData(i, j, south)) {
         case NOWALL:
           Serial.printf("\x1b[37m  +");  //NOWALL
           break;
@@ -88,15 +88,14 @@ void mapView(void)
 
 void viewAdc(void)
 {
-  int i;
   disableMotor();
 
   while (1) {
-    Serial.printf("r_sen        is\t%d   \r\n", sen_r.value);
-    Serial.printf("fr_sen       is\t%d   \r\n", sen_fr.value);
-    Serial.printf("fl_sen       is\t%d  \r\n", sen_fl.value);
-    Serial.printf("l_sen        is\t%d   \r\n", sen_l.value);
-    Serial.printf("VDD          is\t%d mV\r\n", battery_value);
+    Serial.printf("r_sen        is\t%d   \r\n", g_sen_r.value);
+    Serial.printf("fr_sen       is\t%d   \r\n", g_sen_fr.value);
+    Serial.printf("fl_sen       is\t%d  \r\n", g_sen_fl.value);
+    Serial.printf("l_sen        is\t%d   \r\n", g_sen_l.value);
+    Serial.printf("VDD          is\t%d mV\r\n", g_battery_value);
     Serial.printf("\n\r");  //改行
     delay(100);
     Serial.printf("\x1b[2j");
@@ -156,6 +155,8 @@ void adjustMenu(void)
           return;
         }
         break;
+      default:
+        break;
     }
   }
 }
@@ -185,7 +186,7 @@ unsigned char execByModeAdjust(unsigned char mode)
     case 6:
       break;
 
-    case 7:
+    default:
       return 1;
       break;
   }

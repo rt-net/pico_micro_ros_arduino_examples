@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-short incButton(short _data, short limit, short limit_data)
+short incButton(short data, short limit, short limit_data)
 {
-  _data++;
-  if (_data > limit) {
-    _data = limit_data;
+  data++;
+  if (data > limit) {
+    data = limit_data;
   }
   enableBuzzer(INC_FREQ);
   delay(30);
   disableBuzzer();
-  return _data;
+  return data;
 }
-short decButton(short _data, short limit, short limit_data)
+short decButton(short data, short limit, short limit_data)
 {
-  _data--;
-  if (_data < limit) {
-    _data = limit_data;
+  data--;
+  if (data < limit) {
+    data = limit_data;
   }
   enableBuzzer(DEC_FREQ);
   delay(30);
   disableBuzzer();
-  return _data;
+  return data;
 }
 
 void okButton(void)

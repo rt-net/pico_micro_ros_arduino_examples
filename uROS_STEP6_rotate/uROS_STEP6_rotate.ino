@@ -41,62 +41,62 @@ typedef enum {
   unknown,
 } t_local_dir;
 
-hw_timer_t * timer0 = NULL;
-hw_timer_t * timer2 = NULL;
-hw_timer_t * timer3 = NULL;
+hw_timer_t * g_timer0 = NULL;
+hw_timer_t * g_timer2 = NULL;
+hw_timer_t * g_timer3 = NULL;
 
-portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE g_timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
-unsigned short r_step_hz = MIN_HZ;
-unsigned short l_step_hz = MIN_HZ;
+unsigned short g_step_hz_r = MIN_HZ;
+unsigned short g_step_hz_l = MIN_HZ;
 
-volatile unsigned int step_r, step_l;
-double max_speed;
-double min_speed;
-double r_accel = 0.0;
-volatile double speed = MIN_SPEED;
+volatile unsigned int g_step_r, g_step_l;
+double g_max_speed;
+double g_min_speed;
+double g_accel = 0.0;
+volatile double g_speed = MIN_SPEED;
 
-volatile bool motor_move = 0;
+volatile bool g_motor_move = 0;
 
 //割り込み
 //目標値の更新周期1kHz
 void IRAM_ATTR onTimer0(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
+  portENTER_CRITICAL_ISR(&g_timer_mux);  //割り込み禁止
   controlInterrupt();
-  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
+  portEXIT_CRITICAL_ISR(&g_timer_mux);  //割り込み許可
 }
 
 //Rモータの周期数割り込み
 void IRAM_ATTR isrR(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
-  if (motor_move) {
-    timerAlarmWrite(timer2, 2000000 / r_step_hz, true);
+  portENTER_CRITICAL_ISR(&g_timer_mux);  //割り込み禁止
+  if (g_motor_move) {
+    timerAlarmWrite(g_timer2, 2000000 / g_step_hz_r, true);
     digitalWrite(PWM_R, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     }
     digitalWrite(PWM_R, LOW);
-    step_r++;
+    g_step_r++;
   }
-  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
+  portEXIT_CRITICAL_ISR(&g_timer_mux);  //割り込み許可
 }
 
 //Lモータの周期数割り込み
 void IRAM_ATTR isrL(void)
 {
-  portENTER_CRITICAL_ISR(&timer_mux);  //割り込み禁止
-  if (motor_move) {
-    timerAlarmWrite(timer3, 2000000 / l_step_hz, true);
+  portENTER_CRITICAL_ISR(&g_timer_mux);  //割り込み禁止
+  if (g_motor_move) {
+    timerAlarmWrite(g_timer3, 2000000 / g_step_hz_l, true);
     digitalWrite(PWM_L, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
     };
     digitalWrite(PWM_L, LOW);
-    step_l++;
+    g_step_l++;
   }
-  portEXIT_CRITICAL_ISR(&timer_mux);  //割り込み許可
+  portEXIT_CRITICAL_ISR(&g_timer_mux);  //割り込み許可
 }
 
 void setup()
@@ -124,27 +124,28 @@ void setup()
   digitalWrite(PWM_R, LOW);
   digitalWrite(PWM_L, LOW);
 
-  timer0 = timerBegin(0, 80, true);  //1us
-  timerAttachInterrupt(timer0, &onTimer0, true);
-  timerAlarmWrite(timer0, 1000, true);  //1kHz
-  timerAlarmEnable(timer0);
+  g_timer0 = timerBegin(0, 80, true);  //1us
+  timerAttachInterrupt(g_timer0, &onTimer0, true);
+  timerAlarmWrite(g_timer0, 1000, true);  //1kHz
+  timerAlarmEnable(g_timer0);
 
-  timer2 = timerBegin(2, 40, true);  //0.5us
-  timerAttachInterrupt(timer2, &isrR, true);
-  timerAlarmWrite(timer2, 13333, true);  //150Hz
-  timerAlarmEnable(timer2);
+  g_timer2 = timerBegin(2, 40, true);  //0.5us
+  timerAttachInterrupt(g_timer2, &isrR, true);
+  timerAlarmWrite(g_timer2, 13333, true);  //150Hz
+  timerAlarmEnable(g_timer2);
 
-  timer3 = timerBegin(3, 40, true);  //0.5us
-  timerAttachInterrupt(timer3, &isrL, true);
-  timerAlarmWrite(timer3, 13333, true);  //150Hz
-  timerAlarmEnable(timer3);
+  g_timer3 = timerBegin(3, 40, true);  //0.5us
+  timerAttachInterrupt(g_timer3, &isrL, true);
+  timerAlarmWrite(g_timer3, 13333, true);  //150Hz
+  timerAlarmEnable(g_timer3);
 }
 
 void loop()
 {
   // put your main code here, to run repeatedly:
-  while (digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R))
-    ;
+  while (digitalRead(SW_L) & digitalRead(SW_C) & digitalRead(SW_R)) {
+    continue;
+  }
   digitalWrite(MOTOR_EN, HIGH);
   delay(1000);
   rotate(right, 1);

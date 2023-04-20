@@ -1,3 +1,6 @@
+#ifndef DEVICE_H_
+#define DEVICE_H_
+
 #define LED0 1
 #define LED1 2
 #define LED2 42
@@ -34,3 +37,5 @@
 #define SW_RM 4
 
 #define BUZZER_CH 0
+
+#endif  // DEVICE_H_

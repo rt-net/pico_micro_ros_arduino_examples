@@ -23,8 +23,8 @@ typedef enum { north, east, south, west } t_direction_glob;
 
 typedef struct
 {
-  char x;
-  char y;
+  unsigned char x;
+  unsigned char y;
   t_direction_glob dir;
 } t_position;
 
@@ -45,9 +45,9 @@ public:
   short getMyPosX(void);
   short getMyPosY(void);
   t_direction_glob getMyPosDir(void);
-  char getWallData(char x, char y, t_direction_glob dir);
-  void setWallData(char x, char y, t_direction_glob dir, char data);
-  unsigned short getStepMapData(char x, char y);
+  char getWallData(unsigned char x, unsigned char y, t_direction_glob dir);
+  void setWallData(unsigned char x, unsigned char y, t_direction_glob dir, char data);
+  unsigned short getStepMapData(unsigned char x, unsigned char y);
   char getGoalX(void);
   char getGoalY(void);
   void setGoalX(short data);
@@ -61,9 +61,9 @@ public:
   void nextDir(t_direction dir);
   void wallch(int x, int y, int x2, int y2);
   void setWall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L);
-  int getPriority(char x, char y, t_direction_glob dir);
+  int getPriority(unsigned char x, unsigned char y, t_direction_glob dir);
 
   MapManager();
 };
 
-#endif
+#endif  // MAP_MANAGER_H_

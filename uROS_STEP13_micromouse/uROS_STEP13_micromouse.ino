@@ -40,51 +40,51 @@
 // clang-format off
 
 //micro-ROSで使用する変数
-volatile double position_r, position_l;
-volatile double odom_x, odom_y, odom_theta;
-short publish_x, publish_y;
+volatile double g_position_r, g_position_l;
+volatile double g_odom_x, g_odom_y, g_odom_theta;
+short g_publish_x, g_publish_y;
 
-volatile bool fast_task;              //最短経路のマーカーを表示するときに使用
-volatile int start_x, start_y;        //最短経路のマーカーの初期値で使用
-volatile t_direction_glob start_dir;  //最短経路のマーカーの初期値で使用
+volatile bool g_fast_task;              //最短経路のマーカーを表示するときに使用
+volatile int g_start_x, g_start_y;        //最短経路のマーカーの初期値で使用
+volatile t_direction_glob g_start_dir;  //最短経路のマーカーの初期値で使用
 
 //マイクロマウスで使用する変数
 signed char g_mode;
-short battery_value;
-t_sensor sen_r, sen_l, sen_fr, sen_fl;
-t_control con_wall;
-volatile double r_accel;
-volatile double max_speed, min_speed;
-volatile double speed = 0.0;
-volatile bool motor_move;
-MapManager map_control;
+short g_battery_value;
+t_sensor g_sen_r, g_sen_l, g_sen_fr, g_sen_fl;
+t_control g_con_wall;
+volatile double g_accel;
+volatile double g_max_speed, g_min_speed;
+volatile double g_speed = 0.0;
+volatile bool g_motor_move;
+MapManager g_map_control;
 
-volatile bool theta_adj;
+volatile bool g_theta_adj;
 
 void setup()
 {
   // put your setup code here, to run once:
   initDevice();
 
-  sen_r.ref = REF_SEN_R;
-  sen_l.ref = REF_SEN_L;
-  sen_r.th_wall = TH_SEN_R;
-  sen_l.th_wall = TH_SEN_L;
+  g_sen_r.ref = REF_SEN_R;
+  g_sen_l.ref = REF_SEN_L;
+  g_sen_r.th_wall = TH_SEN_R;
+  g_sen_l.th_wall = TH_SEN_L;
 
-  sen_fr.th_wall = TH_SEN_FR;
-  sen_fl.th_wall = TH_SEN_FL;
+  g_sen_fr.th_wall = TH_SEN_FR;
+  g_sen_fl.th_wall = TH_SEN_FL;
 
-  sen_r.th_control = CONTROL_TH_SEN_R;
-  sen_l.th_control = CONTROL_TH_SEN_L;
+  g_sen_r.th_control = CONTROL_TH_SEN_R;
+  g_sen_l.th_control = CONTROL_TH_SEN_L;
 
-  con_wall.kp = CON_WALL_KP;
+  g_con_wall.kp = CON_WALL_KP;
 
-  map_control.setGoalX(GOAL_X);
-  map_control.setGoalY(GOAL_Y);
+  g_map_control.setGoalX(GOAL_X);
+  g_map_control.setGoalY(GOAL_Y);
 
-  motor_move = false;
-  fast_task = false;
-  theta_adj = false;
+  g_motor_move = false;
+  g_fast_task = false;
+  g_theta_adj = false;
   setRStepHz(MIN_SPEED);
   setLStepHz(MIN_SPEED);
 
@@ -109,6 +109,8 @@ void loop()
       okButton();
       execByMode(g_mode);
       break;
+    default:
+      break;
   }
   delay(1);
 }
@@ -119,9 +121,9 @@ void execByMode(int mode)
   delay(1000);
 
   controlInterruptStop();
-  odom_x = 0;
-  odom_y = -0.0;
-  odom_theta = 0.0;
+  g_odom_x = 0;
+  g_odom_y = -0.0;
+  g_odom_theta = 0.0;
   controlInterruptStart();
 
   switch (g_mode) {
@@ -129,30 +131,30 @@ void execByMode(int mode)
       searchLefthand();
       break;
     case 2:  //足立法
-      map_control.positionInit();
-      searchAdachi(map_control.getGoalX(), map_control.getGoalY());
+      g_map_control.positionInit();
+      searchAdachi(g_map_control.getGoalX(), g_map_control.getGoalY());
       rotate(right, 2);
-      map_control.nextDir(right);
-      map_control.nextDir(right);
+      g_map_control.nextDir(right);
+      g_map_control.nextDir(right);
       goalAppeal();
       searchAdachi(0, 0);
       rotate(right, 2);
-      map_control.nextDir(right);
-      map_control.nextDir(right);
+      g_map_control.nextDir(right);
+      g_map_control.nextDir(right);
       mapWrite();
       break;
     case 3:  //最短走行
       copyMap();
-      map_control.positionInit();
-      fastRun(map_control.getGoalX(), map_control.getGoalY());
+      g_map_control.positionInit();
+      fastRun(g_map_control.getGoalX(), g_map_control.getGoalY());
       rotate(right, 2);
-      map_control.nextDir(right);
-      map_control.nextDir(right);
+      g_map_control.nextDir(right);
+      g_map_control.nextDir(right);
       goalAppeal();
       fastRun(0, 0);
       rotate(right, 2);
-      map_control.nextDir(right);
-      map_control.nextDir(right);
+      g_map_control.nextDir(right);
+      g_map_control.nextDir(right);
       break;
     case 4:
       break;
@@ -179,6 +181,9 @@ void execByMode(int mode)
     case 15:
       disableMotor();
       adjustMenu();  //調整メニューに行く
+      break;
+    default:
+      Serial.printf("SelectMode input Error\n\r");
       break;
   }
   disableMotor();

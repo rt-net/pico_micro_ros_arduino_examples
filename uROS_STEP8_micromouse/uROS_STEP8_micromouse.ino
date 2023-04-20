@@ -20,15 +20,15 @@
 #include "parameter.h"
 
 signed char g_mode;
-short battery_value;
-t_sensor sen_r, sen_l, sen_fr, sen_fl;
-t_control con_wall;
+short g_battery_value;
+t_sensor g_sen_r, g_sen_l, g_sen_fr, g_sen_fl;
+t_control g_con_wall;
 
-volatile double r_accel;
-double max_speed, min_speed;
-volatile double speed;
-volatile bool motor_move;
-MapManager map_control;
+volatile double g_accel;
+double g_max_speed, g_min_speed;
+volatile double g_speed;
+volatile bool g_motor_move;
+MapManager g_map_control;
 
 void setup()
 {
@@ -69,30 +69,30 @@ void execByMode(int mode)
       searchLefthand();
       break;
     case 2:  //足立法
-      map_control.positionInit();
-      searchAdachi(map_control.getGoalX(), map_control.getGoalY());
+      g_map_control.positionInit();
+      searchAdachi(g_map_control.getGoalX(), g_map_control.getGoalY());
       rotate(right, 2);
-      map_control.nextDir(right);
-      map_control.nextDir(right);
+      g_map_control.nextDir(right);
+      g_map_control.nextDir(right);
       goalAppeal();
       searchAdachi(0, 0);
       rotate(right, 2);
-      map_control.nextDir(right);
-      map_control.nextDir(right);
+      g_map_control.nextDir(right);
+      g_map_control.nextDir(right);
       mapWrite();
       break;
     case 3:  //最短走行
       copyMap();
-      map_control.positionInit();
-      fastRun(map_control.getGoalX(), map_control.getGoalY());
+      g_map_control.positionInit();
+      fastRun(g_map_control.getGoalX(), g_map_control.getGoalY());
       rotate(right, 2);
-      map_control.nextDir(right);
-      map_control.nextDir(right);
+      g_map_control.nextDir(right);
+      g_map_control.nextDir(right);
       goalAppeal();
       fastRun(0, 0);
       rotate(right, 2);
-      map_control.nextDir(right);
-      map_control.nextDir(right);
+      g_map_control.nextDir(right);
+      g_map_control.nextDir(right);
       break;
     case 4:
       break;
@@ -119,6 +119,8 @@ void execByMode(int mode)
     case 15:
       disableMotor();
       adjustMenu();  //調整メニューに行く
+      break;
+    default:
       break;
   }
   disableMotor();

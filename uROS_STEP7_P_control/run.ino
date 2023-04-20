@@ -15,57 +15,61 @@
 void accelerate(int len, int tar_speed)
 {
   int obj_step;
-  max_speed = tar_speed;
-  r_accel = 1.5;
-  step_r = step_l = 0;
-  speed = min_speed = MIN_SPEED;
-  r_step_hz = l_step_hz = (unsigned short)(speed / PULSE);
+  g_max_speed = tar_speed;
+  g_accel = 1.5;
+  g_step_r = g_step_l = 0;
+  g_speed = g_min_speed = MIN_SPEED;
+  g_step_hz_r = g_step_hz_l = (unsigned short)(g_speed / PULSE);
 
   obj_step = (int)((float)len * 2.0 / PULSE);
   digitalWrite(CW_R, LOW);
   digitalWrite(CW_L, LOW);
-  motor_move = 1;
+  g_motor_move = 1;
 
-  while ((step_r + step_l) < obj_step)
-    ;
+  while ((g_step_r + g_step_l) < obj_step) {
+    continue;
+  }
 }
 
 void oneStep(int len, int tar_speed)
 {
   int obj_step;
-  max_speed = tar_speed;
-  r_accel = 0.0;
-  step_r = step_l = 0;
-  speed = min_speed = tar_speed;
-  r_step_hz = l_step_hz = (unsigned short)(speed / PULSE);
+  g_max_speed = tar_speed;
+  g_accel = 0.0;
+  g_step_r = g_step_l = 0;
+  g_speed = g_min_speed = tar_speed;
+  g_step_hz_r = g_step_hz_l = (unsigned short)(g_speed / PULSE);
   obj_step = (int)((float)len * 2.0 / PULSE);
   digitalWrite(CW_R, LOW);
   digitalWrite(CW_L, LOW);
 
-  while ((step_r + step_l) < obj_step)
-    ;
+  while ((g_step_r + g_step_l) < obj_step) {
+    continue;
+  }
 }
 
 void decelerate(int len, int tar_speed)
 {
   int obj_step;
-  max_speed = tar_speed;
-  r_accel = 0.0;
-  step_r = step_l = 0;
-  speed = min_speed = tar_speed;
-  r_step_hz = l_step_hz = (unsigned short)(speed / PULSE);
+  g_max_speed = tar_speed;
+  g_accel = 0.0;
+  g_step_r = g_step_l = 0;
+  g_speed = g_min_speed = tar_speed;
+  g_step_hz_r = g_step_hz_l = (unsigned short)(g_speed / PULSE);
   obj_step = (int)((float)len * 2.0 / PULSE);
   digitalWrite(CW_R, LOW);
   digitalWrite(CW_L, LOW);
 
-  while ((len - (step_r + step_l) / 2.0 * PULSE) >
-         (((speed * speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * 1.5)))
-    ;
-  r_accel = -1.5;
-  min_speed = MIN_SPEED;
+  while ((len - (g_step_r + g_step_l) / 2.0 * PULSE) >
+         (((g_speed * g_speed) - (MIN_SPEED * MIN_SPEED)) / (2.0 * 1000.0 * 1.5))) {
+    continue;
+  }
+  g_accel = -1.5;
+  g_min_speed = MIN_SPEED;
 
-  while ((step_r + step_l) < obj_step)
-    ;
+  while ((g_step_r + g_step_l) < obj_step) {
+    continue;
+  }
 
-  motor_move = 0;
+  g_motor_move = 0;
 }

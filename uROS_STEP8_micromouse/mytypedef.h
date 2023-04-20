@@ -1,3 +1,6 @@
+#ifndef MYTYPEDEF_H_
+#define MYTYPEDEF_H_
+
 typedef struct
 {
   short value;
@@ -25,3 +28,5 @@ typedef struct
 } t_control;
 
 typedef enum { MOT_FORWARD, MOT_BACK } t_CW_CCW;
+
+#endif  // MYTYPEDEF_H_

@@ -16,41 +16,40 @@ void controlInterrupt(void)
 {
   double spd_r, spd_l;
 
-  speed += r_accel;
+  g_speed += g_accel;
 
-  if (speed > max_speed) {
-    speed = max_speed;
+  if (g_speed > g_max_speed) {
+    g_speed = g_max_speed;
   }
-  if (speed < min_speed) {
-    speed = min_speed;
+  if (g_speed < g_min_speed) {
+    g_speed = g_min_speed;
   }
 
-  if ((sen_r.is_control == true) && (sen_l.is_control == true)) {
-    con_wall.error = sen_r.error - sen_l.error;
+  if ((g_sen_r.is_control == true) && (g_sen_l.is_control == true)) {
+    g_con_wall.error = g_sen_r.error - g_sen_l.error;
   } else {
-    con_wall.error = 2.0 * (sen_r.error - sen_l.error);
+    g_con_wall.error = 2.0 * (g_sen_r.error - g_sen_l.error);
   }
 
-  con_wall.control = 0.001 * speed * con_wall.kp * con_wall.error;
+  g_con_wall.control = 0.001 * g_speed * g_con_wall.kp * g_con_wall.error;
 
-  spd_r = speed + con_wall.control;
-  spd_l = speed - con_wall.control;
+  spd_r = g_speed + g_con_wall.control;
+  spd_l = g_speed - g_con_wall.control;
 
-  if (spd_r < min_speed) {
-    spd_r = min_speed;
+  if (spd_r < g_min_speed) {
+    spd_r = g_min_speed;
   }
-  if (spd_l < min_speed) {
-    spd_l = min_speed;
+  if (spd_l < g_min_speed) {
+    spd_l = g_min_speed;
   }
 
-  r_step_hz = (unsigned short)(spd_r / PULSE);
-  l_step_hz = (unsigned short)(spd_l / PULSE);
+  g_step_hz_r = (unsigned short)(spd_r / PULSE);
+  g_step_hz_l = (unsigned short)(spd_l / PULSE);
 }
 
 void sensorInterrupt(void)
 {
   static char cnt = 0;
-  static char bled_cnt = 0;
 
   switch (cnt) {
     case 0:
@@ -58,12 +57,12 @@ void sensorInterrupt(void)
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sen_fr.value = analogRead(AD1);
+      g_sen_fr.value = analogRead(AD1);
       digitalWrite(SLED_FR, LOW);
-      if (sen_fr.value > sen_fr.th_wall) {
-        sen_fr.is_wall = true;
+      if (g_sen_fr.value > g_sen_fr.th_wall) {
+        g_sen_fr.is_wall = true;
       } else {
-        sen_fr.is_wall = false;
+        g_sen_fr.is_wall = false;
       }
       break;
     case 1:
@@ -71,12 +70,12 @@ void sensorInterrupt(void)
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sen_fl.value = analogRead(AD2);
+      g_sen_fl.value = analogRead(AD2);
       digitalWrite(SLED_FL, LOW);
-      if (sen_fl.value > sen_fl.th_wall) {
-        sen_fl.is_wall = true;
+      if (g_sen_fl.value > g_sen_fl.th_wall) {
+        g_sen_fl.is_wall = true;
       } else {
-        sen_fl.is_wall = false;
+        g_sen_fl.is_wall = false;
       }
       break;
     case 2:
@@ -84,19 +83,19 @@ void sensorInterrupt(void)
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sen_r.value = analogRead(AD3);
+      g_sen_r.value = analogRead(AD3);
       digitalWrite(SLED_R, LOW);
-      if (sen_r.value > sen_r.th_wall) {
-        sen_r.is_wall = true;
+      if (g_sen_r.value > g_sen_r.th_wall) {
+        g_sen_r.is_wall = true;
       } else {
-        sen_r.is_wall = false;
+        g_sen_r.is_wall = false;
       }
-      if (sen_r.value > sen_r.th_control) {
-        sen_r.error = sen_r.value - sen_r.ref;
-        sen_r.is_control = true;
+      if (g_sen_r.value > g_sen_r.th_control) {
+        g_sen_r.error = g_sen_r.value - g_sen_r.ref;
+        g_sen_r.is_control = true;
       } else {
-        sen_r.error = 0;
-        sen_r.is_control = false;
+        g_sen_r.error = 0;
+        g_sen_r.is_control = false;
       }
       break;
     case 3:
@@ -104,21 +103,24 @@ void sensorInterrupt(void)
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sen_l.value = analogRead(AD4);
+      g_sen_l.value = analogRead(AD4);
       digitalWrite(SLED_L, LOW);
-      if (sen_l.value > sen_l.th_wall) {
-        sen_l.is_wall = true;
+      if (g_sen_l.value > g_sen_l.th_wall) {
+        g_sen_l.is_wall = true;
       } else {
-        sen_l.is_wall = false;
+        g_sen_l.is_wall = false;
       }
-      if (sen_l.value > sen_l.th_control) {
-        sen_l.error = sen_l.value - sen_l.ref;
-        sen_l.is_control = true;
+      if (g_sen_l.value > g_sen_l.th_control) {
+        g_sen_l.error = g_sen_l.value - g_sen_l.ref;
+        g_sen_l.is_control = true;
       } else {
-        sen_l.error = 0;
-        sen_l.is_control = false;
+        g_sen_l.error = 0;
+        g_sen_l.is_control = false;
       }
-      battery_value = (double)analogReadMilliVolts(AD0) / 10.0 * (10.0 + 51.0);
+      g_battery_value = (double)analogReadMilliVolts(AD0) / 10.0 * (10.0 + 51.0);
+      break;
+    default:
+      Serial.printf("error¥n¥r");
       break;
   }
   cnt++;

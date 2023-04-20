@@ -23,13 +23,13 @@
 #include <std_msgs/msg/int16.h>
 // clang-format off
 
-pico_msgs__msg__LightSensor sensor_msg;
-std_msgs__msg__Int16 bat_msg;
+pico_msgs__msg__LightSensor g_sensor_msg;
+std_msgs__msg__Int16 g_bat_msg;
 
-rcl_publisher_t publisher_sensor, publisher_battery;
-rclc_support_t support;
-rcl_allocator_t allocator;
-rcl_node_t node;
+rcl_publisher_t g_publisher_sensor, g_publisher_battery;
+rclc_support_t g_support;
+rcl_allocator_t g_allocator;
+rcl_node_t g_node;
 
 #define LED0 1
 #define LED1 2
@@ -47,15 +47,15 @@ rcl_node_t node;
 #define AD1 4
 #define AD0 8
 
-hw_timer_t * timer1 = NULL;
+hw_timer_t * g_timer1 = NULL;
 
-portMUX_TYPE timer_mux = portMUX_INITIALIZER_UNLOCKED;
+portMUX_TYPE g_timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
-volatile short sensor_fr_value;
-volatile short sensor_fl_value;
-volatile short sensor_r_value;
-volatile short sensor_l_value;
-volatile short battery_value;
+volatile short g_sensor_value_fr;
+volatile short g_sensor_value_fl;
+volatile short g_sensor_value_r;
+volatile short g_sensor_value_l;
+volatile short g_battery_value;
 
 #define RCCHECK(fn)                \
   {                                \
@@ -82,14 +82,14 @@ void errorLoop()
 void IRAM_ATTR onTimer1(void)
 {
   static char cnt = 0;
-  portENTER_CRITICAL_ISR(&timer_mux);
+  portENTER_CRITICAL_ISR(&g_timer_mux);
   switch (cnt) {
     case 0:
       digitalWrite(SLED_FR, HIGH);  //LED点灯
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sensor_fr_value = analogRead(AD1);
+      g_sensor_value_fr = analogRead(AD1);
       digitalWrite(SLED_FR, LOW);  //LED消灯
       break;
     case 1:
@@ -97,7 +97,7 @@ void IRAM_ATTR onTimer1(void)
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sensor_fl_value = analogRead(AD2);
+      g_sensor_value_fl = analogRead(AD2);
       digitalWrite(SLED_FL, LOW);  //LED消灯
       break;
     case 2:
@@ -105,7 +105,7 @@ void IRAM_ATTR onTimer1(void)
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sensor_r_value = analogRead(AD3);
+      g_sensor_value_r = analogRead(AD3);
       digitalWrite(SLED_R, LOW);  //LED消灯
       break;
     case 3:
@@ -113,26 +113,29 @@ void IRAM_ATTR onTimer1(void)
       for (int i = 0; i < 300; i++) {
         asm("nop \n");
       }
-      sensor_l_value = analogRead(AD4);
+      g_sensor_value_l = analogRead(AD4);
       digitalWrite(SLED_L, LOW);  //LED消灯
-      battery_value = (double)analogReadMilliVolts(AD0) / 10.0 * (10.0 + 51.0);
+      g_battery_value = (double)analogReadMilliVolts(AD0) / 10.0 * (10.0 + 51.0);
+      break;
+    default:
+      Serial.printf("error\n\r");
       break;
   }
   cnt++;
   if (cnt == 4) cnt = 0;
-  portEXIT_CRITICAL_ISR(&timer_mux);
+  portEXIT_CRITICAL_ISR(&g_timer_mux);
 }
 
 void publisherTask(void * pvParameters)
 {
   while (1) {
-    sensor_msg.forward_r = sensor_fr_value;
-    sensor_msg.forward_l = sensor_fl_value;
-    sensor_msg.right = sensor_r_value;
-    sensor_msg.left = sensor_l_value;
-    bat_msg.data = battery_value;
-    RCSOFTCHECK(rcl_publish(&publisher_sensor, &sensor_msg, NULL));
-    RCSOFTCHECK(rcl_publish(&publisher_battery, &bat_msg, NULL));
+    g_sensor_msg.forward_r = g_sensor_value_fr;
+    g_sensor_msg.forward_l = g_sensor_value_fl;
+    g_sensor_msg.right = g_sensor_value_r;
+    g_sensor_msg.left = g_sensor_value_l;
+    g_bat_msg.data = g_battery_value;
+    RCSOFTCHECK(rcl_publish(&g_publisher_sensor, &g_sensor_msg, NULL));
+    RCSOFTCHECK(rcl_publish(&g_publisher_battery, &g_bat_msg, NULL));
     delay(10);
   }
 }
@@ -160,26 +163,26 @@ void setup()
 
   delay(2000);
 
-  timer1 = timerBegin(1, 80, true);  //1us
-  timerAttachInterrupt(timer1, &onTimer1, true);
-  timerAlarmWrite(timer1, 250, true);  //4kHz
-  timerAlarmEnable(timer1);
+  g_timer1 = timerBegin(1, 80, true);  //1us
+  timerAttachInterrupt(g_timer1, &onTimer1, true);
+  timerAlarmWrite(g_timer1, 250, true);  //4kHz
+  timerAlarmEnable(g_timer1);
 
-  allocator = rcl_get_default_allocator();
+  g_allocator = rcl_get_default_allocator();
 
   //create init_options
-  RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
+  RCCHECK(rclc_support_init(&g_support, 0, NULL, &g_allocator));
 
-  // create node
-  RCCHECK(rclc_node_init_default(&node, "micro_ros_pico_node", "", &support));
+  // create g_node
+  RCCHECK(rclc_node_init_default(&g_node, "micro_ros_pico_node", "", &g_support));
 
-  // create publisher
+  // create g_publisher
   RCCHECK(rclc_publisher_init_default(
-    &publisher_sensor, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(pico_msgs, msg, LightSensor),
+    &g_publisher_sensor, &g_node, ROSIDL_GET_MSG_TYPE_SUPPORT(pico_msgs, msg, LightSensor),
     "pico_sensor"));
 
   RCCHECK(rclc_publisher_init_default(
-    &publisher_battery, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16), "pico_battery"));
+    &g_publisher_battery, &g_node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int16), "pico_battery"));
 
   xTaskCreateUniversal(
     //  xTaskCreatePinnedToCore(

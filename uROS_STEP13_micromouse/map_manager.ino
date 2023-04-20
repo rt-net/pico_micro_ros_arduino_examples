@@ -33,7 +33,7 @@ short MapManager::getMyPosY(void) { return mypos.y; }
 
 t_direction_glob MapManager::getMyPosDir(void) { return mypos.dir; }
 
-char MapManager::getWallData(char x, char y, t_direction_glob dir)
+char MapManager::getWallData(unsigned char x, unsigned char y, t_direction_glob dir)
 {
   switch (dir) {
     case north:
@@ -52,7 +52,7 @@ char MapManager::getWallData(char x, char y, t_direction_glob dir)
   return 99;
 }
 
-void MapManager::setWallData(char x, char y, t_direction_glob dir, char data)
+void MapManager::setWallData(unsigned char x, unsigned char y, t_direction_glob dir, char data)
 {
   switch (dir) {
     case north:
@@ -70,7 +70,10 @@ void MapManager::setWallData(char x, char y, t_direction_glob dir, char data)
   }
 }
 
-unsigned short MapManager::getStepMapData(char x, char y) { return steps_map[x][y]; }
+unsigned short MapManager::getStepMapData(unsigned char x, unsigned char y)
+{
+  return steps_map[x][y];
+}
 
 char MapManager::getGoalX(void) { return goal_mx; }
 
@@ -195,8 +198,6 @@ void MapManager::makeSearchMap(int x, int y)
 //コンストラクタ
 MapManager::MapManager()
 {
-  int i, j;
-
   for (int i = 0; i < MAZESIZE_X; i++) {
     for (int j = 0; j < MAZESIZE_Y; j++) {
       wall[i][j].north = wall[i][j].east = wall[i][j].south = wall[i][j].west =
@@ -309,7 +310,7 @@ void MapManager::setWall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L)  //壁情
   }
 }
 
-int MapManager::getPriority(char x, char y, t_direction_glob dir)
+int MapManager::getPriority(unsigned char x, unsigned char y, t_direction_glob dir)
 {
   int priority;
 
@@ -473,6 +474,8 @@ t_direction MapManager::getNextDir(char x, char y, t_direction_glob * dir)
         break;
     }
   }
+
+  return front;
 }
 
 t_direction MapManager::getNextDir2(short x, short y, t_direction_glob * dir)
@@ -619,4 +622,6 @@ t_direction MapManager::getNextDir2(short x, short y, t_direction_glob * dir)
         break;
     }
   }
+
+  return front;
 }

@@ -16,14 +16,14 @@ void controlInterrupt(void)
 {
   double speed_r, speed_l;
 
-  if ((speed < 0.001) && (speed > -0.001) && (omega < 0.001) && (omega > -0.001)) {
-    motor_move = 0;
+  if ((g_speed < 0.001) && (g_speed > -0.001) && (g_omega < 0.001) && (g_omega > -0.001)) {
+    g_motor_move = 0;
   } else {
-    motor_move = 1;
+    g_motor_move = 1;
   }
 
-  speed_r = speed + omega * TREAD_WIDTH / 2.0;
-  speed_l = speed - omega * TREAD_WIDTH / 2.0;
+  speed_r = g_speed + g_omega * TREAD_WIDTH / 2.0;
+  speed_l = g_speed - g_omega * TREAD_WIDTH / 2.0;
 
   if ((speed_r > 0.001) && (speed_r < MIN_SPEED)) {
     speed_r = MIN_SPEED;
@@ -35,25 +35,25 @@ void controlInterrupt(void)
   } else if ((speed_l < -0.001) && (speed_l > (-1.0 * MIN_SPEED))) {
     speed_l = -1.0 * MIN_SPEED;
   }
-  speed = (speed_r + speed_l) / 2.0;
+  g_speed = (speed_r + speed_l) / 2.0;
 
-  odom_x += speed * 0.001 * cos(odom_theta) * 0.001;
-  odom_y += speed * 0.001 * sin(odom_theta) * 0.001;
-  odom_theta += omega * 0.001;
-  position_r += speed_r * 0.001 / (48 * PI) * 2 * PI;
-  position_l -= speed_l * 0.001 / (48 * PI) * 2 * PI;
+  g_odom_x += g_speed * 0.001 * cos(g_odom_theta) * 0.001;
+  g_odom_y += g_speed * 0.001 * sin(g_odom_theta) * 0.001;
+  g_odom_theta += g_omega * 0.001;
+  g_position_r += speed_r * 0.001 / (48 * PI) * 2 * PI;
+  g_position_l -= speed_l * 0.001 / (48 * PI) * 2 * PI;
 
   if (speed_r > 0) {
     digitalWrite(CW_R, LOW);
   } else {
     digitalWrite(CW_R, HIGH);
   }
-  r_step_hz = abs((signed short)(speed_r / PULSE));
+  g_step_hz_r = abs((signed short)(speed_r / PULSE));
 
   if (speed_l > 0) {
     digitalWrite(CW_L, LOW);
   } else {
     digitalWrite(CW_L, HIGH);
   }
-  l_step_hz = abs((signed short)(speed_l / PULSE));
+  g_step_hz_l = abs((signed short)(speed_l / PULSE));
 }
