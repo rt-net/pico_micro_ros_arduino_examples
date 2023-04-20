@@ -119,6 +119,9 @@ void sensorInterrupt(void)
       }
       g_battery_value = (double)analogReadMilliVolts(AD0) / 10.0 * (10.0 + 51.0);
       break;
+    default:
+      Serial.printf("error¥n¥r");
+      break;
   }
   cnt++;
   if (cnt == 4) cnt = 0;
