@@ -1,9 +1,29 @@
-# micro-ROS Arduino examples for Pi:Co Classic 3
+# micro-ROS Arduino examples for Pi:Co Classic3
 
 [![Compile Sketches](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/compile-sketches.yaml/badge.svg)](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/compile-sketches.yaml)
 [![Lint](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/lint.yaml/badge.svg)](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/lint.yaml)
 
-Pi:Co Classic 3用のmicro-ROS Arduino サンプル集です
+Pi:Co Classic3用のmicro-ROS Arduinoサンプルスケッチ集です。
+
+オプションキット No.1 [ESP32-S3マイコンボード]を搭載したPi:Co Classic3を、
+**Arduino**および**micro-ROS**で動かせます。
+
+## サンプルスケッチについて
+
+### STEP1 ~ STEP8
+
+- micro-ROSを使用しないサンプルスケッチです
+- Pi:Co Classic3のハードウェアを動かすための、Arduinoスケッチの書き方をまとめています
+
+### STEP10 ~ STEP13
+
+- micro-ROSを使用するサンプルスケッチです
+- PCとPi:Co Classic3間で通信するための、Arduinoスケッチの書き方をまとめています
+
+## 関連ソフトウェア
+
+- [pico_msgs](https://github.com/rt-net/pico_msgs) : PCとPi:Co Classic3間でやりとりするROSメッセージを定義したパッケージです
+- [pico_ros](https://github.com/rt-net/pico_ros) : Pi:Co Classic3を便利に動かすためのPC向けROSパッケージ集です
 
 ## スケッチファイルの自動整形について
 
