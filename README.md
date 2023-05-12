@@ -3,9 +3,12 @@
 [![Compile Sketches](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/compile-sketches.yaml/badge.svg)](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/compile-sketches.yaml)
 [![Lint](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/lint.yaml/badge.svg)](https://github.com/rt-net/pico_micro_ros_arduino_examples/actions/workflows/lint.yaml)
 
+![pico](https://rt-net.github.io/images/pico/PiCo_ESP32_500x500.png)
+
 Pi:Co Classic3用のmicro-ROS Arduinoサンプルスケッチ集です。
 
-オプションキット No.1 [ESP32-S3マイコンボード]を搭載したPi:Co Classic3を、
+[オプションキット No.1 [ESP32-S3マイコンボード]](https://www.rt-shop.jp/index.php?main_page=product_info&products_id=4131)
+を搭載したPi:Co Classic3を、
 **Arduino**および**micro-ROS**で動かせます。
 
 ## サンプルスケッチについて
