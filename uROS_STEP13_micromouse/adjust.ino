@@ -116,7 +116,7 @@ void straightCheck(int section_check)
   disableMotor();
 }
 
-void goAndTurnRight(void)
+void rotationCheck(void)
 {
   enableMotor();
   delay(1000);
@@ -173,7 +173,7 @@ unsigned char execByModeAdjust(unsigned char mode)
       break;
 
     case 3:
-      goAndTurnRight();
+      rotationCheck();
       break;
     case 4:
       copyMap();
