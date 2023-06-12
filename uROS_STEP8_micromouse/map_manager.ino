@@ -41,25 +41,12 @@ void MapManager::positionInit(void)
   mypos.x = mypos.y = 0;
   mypos.dir = north;
 }
-/*
-unsigned short *MapManager::GET_WALL_POINTER(void) {
-  return (unsigned short *)wall;
-}
-*/
-void MapManager::setMyPos(char x, char y, t_direction_glob dir)
-{
-  mypos.x = x;
-  mypos.y = y;
-  mypos.dir = dir;
-}
 
 void MapManager::setMyPosDir(t_direction_glob dir) { mypos.dir = dir; }
 
 short MapManager::getMyPosX(void) { return mypos.x; }
 
 short MapManager::getMyPosY(void) { return mypos.y; }
-
-t_direction_glob MapManager::getMyPosDir(void) { return mypos.dir; }
 
 char MapManager::getWallData(unsigned char x, unsigned char y, t_direction_glob dir)
 {
@@ -98,11 +85,6 @@ void MapManager::setWallData(unsigned char x, unsigned char y, t_direction_glob 
   }
 }
 
-unsigned short MapManager::getStepMapData(unsigned char x, unsigned char y)
-{
-  return steps_map[x][y];
-}
-
 char MapManager::getGoalX(void) { return goal_mx; }
 
 char MapManager::getGoalY(void) { return goal_my; }
@@ -110,118 +92,6 @@ char MapManager::getGoalY(void) { return goal_my; }
 void MapManager::setGoalX(short data) { goal_mx = data; }
 
 void MapManager::setGoalY(short data) { goal_my = data; }
-
-void MapManager::makeMap2(int x, int y)
-{
-  bool change_flag;
-
-  for (int i = 0; i < MAZESIZE_X; i++) {
-    for (int j = 0; j < MAZESIZE_Y; j++) {
-      steps_map[i][j] = 65535;
-    }
-  }
-  steps_map[x][y] = 0;
-
-  do {
-    change_flag = false;
-    for (int i = 0; i < MAZESIZE_X; i++) {
-      for (int j = 0; j < MAZESIZE_Y; j++) {
-        if (steps_map[i][j] == 65535) continue;
-        if (j < (MAZESIZE_Y - 1)) {
-          if (wall[i][j].north == NOWALL) {
-            if (steps_map[i][j + 1] == 65535) {
-              steps_map[i][j + 1] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-
-        if (i < (MAZESIZE_X - 1)) {
-          if (wall[i][j].east == NOWALL) {
-            if (steps_map[i + 1][j] == 65535) {
-              steps_map[i + 1][j] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-
-        if (j > 0) {
-          if (wall[i][j].south == NOWALL) {
-            if (steps_map[i][j - 1] == 65535) {
-              steps_map[i][j - 1] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-
-        if (i > 0) {
-          if (wall[i][j].west == NOWALL) {
-            if (steps_map[i - 1][j] == 65535) {
-              steps_map[i - 1][j] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-      }
-    }
-  } while (change_flag == true);
-}
-
-void MapManager::makeSearchMap(int x, int y)
-{
-  bool change_flag;
-
-  for (int i = 0; i < MAZESIZE_X; i++) {
-    for (int j = 0; j < MAZESIZE_Y; j++) {
-      steps_map[i][j] = 65535;
-    }
-  }
-  steps_map[x][y] = 0;
-
-  do {
-    change_flag = false;
-    for (int i = 0; i < MAZESIZE_X; i++) {
-      for (int j = 0; j < MAZESIZE_Y; j++) {
-        if (steps_map[i][j] == 65535) continue;
-        if (j < (MAZESIZE_Y - 1)) {
-          if (wall[i][j].north != WALL) {
-            if (steps_map[i][j + 1] == 65535) {
-              steps_map[i][j + 1] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-
-        if (i < (MAZESIZE_X - 1)) {
-          if (wall[i][j].east != WALL) {
-            if (steps_map[i + 1][j] == 65535) {
-              steps_map[i + 1][j] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-
-        if (j > 0) {
-          if (wall[i][j].south != WALL) {
-            if (steps_map[i][j - 1] == 65535) {
-              steps_map[i][j - 1] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-
-        if (i > 0) {
-          if (wall[i][j].west != WALL) {
-            if (steps_map[i - 1][j] == 65535) {
-              steps_map[i - 1][j] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-      }
-    }
-  } while (change_flag == true);
-}
 
 void MapManager::axisUpdate(void)
 {
@@ -312,31 +182,6 @@ void MapManager::setWall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L)  //壁情
       if ((mypos.y - 1) > -1) wall[mypos.x][mypos.y - 1].north = IS_SEN_L ? WALL : NOWALL;
       break;
   }
-}
-
-int MapManager::getPriority(unsigned char x, unsigned char y, t_direction_glob dir)
-{
-  int priority;
-
-  priority = 0;
-
-  if (mypos.dir == dir) {
-    priority = 2;
-  } else if (
-    ((mypos.dir == north) && (dir == south)) || ((mypos.dir == east) && (dir == west)) ||
-    ((mypos.dir == south) && (dir == north)) || ((mypos.dir == west) && (dir == east))) {
-    priority = 0;
-  } else {
-    priority = 1;
-  }
-
-  if (
-    (wall[x][y].north == _UNKNOWN) || (wall[x][y].east == _UNKNOWN) ||
-    (wall[x][y].south == _UNKNOWN) || (wall[x][y].west == _UNKNOWN)) {
-    priority += 4;
-  }
-
-  return priority;
 }
 
 t_direction MapManager::getNextDir(char x, char y, t_direction_glob * dir)
@@ -624,4 +469,141 @@ t_direction MapManager::getNextDir2(short x, short y, t_direction_glob * dir)
   }
 
   return front;
+}
+
+void MapManager::makeMap2(int x, int y)
+{
+  bool change_flag;
+
+  for (int i = 0; i < MAZESIZE_X; i++) {
+    for (int j = 0; j < MAZESIZE_Y; j++) {
+      steps_map[i][j] = 65535;
+    }
+  }
+  steps_map[x][y] = 0;
+
+  do {
+    change_flag = false;
+    for (int i = 0; i < MAZESIZE_X; i++) {
+      for (int j = 0; j < MAZESIZE_Y; j++) {
+        if (steps_map[i][j] == 65535) continue;
+        if (j < (MAZESIZE_Y - 1)) {
+          if (wall[i][j].north == NOWALL) {
+            if (steps_map[i][j + 1] == 65535) {
+              steps_map[i][j + 1] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+
+        if (i < (MAZESIZE_X - 1)) {
+          if (wall[i][j].east == NOWALL) {
+            if (steps_map[i + 1][j] == 65535) {
+              steps_map[i + 1][j] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+
+        if (j > 0) {
+          if (wall[i][j].south == NOWALL) {
+            if (steps_map[i][j - 1] == 65535) {
+              steps_map[i][j - 1] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+
+        if (i > 0) {
+          if (wall[i][j].west == NOWALL) {
+            if (steps_map[i - 1][j] == 65535) {
+              steps_map[i - 1][j] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+      }
+    }
+  } while (change_flag == true);
+}
+
+void MapManager::makeSearchMap(int x, int y)
+{
+  bool change_flag;
+
+  for (int i = 0; i < MAZESIZE_X; i++) {
+    for (int j = 0; j < MAZESIZE_Y; j++) {
+      steps_map[i][j] = 65535;
+    }
+  }
+  steps_map[x][y] = 0;
+
+  do {
+    change_flag = false;
+    for (int i = 0; i < MAZESIZE_X; i++) {
+      for (int j = 0; j < MAZESIZE_Y; j++) {
+        if (steps_map[i][j] == 65535) continue;
+        if (j < (MAZESIZE_Y - 1)) {
+          if (wall[i][j].north != WALL) {
+            if (steps_map[i][j + 1] == 65535) {
+              steps_map[i][j + 1] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+
+        if (i < (MAZESIZE_X - 1)) {
+          if (wall[i][j].east != WALL) {
+            if (steps_map[i + 1][j] == 65535) {
+              steps_map[i + 1][j] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+
+        if (j > 0) {
+          if (wall[i][j].south != WALL) {
+            if (steps_map[i][j - 1] == 65535) {
+              steps_map[i][j - 1] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+
+        if (i > 0) {
+          if (wall[i][j].west != WALL) {
+            if (steps_map[i - 1][j] == 65535) {
+              steps_map[i - 1][j] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+      }
+    }
+  } while (change_flag == true);
+}
+
+int MapManager::getPriority(unsigned char x, unsigned char y, t_direction_glob dir)
+{
+  int priority;
+
+  priority = 0;
+
+  if (mypos.dir == dir) {
+    priority = 2;
+  } else if (
+    ((mypos.dir == north) && (dir == south)) || ((mypos.dir == east) && (dir == west)) ||
+    ((mypos.dir == south) && (dir == north)) || ((mypos.dir == west) && (dir == east))) {
+    priority = 0;
+  } else {
+    priority = 1;
+  }
+
+  if (
+    (wall[x][y].north == _UNKNOWN) || (wall[x][y].east == _UNKNOWN) ||
+    (wall[x][y].south == _UNKNOWN) || (wall[x][y].west == _UNKNOWN)) {
+    priority += 4;
+  }
+
+  return priority;
 }
