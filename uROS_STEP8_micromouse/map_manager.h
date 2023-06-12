@@ -37,8 +37,8 @@ private:
   short goal_mx, goal_my;
 
 public:
-  void view(char view_weight_f);
-  //  unsigned short *GET_WALL_POINTER(void);
+  MapManager();
+
   void positionInit(void);
   void setMyPos(char x, char y, t_direction_glob dir);
   void setMyPosDir(t_direction_glob dir);
@@ -52,18 +52,14 @@ public:
   char getGoalY(void);
   void setGoalX(short data);
   void setGoalY(short data);
-
   void makeMap2(int x, int y);
   void makeSearchMap(int x, int y);
-  t_direction getNextDir2(short x, short y, t_direction_glob * dir);
-  t_direction getNextDir(char x, char y, t_direction_glob * dir);
   void axisUpdate(void);
   void nextDir(t_direction dir);
-  void wallch(int x, int y, int x2, int y2);
   void setWall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L);
   int getPriority(unsigned char x, unsigned char y, t_direction_glob dir);
-
-  MapManager();
+  t_direction getNextDir(char x, char y, t_direction_glob * dir);
+  t_direction getNextDir2(short x, short y, t_direction_glob * dir);
 };
 
 #endif  // MAP_MANAGER_H_

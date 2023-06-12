@@ -12,6 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//コンストラクタ
+MapManager::MapManager()
+{
+  for (int i = 0; i < MAZESIZE_X; i++) {
+    for (int j = 0; j < MAZESIZE_Y; j++) {
+      wall[i][j].north = wall[i][j].east = wall[i][j].south = wall[i][j].west =
+        _UNKNOWN;  //迷路の全体がわからない事を設定する
+    }
+  }
+
+  for (int i = 0; i < MAZESIZE_X; i++) {
+    wall[i][0].south = WALL;               //四方の壁を追加する(南)
+    wall[i][MAZESIZE_Y - 1].north = WALL;  //四方の壁を追加する(北)
+  }
+
+  for (int i = 0; i < MAZESIZE_Y; i++) {
+    wall[0][i].west = WALL;               //四方の壁を追加する(西)
+    wall[MAZESIZE_X - 1][i].east = WALL;  //四方の壁を追加する(東)
+  }
+  //   x,y
+  wall[0][0].east = wall[1][0].west = WALL;  //スタート地点の右の壁を追加する
+  wall[0][0].north = wall[0][1].south = NOWALL;
+}
+
 void MapManager::positionInit(void)
 {
   mypos.x = mypos.y = 0;
@@ -31,11 +55,11 @@ void MapManager::setMyPos(char x, char y, t_direction_glob dir)
 
 void MapManager::setMyPosDir(t_direction_glob dir) { mypos.dir = dir; }
 
-t_direction_glob MapManager::getMyPosDir(void) { return mypos.dir; }
-
 short MapManager::getMyPosX(void) { return mypos.x; }
 
 short MapManager::getMyPosY(void) { return mypos.y; }
+
+t_direction_glob MapManager::getMyPosDir(void) { return mypos.dir; }
 
 char MapManager::getWallData(unsigned char x, unsigned char y, t_direction_glob dir)
 {
@@ -197,30 +221,6 @@ void MapManager::makeSearchMap(int x, int y)
       }
     }
   } while (change_flag == true);
-}
-
-//コンストラクタ
-MapManager::MapManager()
-{
-  for (int i = 0; i < MAZESIZE_X; i++) {
-    for (int j = 0; j < MAZESIZE_Y; j++) {
-      wall[i][j].north = wall[i][j].east = wall[i][j].south = wall[i][j].west =
-        _UNKNOWN;  //迷路の全体がわからない事を設定する
-    }
-  }
-
-  for (int i = 0; i < MAZESIZE_X; i++) {
-    wall[i][0].south = WALL;               //四方の壁を追加する(南)
-    wall[i][MAZESIZE_Y - 1].north = WALL;  //四方の壁を追加する(北)
-  }
-
-  for (int i = 0; i < MAZESIZE_Y; i++) {
-    wall[0][i].west = WALL;               //四方の壁を追加する(西)
-    wall[MAZESIZE_X - 1][i].east = WALL;  //四方の壁を追加する(東)
-  }
-  //   x,y
-  wall[0][0].east = wall[1][0].west = WALL;  //スタート地点の右の壁を追加する
-  wall[0][0].north = wall[0][1].south = NOWALL;
 }
 
 void MapManager::axisUpdate(void)
