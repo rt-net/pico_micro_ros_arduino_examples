@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-void straight(int len, int init_speed, int max_sp, int finish_speed)
+void straight(int len, int init_speed, int max_speed, int finish_speed)
 {
   int obj_step;
 
   controlInterruptStop();
-  g_max_speed = max_sp;
+  g_max_speed = max_speed;
   g_accel = SEARCH_ACCEL;
 
   if (init_speed < MIN_SPEED) {
