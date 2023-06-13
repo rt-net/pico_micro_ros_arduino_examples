@@ -55,8 +55,8 @@ private:
   t_position mypos;
   short goal_mx, goal_my;
 
-  void makeMap2(int x, int y);
   void makeSearchMap(int x, int y);
+  void makeMap2(int x, int y);
   int getPriority(unsigned char x, unsigned char y, t_direction_glob dir);
 };
 

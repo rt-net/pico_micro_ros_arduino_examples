@@ -471,62 +471,6 @@ t_direction MapManager::getNextDir2(short x, short y, t_direction_glob * dir)
   return front;
 }
 
-void MapManager::makeMap2(int x, int y)
-{
-  bool change_flag;
-
-  for (int i = 0; i < MAZESIZE_X; i++) {
-    for (int j = 0; j < MAZESIZE_Y; j++) {
-      steps_map[i][j] = 65535;
-    }
-  }
-  steps_map[x][y] = 0;
-
-  do {
-    change_flag = false;
-    for (int i = 0; i < MAZESIZE_X; i++) {
-      for (int j = 0; j < MAZESIZE_Y; j++) {
-        if (steps_map[i][j] == 65535) continue;
-        if (j < (MAZESIZE_Y - 1)) {
-          if (wall[i][j].north == NOWALL) {
-            if (steps_map[i][j + 1] == 65535) {
-              steps_map[i][j + 1] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-
-        if (i < (MAZESIZE_X - 1)) {
-          if (wall[i][j].east == NOWALL) {
-            if (steps_map[i + 1][j] == 65535) {
-              steps_map[i + 1][j] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-
-        if (j > 0) {
-          if (wall[i][j].south == NOWALL) {
-            if (steps_map[i][j - 1] == 65535) {
-              steps_map[i][j - 1] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-
-        if (i > 0) {
-          if (wall[i][j].west == NOWALL) {
-            if (steps_map[i - 1][j] == 65535) {
-              steps_map[i - 1][j] = steps_map[i][j] + 1;
-              change_flag = true;
-            }
-          }
-        }
-      }
-    }
-  } while (change_flag == true);
-}
-
 void MapManager::makeSearchMap(int x, int y)
 {
   bool change_flag;
@@ -572,6 +516,62 @@ void MapManager::makeSearchMap(int x, int y)
 
         if (i > 0) {
           if (wall[i][j].west != WALL) {
+            if (steps_map[i - 1][j] == 65535) {
+              steps_map[i - 1][j] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+      }
+    }
+  } while (change_flag == true);
+}
+
+void MapManager::makeMap2(int x, int y)
+{
+  bool change_flag;
+
+  for (int i = 0; i < MAZESIZE_X; i++) {
+    for (int j = 0; j < MAZESIZE_Y; j++) {
+      steps_map[i][j] = 65535;
+    }
+  }
+  steps_map[x][y] = 0;
+
+  do {
+    change_flag = false;
+    for (int i = 0; i < MAZESIZE_X; i++) {
+      for (int j = 0; j < MAZESIZE_Y; j++) {
+        if (steps_map[i][j] == 65535) continue;
+        if (j < (MAZESIZE_Y - 1)) {
+          if (wall[i][j].north == NOWALL) {
+            if (steps_map[i][j + 1] == 65535) {
+              steps_map[i][j + 1] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+
+        if (i < (MAZESIZE_X - 1)) {
+          if (wall[i][j].east == NOWALL) {
+            if (steps_map[i + 1][j] == 65535) {
+              steps_map[i + 1][j] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+
+        if (j > 0) {
+          if (wall[i][j].south == NOWALL) {
+            if (steps_map[i][j - 1] == 65535) {
+              steps_map[i][j - 1] = steps_map[i][j] + 1;
+              change_flag = true;
+            }
+          }
+        }
+
+        if (i > 0) {
+          if (wall[i][j].west == NOWALL) {
             if (steps_map[i - 1][j] == 65535) {
               steps_map[i - 1][j] = steps_map[i][j] + 1;
               change_flag = true;
