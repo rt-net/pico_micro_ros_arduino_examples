@@ -18,7 +18,7 @@ Pi:Co Classic3用のmicro-ROS Arduinoサンプルスケッチ集です。
 - micro-ROSを使用しないサンプルスケッチです
 - Pi:Co Classic3のハードウェアを動かすための、Arduinoスケッチの書き方をまとめています
 
-### STEP10 ~ STEP13
+### STEP9 ~ STEP12
 
 - micro-ROSを使用するサンプルスケッチです
 - PCとPi:Co Classic3間で通信するための、Arduinoスケッチの書き方をまとめています
