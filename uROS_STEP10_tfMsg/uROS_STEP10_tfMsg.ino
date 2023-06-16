@@ -298,7 +298,5 @@ void loop()
   RCSOFTCHECK(rcl_publish(&g_publisher, g_tf_message, NULL));
   RCSOFTCHECK(rcl_publish(&g_publisher2, &g_jstate, NULL));
 
-  RCCHECK(rclc_executor_spin_some(&g_executor, RCL_MS_TO_NS(100)));  //for subscription
-
-  delay(10);
+  RCCHECK(rclc_executor_spin_some(&g_executor, RCL_MS_TO_NS(10)));  //for subscription
 }
