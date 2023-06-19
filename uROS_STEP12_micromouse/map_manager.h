@@ -30,13 +30,9 @@ typedef struct
 
 class MapManager
 {
-private:
-  unsigned short steps_map[MAZESIZE_X][MAZESIZE_Y];  //歩数マップ
-  t_wall wall[MAZESIZE_X][MAZESIZE_Y];               //壁の情報を格納する構造体配列
-  t_position mypos;
-  short goal_mx, goal_my;
-
 public:
+  MapManager();
+
   void positionInit(void);
   void setMyPosDir(t_direction_glob dir);
   short getMyPosX(void);
@@ -48,17 +44,21 @@ public:
   char getGoalY(void);
   void setGoalX(short data);
   void setGoalY(short data);
-
-  void makeMap2(int x, int y);
-  void makeSearchMap(int x, int y);
-  t_direction getNextDir2(short x, short y, t_direction_glob * dir);
-  t_direction getNextDir(char x, char y, t_direction_glob * dir);
   void axisUpdate(void);
   void nextDir(t_direction dir);
   void setWall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L);
-  int getPriority(unsigned char x, unsigned char y, t_direction_glob dir);
+  t_direction getNextDir(char x, char y, t_direction_glob * dir);
+  t_direction getNextDir2(short x, short y, t_direction_glob * dir);
 
-  MapManager();
+private:
+  unsigned short steps_map[MAZESIZE_X][MAZESIZE_Y];  //歩数マップ
+  t_wall wall[MAZESIZE_X][MAZESIZE_Y];               //壁の情報を格納する構造体配列
+  t_position mypos;
+  short goal_mx, goal_my;
+
+  void makeSearchMap(int x, int y);
+  void makeMap2(int x, int y);
+  int getPriority(unsigned char x, unsigned char y, t_direction_glob dir);
 };
 
 #endif  // MAP_MANAGER_H_
