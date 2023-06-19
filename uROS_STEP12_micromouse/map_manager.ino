@@ -18,13 +18,6 @@ void MapManager::positionInit(void)
   mypos.dir = north;
 }
 
-void MapManager::setMyPos(char x, char y, t_direction_glob dir)
-{
-  mypos.x = x;
-  mypos.y = y;
-  mypos.dir = dir;
-}
-
 void MapManager::setMyPosDir(t_direction_glob dir) { mypos.dir = dir; }
 
 short MapManager::getMyPosX(void) { return mypos.x; }
@@ -68,11 +61,6 @@ void MapManager::setWallData(unsigned char x, unsigned char y, t_direction_glob 
       wall[x][y].east = data;
       break;
   }
-}
-
-unsigned short MapManager::getStepMapData(unsigned char x, unsigned char y)
-{
-  return steps_map[x][y];
 }
 
 char MapManager::getGoalX(void) { return goal_mx; }

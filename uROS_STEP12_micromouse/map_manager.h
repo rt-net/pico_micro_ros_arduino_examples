@@ -37,16 +37,13 @@ private:
   short goal_mx, goal_my;
 
 public:
-  void view(char view_weight_f);
   void positionInit(void);
-  void setMyPos(char x, char y, t_direction_glob dir);
   void setMyPosDir(t_direction_glob dir);
   short getMyPosX(void);
   short getMyPosY(void);
   t_direction_glob getMyPosDir(void);
   char getWallData(unsigned char x, unsigned char y, t_direction_glob dir);
   void setWallData(unsigned char x, unsigned char y, t_direction_glob dir, char data);
-  unsigned short getStepMapData(unsigned char x, unsigned char y);
   char getGoalX(void);
   char getGoalY(void);
   void setGoalX(short data);
@@ -58,7 +55,6 @@ public:
   t_direction getNextDir(char x, char y, t_direction_glob * dir);
   void axisUpdate(void);
   void nextDir(t_direction dir);
-  void wallch(int x, int y, int x2, int y2);
   void setWall(bool IS_SEN_FR, bool IS_SEN_R, bool IS_SEN_L);
   int getPriority(unsigned char x, unsigned char y, t_direction_glob dir);
 
