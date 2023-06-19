@@ -14,34 +14,35 @@
 
 void controlInterrupt(void)
 {
-  double speed_r, speed_l;
+  // 直進速度と回転速度から、左右のモータ速度を求める
+  double speed_r = g_speed + g_omega * TREAD_WIDTH / 2.0;
+  double speed_l = g_speed - g_omega * TREAD_WIDTH / 2.0;
 
-  if ((g_speed < 0.001) && (g_speed > -0.001) && (g_omega < 0.001) && (g_omega > -0.001)) {
+  // 左右両方のモータ速度がMIN_SPEED以下の場合は走行を停止する
+  if (fabs(speed_r) < MIN_SPEED && fabs(speed_l) < MIN_SPEED) {
     g_motor_move = 0;
-  } else {
-    g_motor_move = 1;
+    return;
   }
 
-  speed_r = g_speed + g_omega * TREAD_WIDTH / 2.0;
-  speed_l = g_speed - g_omega * TREAD_WIDTH / 2.0;
-
-  if ((speed_r > 0.001) && (speed_r < MIN_SPEED)) {
-    speed_r = MIN_SPEED;
-  } else if ((speed_r < -0.001) && (speed_r > (-1.0 * MIN_SPEED))) {
-    speed_r = -1.0 * MIN_SPEED;
+  g_motor_move = 1;
+  // モータ速度をMIN_SPEED以上に制限する
+  if (fabs(speed_r) < MIN_SPEED) {
+    speed_r = (speed_r > 0.0) ? MIN_SPEED : -1.0 * MIN_SPEED;
   }
-  if ((speed_l > 0.001) && (speed_l < MIN_SPEED)) {
-    speed_l = MIN_SPEED;
-  } else if ((speed_l < -0.001) && (speed_l > (-1.0 * MIN_SPEED))) {
-    speed_l = -1.0 * MIN_SPEED;
+  if (fabs(speed_l) < MIN_SPEED) {
+    speed_l = (speed_l > 0.0) ? MIN_SPEED : -1.0 * MIN_SPEED;
   }
-  g_speed = (speed_r + speed_l) / 2.0;
 
-  g_odom_x += g_speed * 0.001 * cos(g_odom_theta) * 0.001;
-  g_odom_y += g_speed * 0.001 * sin(g_odom_theta) * 0.001;
-  g_odom_theta += g_omega * 0.001;
-  g_position_r += speed_r * 0.001 / (48 * PI) * 2 * PI;
-  g_position_l -= speed_l * 0.001 / (48 * PI) * 2 * PI;
+  // 制限されたモータ速度から、直進速度と回転速度を求める
+  const double forward_speed = (speed_r + speed_l) / 2.0;
+  const double omega = (speed_r - speed_l) / TREAD_WIDTH;
+
+  const double UPDATE_INTERVAL = 0.001;
+  g_odom_x += forward_speed * UPDATE_INTERVAL * cos(g_odom_theta) * UPDATE_INTERVAL;
+  g_odom_y += forward_speed * UPDATE_INTERVAL * sin(g_odom_theta) * UPDATE_INTERVAL;
+  g_odom_theta += omega * UPDATE_INTERVAL;
+  g_position_r += speed_r * UPDATE_INTERVAL / (TIRE_DIAMETER * PI) * 2 * PI;
+  g_position_l -= speed_l * UPDATE_INTERVAL / (TIRE_DIAMETER * PI) * 2 * PI;
 
   if (speed_r > 0) {
     digitalWrite(CW_R, LOW);
