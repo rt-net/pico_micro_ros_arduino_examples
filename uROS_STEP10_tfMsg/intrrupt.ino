@@ -14,18 +14,18 @@
 
 void controlInterrupt(void)
 {
-  // 直進速度と回転速度から、左右のタイヤ速度を求める
+  // 直進速度と回転速度から、左右のモータ速度を求める
   double speed_r = g_speed + g_omega * TREAD_WIDTH / 2.0;
   double speed_l = g_speed - g_omega * TREAD_WIDTH / 2.0;
 
-  // 左右両方のタイヤ速度がMIN_SPEED以下の場合は走行を停止する
+  // 左右両方のモータ速度がMIN_SPEED以下の場合は走行を停止する
   if (fabs(speed_r) < MIN_SPEED && fabs(speed_l) < MIN_SPEED) {
     g_motor_move = 0;
     return;
   }
 
   g_motor_move = 1;
-  // タイヤの最低速度をMIN_SPEEDに制限する
+  // モータ速度をMIN_SPEED以上に制限する
   if (fabs(speed_r) < MIN_SPEED) {
     speed_r = (speed_r > 0.0) ? MIN_SPEED : -1.0 * MIN_SPEED;
   }
@@ -33,7 +33,7 @@ void controlInterrupt(void)
     speed_l = (speed_l > 0.0) ? MIN_SPEED : -1.0 * MIN_SPEED;
   }
 
-  // 制限されたタイヤ速度から、直進速度と回転速度を求める
+  // 制限されたモータ速度から、直進速度と回転速度を求める
   const double forward_speed = (speed_r + speed_l) / 2.0;
   const double omega = (speed_r - speed_l) / TREAD_WIDTH;
 
