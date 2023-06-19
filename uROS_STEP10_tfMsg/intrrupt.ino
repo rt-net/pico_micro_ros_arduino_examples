@@ -18,9 +18,8 @@ void controlInterrupt(void)
   double speed_r = g_speed + g_omega * TREAD_WIDTH / 2.0;
   double speed_l = g_speed - g_omega * TREAD_WIDTH / 2.0;
 
-  // 左右両方のタイヤ速度がMOTOR_OFF_THRESHOLD以下の場合は走行を停止する
-  const double MOTOR_OFF_THRESHOLD = MIN_SPEED * 0.5;
-  if (fabs(speed_r) < MOTOR_OFF_THRESHOLD && fabs(speed_l) < MOTOR_OFF_THRESHOLD) {
+  // 左右両方のタイヤ速度がMIN_SPEED以下の場合は走行を停止する
+  if (fabs(speed_r) < MIN_SPEED && fabs(speed_l) < MIN_SPEED) {
     g_motor_move = 0;
     return;
   }
