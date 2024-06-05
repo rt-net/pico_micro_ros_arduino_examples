@@ -11,6 +11,10 @@ Pi:Co Classic3用のmicro-ROS Arduinoサンプルスケッチ集です。
 を搭載したPi:Co Classic3を、
 **Arduino**および**micro-ROS**で動かせます。
 
+## 動作環境
+
+- arduino-esp32 : v2.0.17
+
 ## サンプルスケッチについて
 
 ### STEP1 ~ STEP8
