@@ -1,4 +1,4 @@
-// Copyright 2023 RT Corporation
+// Copyright 2024 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,22 +60,22 @@ void execByMode(char mode)
 {
   switch (mode) {
     case 1:
-      ledcWriteTone(0, FREQ_C);
+      ledcWriteTone(BUZZER, FREQ_C);
       delay(1000);
-      ledcWrite(0, 1024);
+      ledcWrite(BUZZER, 1024);
       break;
     case 2:
-      ledcWriteTone(0, FREQ_D);
+      ledcWriteTone(BUZZER, FREQ_D);
       delay(1000);
-      ledcWrite(0, 1024);
+      ledcWrite(BUZZER, 1024);
       break;
     case 3:
-      ledcWriteTone(0, FREQ_E);
+      ledcWriteTone(BUZZER, FREQ_E);
       delay(1000);
-      ledcWrite(0, 1024);
+      ledcWrite(BUZZER, 1024);
       break;
     default:
-      ledcWrite(0, 1024);
+      ledcWrite(BUZZER, 1024);
       break;
   }
 }
@@ -92,9 +92,8 @@ void setup()
   pinMode(SW_C, INPUT);
   pinMode(SW_R, INPUT);
 
-  ledcSetup(0, 440, 10);
-  ledcAttachPin(BUZZER, 0);
-  ledcWrite(0, 1024);
+  ledcAttach(BUZZER, 440, 10);
+  ledcWrite(BUZZER, 1024);
 
   g_mode = 1;
   setLED(g_mode);
@@ -111,9 +110,9 @@ void loop()
     if (g_mode > 15) {
       g_mode = 15;
     } else {
-      ledcWriteTone(0, INC_FREQ);
+      ledcWriteTone(BUZZER, INC_FREQ);
       delay(30);
-      ledcWrite(0, 1024);
+      ledcWrite(BUZZER, 1024);
     }
     setLED(g_mode);
   }
@@ -122,18 +121,18 @@ void loop()
     if (g_mode < 1) {
       g_mode = 1;
     } else {
-      ledcWriteTone(0, DEC_FREQ);
+      ledcWriteTone(BUZZER, DEC_FREQ);
       delay(30);
-      ledcWrite(0, 1024);
+      ledcWrite(BUZZER, 1024);
     }
     setLED(g_mode);
   }
   if (digitalRead(SW_C) == 0) {
-    ledcWriteTone(0, INC_FREQ);
+    ledcWriteTone(BUZZER, INC_FREQ);
     delay(80);
-    ledcWriteTone(0, DEC_FREQ);
+    ledcWriteTone(BUZZER, DEC_FREQ);
     delay(80);
-    ledcWrite(0, 1024);
+    ledcWrite(BUZZER, 1024);
     delay(300);
     execByMode(g_mode);
   }
