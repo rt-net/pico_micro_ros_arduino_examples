@@ -1,4 +1,4 @@
-// Copyright 2023 RT Corporation
+// Copyright 2024 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ void IRAM_ATTR isrR(void)
 {
   portENTER_CRITICAL_ISR(&g_timer_mux);  //割り込み禁止
   if (g_motor_move) {
-    timerAlarmWrite(g_timer2, 2000000 / g_step_hz_r, true);
+    timerAlarm(g_timer2, 2000000 / g_step_hz_r, true, 0);
     digitalWrite(PWM_R, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
@@ -88,7 +88,7 @@ void IRAM_ATTR isrL(void)
 {
   portENTER_CRITICAL_ISR(&g_timer_mux);  //割り込み禁止
   if (g_motor_move) {
-    timerAlarmWrite(g_timer3, 2000000 / g_step_hz_l, true);
+    timerAlarm(g_timer3, 2000000 / g_step_hz_l, true, 0);
     digitalWrite(PWM_L, HIGH);
     for (int i = 0; i < 100; i++) {
       asm("nop \n");
@@ -124,20 +124,20 @@ void setup()
   digitalWrite(PWM_R, LOW);
   digitalWrite(PWM_L, LOW);
 
-  g_timer0 = timerBegin(0, 80, true);  //1us
-  timerAttachInterrupt(g_timer0, &onTimer0, true);
-  timerAlarmWrite(g_timer0, 1000, true);  //1kHz
-  timerAlarmEnable(g_timer0);
+  g_timer0 = timerBegin(1000000);  //1us
+  timerAttachInterrupt(g_timer0, &onTimer0);
+  timerAlarm(g_timer0, 1000, true, 0);  //1kHz
+  timerStart(g_timer0);
 
-  g_timer2 = timerBegin(2, 40, true);  //0.5us
-  timerAttachInterrupt(g_timer2, &isrR, true);
-  timerAlarmWrite(g_timer2, 13333, true);  //150Hz
-  timerAlarmEnable(g_timer2);
+  g_timer2 = timerBegin(2000000);  //0.5us
+  timerAttachInterrupt(g_timer2, &isrR);
+  timerAlarm(g_timer2, 13333, true, 0);  //150Hz
+  timerStart(g_timer2);
 
-  g_timer3 = timerBegin(3, 40, true);  //0.5us
-  timerAttachInterrupt(g_timer3, &isrL, true);
-  timerAlarmWrite(g_timer3, 13333, true);  //150Hz
-  timerAlarmEnable(g_timer3);
+  g_timer3 = timerBegin(2000000);  //0.5us
+  timerAttachInterrupt(g_timer3, &isrL);
+  timerAlarm(g_timer3, 13333, true, 0);  //150Hz
+  timerStart(g_timer3);
 }
 
 void loop()
