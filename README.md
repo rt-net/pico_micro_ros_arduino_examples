@@ -13,7 +13,7 @@ Pi:Co Classic3用のmicro-ROS Arduinoサンプルスケッチ集です。
 
 ## 動作環境
 
-- arduino-esp32 : v2.0.17
+- arduino-esp32 : v3.0.1
 
 ## サンプルスケッチについて
 

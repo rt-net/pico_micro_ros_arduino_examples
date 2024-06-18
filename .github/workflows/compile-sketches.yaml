@@ -28,13 +28,9 @@ jobs:
           platforms: |  # ESP32公式のpackage indexを使用する
             - name: esp32:esp32
               source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-              version: 2.0.17
+              version: 3.0.1
           libraries: |  # RTがカスタマイズしたmicro_ros_arduinoライブラリを使用する
             - source-url: https://github.com/rt-net/micro_ros_arduino/archive/refs/tags/esp32s3-230417.zip
-          cli-compile-flags: |  # 警告がエラーとして扱われるので、対処しない警告はエラーから除外する
-            - --build-property
-            - "compiler.cpp.extra_flags= \
-              -Wno-error=type-limits"  # micro_ros_arduino側のエラーを防ぐ
           sketch-paths: |
             - uROS_STEP1_LED
             - uROS_STEP2_SWITCH
