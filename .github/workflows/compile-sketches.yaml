@@ -34,10 +34,9 @@ jobs:
 
           # 警告がエラーとして扱われるので、対処しない警告はエラーから除外する
           # type-limitsはmicro_ros_arduino側のエラーを防ぐために除外します
-          # cli-compile-flags: |
-          #   - --build-property
-          #   - "compiler.cpp.extra_flags= \
-          #     -Wno-error=type-limits"
+          cli-compile-flags: |
+            - --build-property
+            - compiler.cpp.extra_flags=-Wno-error=type-limits
           sketch-paths: |
             - uROS_STEP1_LED
             - uROS_STEP2_SWITCH
