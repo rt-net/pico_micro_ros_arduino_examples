@@ -1,4 +1,4 @@
-// Copyright 2024 RT Corporation
+// Copyright 2023 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -163,9 +163,9 @@ void setup()
 
   delay(2000);
 
-  g_timer1 = timerBegin(1000000);  //1us
+  g_timer1 = timerBegin(1000000);  //1MHz(1us)
   timerAttachInterrupt(g_timer1, &onTimer1);
-  timerAlarm(g_timer1, 250, true, 0);  //4kHz
+  timerAlarm(g_timer1, 250, true, 0);  //250 * 1us = 250us(4kHz)
   timerStart(g_timer1);
 
   g_allocator = rcl_get_default_allocator();

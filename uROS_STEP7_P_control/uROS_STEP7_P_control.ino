@@ -1,4 +1,4 @@
-// Copyright 2024 RT Corporation
+// Copyright 2023 RT Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -190,9 +190,9 @@ void setup()
 
   Serial.begin(115200);
 
-  g_timer0 = timerBegin(1000000);  //1us
+  g_timer0 = timerBegin(1000000);  //1MHz(1us)
   timerAttachInterrupt(g_timer0, &onTimer0);
-  timerAlarm(g_timer0, 1000, true, 0);  //1kHz
+  timerAlarm(g_timer0, 1000, true, 0);  //1000 * 1us =1000us(1kHz)
   timerStart(g_timer0);
 
   g_timer1 = timerBegin(1000000);
@@ -200,14 +200,14 @@ void setup()
   timerAlarm(g_timer1, 250, true, 0);
   timerStart(g_timer1);
 
-  g_timer2 = timerBegin(2000000);  //0.5us
+  g_timer2 = timerBegin(2000000);  //2MHz(0.5us)
   timerAttachInterrupt(g_timer2, &isrR);
-  timerAlarm(g_timer2, 13333, true, 0);  //150Hz
+  timerAlarm(g_timer2, 13333, true, 0);  //13333 * 0.5us = 6666us(150Hz)
   timerStart(g_timer2);
 
-  g_timer3 = timerBegin(2000000);  //0.5us
+  g_timer3 = timerBegin(2000000);  //2MHz(0.5us)
   timerAttachInterrupt(g_timer3, &isrL);
-  timerAlarm(g_timer3, 13333, true, 0);  //150Hz
+  timerAlarm(g_timer3, 13333, true, 0);  //13333 * 0.5us = 6666us(150Hz)
   timerStart(g_timer3);
 
   g_sen_r.ref = REF_SEN_R;

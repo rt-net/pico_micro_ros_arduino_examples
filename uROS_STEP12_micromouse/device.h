@@ -36,5 +36,4 @@
 #define SW_CM 2
 #define SW_RM 4
 
-
 #endif  // DEVICE_H_
