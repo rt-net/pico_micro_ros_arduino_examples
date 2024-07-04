@@ -94,10 +94,10 @@ void setup()
 
   Serial.begin(115200);
 
-  g_timer1 = timerBegin(1, 80, true);  //1us
-  timerAttachInterrupt(g_timer1, &onTimer1, true);
-  timerAlarmWrite(g_timer1, 250, true);  //4kHz
-  timerAlarmEnable(g_timer1);
+  g_timer1 = timerBegin(1000000);  //1MHz(1us)
+  timerAttachInterrupt(g_timer1, &onTimer1);
+  timerAlarm(g_timer1, 250, true, 0);  //250 * 1us =250us(4kHz)
+  timerStart(g_timer1);
 }
 
 void loop()
