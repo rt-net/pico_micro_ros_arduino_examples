@@ -49,7 +49,7 @@ void loop()
   }
   if (digitalRead(SW_C) == 0) {
     digitalWrite(LED2, (++g_state_c) & 0x01);
-    digitalWrite(LED1, (g_state_c)&0x01);
+    digitalWrite(LED1, g_state_c & 0x01);
   }
   if (digitalRead(SW_L) == 0) {
     digitalWrite(LED0, (++g_state_l) & 0x01);
