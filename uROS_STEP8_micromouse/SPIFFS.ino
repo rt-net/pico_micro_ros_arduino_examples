@@ -30,8 +30,8 @@ void mapWrite(void)
     Serial.println("- failed to open file for writing");
     return;
   }
-  for (int i = 0; i < 16; i++) {
-    for (int j = 0; j < 16; j++) {
+  for (int i = 0; i < MAZESIZE_X; i++) {
+    for (int j = 0; j < MAZESIZE_Y; j++) {
       data_temp = g_map_control.getWallData(i, j, north) +
                   (g_map_control.getWallData(i, j, east) << 2) +
                   (g_map_control.getWallData(i, j, south) << 4) +
@@ -63,8 +63,8 @@ void copyMap(void)
     Serial.println("- failed to open file for reading");
     return;
   }
-  for (int i = 0; i < 16; i++) {
-    for (int j = 0; j < 16; j++) {
+  for (int i = 0; i < MAZESIZE_X; i++) {
+    for (int j = 0; j < MAZESIZE_Y; j++) {
       if (file.available()) {
         read_data = file.read();
         g_map_control.setWallData(i, j, north, read_data & 0x03);
